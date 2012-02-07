@@ -4,11 +4,20 @@ require 'spec_helper'
 describe FakeBraspag::App do
   context "Authorize method" do
     let(:order_id) { "12345678" }
+    let(:body) { Nokogiri::XML last_response.body }
 
     after { FakeBraspag::App.clear_requests }
 
     def do_post(card_number)
       post FakeBraspag::AUTHORIZE_URI, :order_id => order_id, :card_number => card_number
+    end
+
+    def returned_status
+      body.css("status").text
+    end
+
+    def returned_order_id
+      body.css("transactionId").text
     end
 
     context "when authorized" do
@@ -21,12 +30,12 @@ describe FakeBraspag::App do
 
       it "returns an XML with the sent order id" do
         do_post card_number
-        Nokogiri::XML(last_response.body).css("transactionId").text.should == order_id
+        returned_order_id.should == order_id
       end
 
       it "returns an XML with the success status code" do
         do_post card_number
-        Nokogiri::XML(last_response.body).css("status").text.should == FakeBraspag::Authorize::Status::AUTHORIZED
+        returned_status.should == FakeBraspag::Authorize::Status::AUTHORIZED
       end
     end
 
@@ -40,12 +49,12 @@ describe FakeBraspag::App do
 
       it "returns an XML with the sent order id" do
         do_post card_number
-        Nokogiri::XML(last_response.body).css("transactionId").text.should == order_id
+        returned_order_id.should == order_id
       end
 
       it "returns an XML with the denied status code" do
         do_post card_number
-        Nokogiri::XML(last_response.body).css("status").text.should == FakeBraspag::Authorize::Status::DENIED
+        returned_status.should == FakeBraspag::Authorize::Status::DENIED
       end
     end
 
@@ -60,12 +69,12 @@ describe FakeBraspag::App do
 
         it "returns an XML with the sent order id" do
           do_post card_number
-          Nokogiri::XML(last_response.body).css("transactionId").text.should == order_id
+          returned_order_id.should == order_id
         end
 
         it "returns an XML with the captured status code" do
           do_post card_number
-          Nokogiri::XML(last_response.body).css("status").text.should == FakeBraspag::Capture::Status::CAPTURED
+          returned_status.should == FakeBraspag::Capture::Status::CAPTURED
         end
       end
 
@@ -79,12 +88,12 @@ describe FakeBraspag::App do
 
         it "returns an XML with the sent order id" do
           do_post card_number
-          Nokogiri::XML(last_response.body).css("transactionId").text.should == order_id
+          returned_order_id.should == order_id
         end
 
         it "returns an XML with the captured status code" do
           do_post card_number
-          Nokogiri::XML(last_response.body).css("status").text.should == FakeBraspag::Capture::Status::DENIED
+          returned_status.should == FakeBraspag::Capture::Status::DENIED
         end
       end      
     end
