@@ -1,5 +1,6 @@
 require 'rspec'
 require 'rack/test'
+require "pry"
 
 ENV ||= {}
 ENV["SINATRA_ENV"] = "test"
