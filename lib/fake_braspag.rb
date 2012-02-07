@@ -9,12 +9,14 @@ module FakeBraspag
   CAPTURE_URI   = "/webservices/pagador/Pagador.asmx/Capture"
 
   module CreditCards
-    AUTHORIZE_OK = "5340749871433512"
+    AUTHORIZE_OK     = "5340749871433512"
+    AUTHORIZE_DENIED = "5558702121154658"
   end
 
   module Authorize
     module Status
       AUTHORIZED = "1"
+      DENIED     = '2'
     end
   end
 
@@ -26,10 +28,14 @@ module FakeBraspag
         @received_requests ||= {}
         @received_requests[order_id] = card_number
       end
+
+      def clear_requests
+        @received_requests.clear
+      end
     end
 
     post AUTHORIZE_URI do
-      save_request
+      save_request if authorize_with_success?
       <<-EOXML
         <?xml version="1.0" encoding="utf-8"?>
         <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -39,14 +45,26 @@ module FakeBraspag
           <message>Transaction Successful</message>
           <authorisationNumber>733610</authorisationNumber>
           <returnCode>7</returnCode>
-          <status>#{Authorize::Status::AUTHORIZED}</status>
+          <status>#{status_to_return}</status>
           <transactionId>#{params[:order_id]}</transactionId>
         </PagadorReturn>
       EOXML
     end
 
+    private
     def save_request
       self.class.save_request params[:order_id], params[:card_number]
+    end
+
+    def authorize_with_success?
+      params[:card_number] == CreditCards::AUTHORIZE_OK
+    end
+
+    def status_to_return
+      case params[:card_number]
+      when CreditCards::AUTHORIZE_OK; Authorize::Status::AUTHORIZED
+      when CreditCards::AUTHORIZE_DENIED; Authorize::Status::DENIED
+      end
     end
 
     configure do
