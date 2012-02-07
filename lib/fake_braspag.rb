@@ -13,6 +13,8 @@ module FakeBraspag
     AUTHORIZE_DENIED             = "5558702121154658"
     AUTHORIZE_AND_CAPTURE_OK     = "5326107541057732"
     AUTHORIZE_AND_CAPTURE_DENIED = "5430442567033801"
+    CAPTURE_OK                   = "5277253663231678"
+    CAPTURE_DENIED               = "5473598178407565"
   end
 
   module Authorize
@@ -54,8 +56,22 @@ module FakeBraspag
           <message>Transaction Successful</message>
           <authorisationNumber>733610</authorisationNumber>
           <returnCode>7</returnCode>
-          <status>#{status_to_return}</status>
+          <status>#{authorize_status}</status>
           <transactionId>#{params[:order_id]}</transactionId>
+        </PagadorReturn>
+      EOXML
+    end
+
+    post CAPTURE_URI do
+      <<-EOXML
+        <?xml version="1.0" encoding="utf-8"?>
+        <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                       xmlns="https://www.pagador.com.br/webservice/pagador">
+          <amount>2</amount>
+          <message>Approved</message>
+          <returnCode>0</returnCode>
+          <status>#{capture_status}</status>
         </PagadorReturn>
       EOXML
     end
@@ -66,15 +82,23 @@ module FakeBraspag
     end
 
     def authorize_with_success?
-      params[:card_number] == CreditCards::AUTHORIZE_OK
+      authorize_status == Authorize::Status::AUTHORIZED
     end
 
-    def status_to_return
+    def authorize_status
       case params[:card_number]
       when CreditCards::AUTHORIZE_OK; Authorize::Status::AUTHORIZED
       when CreditCards::AUTHORIZE_DENIED; Authorize::Status::DENIED
       when CreditCards::AUTHORIZE_AND_CAPTURE_OK; Capture::Status::CAPTURED
       when CreditCards::AUTHORIZE_AND_CAPTURE_DENIED; Capture::Status::DENIED
+      when CreditCards::AUTHORIZE_OK, CreditCards::CAPTURE_OK, CreditCards::CAPTURE_DENIED; Authorize::Status::AUTHORIZED
+      end
+    end
+
+    def capture_status
+      case self.class.received_requests[params[:order_id]]
+      when CreditCards::CAPTURE_OK; Capture::Status::CAPTURED
+      when CreditCards::CAPTURE_DENIED; Capture::Status::DENIED
       end
     end
 
