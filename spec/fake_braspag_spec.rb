@@ -50,12 +50,42 @@ describe FakeBraspag::App do
     end
 
     context "with capture in the same request" do
-      context "when authorized" do
-        
+      context "when confirmed" do
+        let(:card_number) { FakeBraspag::CreditCards::AUTHORIZE_AND_CAPTURE_OK }
+
+        it "does not add the received credit card and order id to the list of received requests" do
+          do_post card_number
+          FakeBraspag::App.received_requests.should == {}
+        end
+
+        it "returns an XML with the sent order id" do
+          do_post card_number
+          Nokogiri::XML(last_response.body).css("transactionId").text.should == order_id
+        end
+
+        it "returns an XML with the captured status code" do
+          do_post card_number
+          Nokogiri::XML(last_response.body).css("status").text.should == FakeBraspag::Capture::Status::CAPTURED
+        end
       end
 
       context "denied" do
-        
+        let(:card_number) { FakeBraspag::CreditCards::AUTHORIZE_AND_CAPTURE_DENIED }
+
+        it "does not add the received credit card and order id to the list of received requests" do
+          do_post card_number
+          FakeBraspag::App.received_requests.should == {}
+        end
+
+        it "returns an XML with the sent order id" do
+          do_post card_number
+          Nokogiri::XML(last_response.body).css("transactionId").text.should == order_id
+        end
+
+        it "returns an XML with the captured status code" do
+          do_post card_number
+          Nokogiri::XML(last_response.body).css("status").text.should == FakeBraspag::Capture::Status::DENIED
+        end
       end      
     end
   end

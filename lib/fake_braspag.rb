@@ -9,14 +9,23 @@ module FakeBraspag
   CAPTURE_URI   = "/webservices/pagador/Pagador.asmx/Capture"
 
   module CreditCards
-    AUTHORIZE_OK     = "5340749871433512"
-    AUTHORIZE_DENIED = "5558702121154658"
+    AUTHORIZE_OK                 = "5340749871433512"
+    AUTHORIZE_DENIED             = "5558702121154658"
+    AUTHORIZE_AND_CAPTURE_OK     = "5326107541057732"
+    AUTHORIZE_AND_CAPTURE_DENIED = "5430442567033801"
   end
 
   module Authorize
     module Status
       AUTHORIZED = "1"
       DENIED     = '2'
+    end
+  end
+
+  module Capture
+    module Status
+      CAPTURED = "0"
+      DENIED   = "2"
     end
   end
 
@@ -64,6 +73,8 @@ module FakeBraspag
       case params[:card_number]
       when CreditCards::AUTHORIZE_OK; Authorize::Status::AUTHORIZED
       when CreditCards::AUTHORIZE_DENIED; Authorize::Status::DENIED
+      when CreditCards::AUTHORIZE_AND_CAPTURE_OK; Capture::Status::CAPTURED
+      when CreditCards::AUTHORIZE_AND_CAPTURE_DENIED; Capture::Status::DENIED
       end
     end
 
