@@ -128,7 +128,7 @@ module FakeBraspag
     end
 
     def amount_for_get_dados_pedido
-      authorized_requests[params[:numeroPedido]].nil? ? "" : authorized_requests[params[:numeroPedido]][:amount]
+      authorized_requests[params[:numeroPedido]].nil? ? "" : authorized_requests[params[:numeroPedido]][:amount].gsub(",",".")
     end
 
     def capture_request

@@ -3,11 +3,12 @@ require 'spec_helper'
 
 describe FakeBraspag::App do
   let(:order_id) { "12345678" }
+  let(:amount_for_post) { "123,45" }
   let(:amount) { "123.45" }
   let(:body) { Nokogiri::XML last_response.body }
 
   def do_authorize(card_number)
-    post FakeBraspag::AUTHORIZE_URI, :orderId => order_id, :cardNumber => card_number, :amount => amount
+    post FakeBraspag::AUTHORIZE_URI, :orderId => order_id, :cardNumber => card_number, :amount => amount_for_post
   end
 
   context "Authorize method" do
@@ -26,7 +27,7 @@ describe FakeBraspag::App do
 
       it "adds the received credit card, amout and order id to the list of authorized requests" do
         do_authorize card_number
-        FakeBraspag::App.authorized_requests.should == {order_id => {:card_number => FakeBraspag::CreditCards::AUTHORIZE_OK, :amount => amount}}
+        FakeBraspag::App.authorized_requests.should == {order_id => {:card_number => FakeBraspag::CreditCards::AUTHORIZE_OK, :amount => amount_for_post}}
       end
 
       it "returns an XML with the sent order id" do
@@ -67,7 +68,7 @@ describe FakeBraspag::App do
 
         it "adds the received credit card and order id to the list of authorized requests" do
           do_authorize card_number
-          FakeBraspag::App.authorized_requests.should == {order_id => {:card_number => card_number, :amount => amount}}
+          FakeBraspag::App.authorized_requests.should == {order_id => {:card_number => card_number, :amount => amount_for_post}}
         end
 
         it "adds the order id to the list of captured orders" do
@@ -91,7 +92,7 @@ describe FakeBraspag::App do
 
         it "adds the received credit card and order id to the list of authorized requests" do
           do_authorize card_number
-          FakeBraspag::App.authorized_requests.should == {order_id => {:card_number => card_number, :amount => amount}}
+          FakeBraspag::App.authorized_requests.should == {order_id => {:card_number => card_number, :amount => amount_for_post}}
         end
 
         it "returns an XML with the sent order id" do
