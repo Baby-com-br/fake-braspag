@@ -23,11 +23,11 @@ describe FakeBraspag::App do
     end
 
     context "when authorized" do
-      let(:card_number) { FakeBraspag::CreditCards::AUTHORIZE_OK }
+      let(:card_number) { FakeBraspag::CreditCard::AUTHORIZE_OK }
 
       it "adds the received credit card, amout and order id to the list of authorized requests" do
         do_authorize card_number
-        FakeBraspag::App.authorized_requests.should == {order_id => {:card_number => FakeBraspag::CreditCards::AUTHORIZE_OK, :amount => amount_for_post}}
+        FakeBraspag::App.authorized_requests.should == {order_id => {:card_number => FakeBraspag::CreditCard::AUTHORIZE_OK, :amount => amount_for_post}}
       end
 
       it "returns an XML with the sent order id" do
@@ -42,7 +42,7 @@ describe FakeBraspag::App do
     end
 
     context "when denied" do
-      let(:card_number) { FakeBraspag::CreditCards::AUTHORIZE_DENIED }
+      let(:card_number) { FakeBraspag::CreditCard::AUTHORIZE_DENIED }
 
       it "does not add the received credit card and order id to the list of received requests" do
         do_authorize card_number
@@ -62,7 +62,7 @@ describe FakeBraspag::App do
 
     context "with capture in the same request" do
       context "when confirmed" do
-        let(:card_number) { FakeBraspag::CreditCards::AUTHORIZE_AND_CAPTURE_OK }
+        let(:card_number) { FakeBraspag::CreditCard::AUTHORIZE_AND_CAPTURE_OK }
 
         after { FakeBraspag::App.clear_captured_requests }
 
@@ -88,7 +88,7 @@ describe FakeBraspag::App do
       end
 
       context "denied" do
-        let(:card_number) { FakeBraspag::CreditCards::AUTHORIZE_AND_CAPTURE_DENIED }
+        let(:card_number) { FakeBraspag::CreditCard::AUTHORIZE_AND_CAPTURE_DENIED }
 
         it "adds the received credit card and order id to the list of authorized requests" do
           do_authorize card_number
@@ -118,7 +118,7 @@ describe FakeBraspag::App do
     end
 
     context "when authorized" do
-      let(:card_number) { FakeBraspag::CreditCards::CAPTURE_OK }      
+      let(:card_number) { FakeBraspag::CreditCard::CAPTURE_OK }      
 
       before { do_authorize card_number }
 
@@ -129,7 +129,7 @@ describe FakeBraspag::App do
     end
 
     context "when denied" do
-      let(:card_number) { FakeBraspag::CreditCards::CAPTURE_DENIED }
+      let(:card_number) { FakeBraspag::CreditCard::CAPTURE_DENIED }
 
       before { do_authorize card_number }
 
@@ -161,7 +161,7 @@ describe FakeBraspag::App do
     end
 
     context "when the order has been paid" do
-      let(:card_number) { FakeBraspag::CreditCards::AUTHORIZE_AND_CAPTURE_OK }
+      let(:card_number) { FakeBraspag::CreditCard::AUTHORIZE_AND_CAPTURE_OK }
 
       before do
         do_authorize card_number 
@@ -178,7 +178,7 @@ describe FakeBraspag::App do
     end
 
     context "when the order is pending" do
-      let(:card_number) { FakeBraspag::CreditCards::AUTHORIZE_OK }  
+      let(:card_number) { FakeBraspag::CreditCard::AUTHORIZE_OK }  
 
       before do
         do_authorize card_number 
@@ -195,7 +195,7 @@ describe FakeBraspag::App do
     end
 
     context "when the order has been cancelled" do
-      let(:card_number) { FakeBraspag::CreditCards::CAPTURE_DENIED }
+      let(:card_number) { FakeBraspag::CreditCard::CAPTURE_DENIED }
 
       before do
         do_authorize card_number 
@@ -212,7 +212,7 @@ describe FakeBraspag::App do
     end
 
     context "when the order has not been authorized or captured" do
-      let(:card_number) { FakeBraspag::CreditCards::AUTHORIZE_OK }
+      let(:card_number) { FakeBraspag::CreditCard::AUTHORIZE_OK }
 
       it "returns an XML with an empty status" do
         do_post order_id
@@ -222,7 +222,7 @@ describe FakeBraspag::App do
   end
 
   context "CreateBoleto method" do
-    before { do_post }
+    before { do_post payment_method }
 
     def do_post(payment_method)
       post FakeBraspag::BILL_URL, :orderId => order_id, :amount => amount_for_post, :paymentMethod => payment_method
