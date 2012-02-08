@@ -3,10 +3,11 @@ require 'spec_helper'
 
 describe FakeBraspag::App do
   let(:order_id) { "12345678" }
+  let(:amount) { "123.45" }
   let(:body) { Nokogiri::XML last_response.body }
 
   def do_authorize(card_number)
-    post FakeBraspag::AUTHORIZE_URI, :order_id => order_id, :card_number => card_number
+    post FakeBraspag::AUTHORIZE_URI, :order_id => order_id, :card_number => card_number, :amount => amount
   end
 
   context "Authorize method" do
@@ -23,9 +24,9 @@ describe FakeBraspag::App do
     context "when authorized" do
       let(:card_number) { FakeBraspag::CreditCards::AUTHORIZE_OK }
 
-      it "adds the received credit card and order id to the list of received requests" do
+      it "adds the received credit card, amout and order id to the list of authorized requests" do
         do_authorize card_number
-        FakeBraspag::App.authorized_requests.should == {order_id => FakeBraspag::CreditCards::AUTHORIZE_OK}
+        FakeBraspag::App.authorized_requests.should == {order_id => {:card_number => FakeBraspag::CreditCards::AUTHORIZE_OK, :amount => amount}}
       end
 
       it "returns an XML with the sent order id" do
@@ -66,7 +67,7 @@ describe FakeBraspag::App do
 
         it "adds the received credit card and order id to the list of authorized requests" do
           do_authorize card_number
-          FakeBraspag::App.authorized_requests.should == {order_id => card_number}
+          FakeBraspag::App.authorized_requests.should == {order_id => {:card_number => card_number, :amount => amount}}
         end
 
         it "adds the order id to the list of captured orders" do
@@ -90,7 +91,7 @@ describe FakeBraspag::App do
 
         it "adds the received credit card and order id to the list of authorized requests" do
           do_authorize card_number
-          FakeBraspag::App.authorized_requests.should == {order_id => card_number}
+          FakeBraspag::App.authorized_requests.should == {order_id => {:card_number => card_number, :amount => amount}}
         end
 
         it "returns an XML with the sent order id" do

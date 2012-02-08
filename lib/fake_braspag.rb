@@ -2,8 +2,6 @@ require "bundler/setup"
 
 Bundler.require 
 
-$:.unshift File.dirname(File.expand_path(__FILE__)) + "/lib"
-
 module FakeBraspag
   AUTHORIZE_URI    = "/webservices/pagador/Pagador.asmx/Authorize"
   CAPTURE_URI      = "/webservices/pagador/Pagador.asmx/Capture"
@@ -50,8 +48,8 @@ module FakeBraspag
         @captured_requests ||= []
       end
 
-      def authorize_request(order_id, card_number)
-        authorized_requests[order_id] = card_number
+      def authorize_request(params)
+        authorized_requests[params[:order_id]] = {:card_number => params[:card_number], :amount => params[:amount]}
       end
 
       def capture_request(order_id)
@@ -126,7 +124,7 @@ module FakeBraspag
     end
 
     def authorize_request
-      self.class.authorize_request params[:order_id], card_number
+      self.class.authorize_request params
     end
 
     def capture_request
@@ -151,20 +149,28 @@ module FakeBraspag
       end
     end
 
+    def authorized_requests
+      self.class.authorized_requests
+    end
+
+    def captured_requests
+      self.class.captured_requests
+    end
+
     def capture_status
-      return nil if self.class.authorized_requests.nil?
-      case self.class.authorized_requests[params[:order_id]]
+      return nil if authorized_requests[params[:order_id]].nil? 
+      case authorized_requests[params[:order_id]][:card_number]
       when CreditCards::CAPTURE_OK, CreditCards::AUTHORIZE_AND_CAPTURE_OK; Capture::Status::CAPTURED
       when CreditCards::CAPTURE_DENIED, CreditCards::AUTHORIZE_AND_CAPTURE_DENIED; Capture::Status::DENIED
       end
     end
 
     def dados_pedido_status
-      return nil if self.class.authorized_requests[params[:numeroPedido]].nil?
-      if self.class.captured_requests.include? params[:numeroPedido]
+      return nil if authorized_requests[params[:numeroPedido]].nil?
+      if captured_requests.include? params[:numeroPedido]
         DadosPedido::Status::PAID 
       else
-        case self.class.authorized_requests[params[:numeroPedido]]
+        case authorized_requests[params[:numeroPedido]][:card_number]
         when CreditCards::AUTHORIZE_OK, CreditCards::AUTHORIZE_AND_CAPTURE_OK
           DadosPedido::Status::PENDING
         else
