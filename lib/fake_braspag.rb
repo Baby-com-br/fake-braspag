@@ -5,8 +5,9 @@ Bundler.require
 $:.unshift File.dirname(File.expand_path(__FILE__)) + "/lib"
 
 module FakeBraspag
-  AUTHORIZE_URI = "/webservices/pagador/Pagador.asmx/Authorize"
-  CAPTURE_URI   = "/webservices/pagador/Pagador.asmx/Capture"
+  AUTHORIZE_URI    = "/webservices/pagador/Pagador.asmx/Authorize"
+  CAPTURE_URI      = "/webservices/pagador/Pagador.asmx/Capture"
+  DADOS_PEDIDO_URI = "/webservices/pagador/pedido.asmx/GetDadosPedido"
 
   module CreditCards
     AUTHORIZE_OK                 = "5340749871433512"
@@ -20,7 +21,7 @@ module FakeBraspag
   module Authorize
     module Status
       AUTHORIZED = "1"
-      DENIED     = '2'
+      DENIED     = "2"
     end
   end
 
@@ -31,22 +32,44 @@ module FakeBraspag
     end
   end
 
+  module DadosPedido
+    module Status
+      PENDING   = "1"
+      PAID      = "3"
+      CANCELLED = "4"
+    end
+  end
+
   class App < Sinatra::Base
     class << self
-      attr_reader :received_requests
-
-      def save_request(order_id, card_number)
-        @received_requests ||= {}
-        @received_requests[order_id] = card_number
+      def authorized_requests
+        @authorized_requests ||= {}
       end
 
-      def clear_requests
-        @received_requests.clear
+      def captured_requests
+        @captured_requests ||= []
+      end
+
+      def authorize_request(order_id, card_number)
+        authorized_requests[order_id] = card_number
+      end
+
+      def capture_request(order_id)
+        captured_requests << order_id
+      end
+
+      def clear_authorized_requests
+        authorized_requests.clear
+      end
+
+      def clear_captured_requests
+        captured_requests.clear
       end
     end
 
     post AUTHORIZE_URI do
-      save_request if authorize_with_success?
+      authorize_request if authorize_with_success?
+      capture_request   if capture_with_success?
       <<-EOXML
         <?xml version="1.0" encoding="utf-8"?>
         <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -63,6 +86,7 @@ module FakeBraspag
     end
 
     post CAPTURE_URI do
+      capture_request if capture_with_success?
       <<-EOXML
         <?xml version="1.0" encoding="utf-8"?>
         <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -76,18 +100,50 @@ module FakeBraspag
       EOXML
     end
 
+    get DADOS_PEDIDO_URI do
+      <<-EOXML
+      <?xml version="1.0" encoding="utf-8"?>
+      <DadosPedido xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                   xmlns="http://www.pagador.com.br/">
+        <CodigoAutorizacao>885796</CodigoAutorizacao>
+        <CodigoPagamento>18</CodigoPagamento>
+        <FormaPagamento>American Express 2P</FormaPagamento>
+        <NumeroParcelas>1</NumeroParcelas>
+        <Status>#{dados_pedido_status}</Status>
+        <Valor>0.01</Valor>
+        <DataPagamento>7/8/2011 1:19:38 PM</DataPagamento>
+        <DataPedido>7/8/2011 1:06:06 PM</DataPedido>
+        <TransId>398591</TransId>
+        <BraspagTid>5a1d4463-1d11-4571-a877-763aba0ef7ff</BraspagTid>
+      </DadosPedido>
+      EOXML
+    end
+
     private
-    def save_request
-      self.class.save_request params[:order_id], params[:card_number]
+    def card_number
+      params[:card_number]
+    end
+
+    def authorize_request
+      self.class.authorize_request params[:order_id], card_number
+    end
+
+    def capture_request
+      self.class.capture_request params[:order_id]
     end
 
     def authorize_with_success?
-      authorize_status == Authorize::Status::AUTHORIZED
+      authorize_status == Authorize::Status::AUTHORIZED || 
+        [CreditCards::AUTHORIZE_AND_CAPTURE_OK, CreditCards::AUTHORIZE_AND_CAPTURE_DENIED].include?(card_number)
+    end
+
+    def capture_with_success?
+      capture_status == Capture::Status::CAPTURED || card_number == CreditCards::AUTHORIZE_AND_CAPTURE_OK
     end
 
     def authorize_status
-      case params[:card_number]
-      when CreditCards::AUTHORIZE_OK; Authorize::Status::AUTHORIZED
+      case card_number
       when CreditCards::AUTHORIZE_DENIED; Authorize::Status::DENIED
       when CreditCards::AUTHORIZE_AND_CAPTURE_OK; Capture::Status::CAPTURED
       when CreditCards::AUTHORIZE_AND_CAPTURE_DENIED; Capture::Status::DENIED
@@ -96,9 +152,24 @@ module FakeBraspag
     end
 
     def capture_status
-      case self.class.received_requests[params[:order_id]]
-      when CreditCards::CAPTURE_OK; Capture::Status::CAPTURED
-      when CreditCards::CAPTURE_DENIED; Capture::Status::DENIED
+      return nil if self.class.authorized_requests.nil?
+      case self.class.authorized_requests[params[:order_id]]
+      when CreditCards::CAPTURE_OK, CreditCards::AUTHORIZE_AND_CAPTURE_OK; Capture::Status::CAPTURED
+      when CreditCards::CAPTURE_DENIED, CreditCards::AUTHORIZE_AND_CAPTURE_DENIED; Capture::Status::DENIED
+      end
+    end
+
+    def dados_pedido_status
+      return nil if self.class.authorized_requests[params[:numeroPedido]].nil?
+      if self.class.captured_requests.include? params[:numeroPedido]
+        DadosPedido::Status::PAID 
+      else
+        case self.class.authorized_requests[params[:numeroPedido]]
+        when CreditCards::AUTHORIZE_OK, CreditCards::AUTHORIZE_AND_CAPTURE_OK
+          DadosPedido::Status::PENDING
+        else
+          DadosPedido::Status::CANCELLED
+        end
       end
     end
 
