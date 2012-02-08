@@ -7,7 +7,7 @@ describe FakeBraspag::App do
   let(:body) { Nokogiri::XML last_response.body }
 
   def do_authorize(card_number)
-    post FakeBraspag::AUTHORIZE_URI, :order_id => order_id, :card_number => card_number, :amount => amount
+    post FakeBraspag::AUTHORIZE_URI, :orderId => order_id, :cardNumber => card_number, :amount => amount
   end
 
   context "Authorize method" do
@@ -113,7 +113,7 @@ describe FakeBraspag::App do
     end
 
     def do_capture
-      post FakeBraspag::CAPTURE_URI, :order_id => order_id
+      post FakeBraspag::CAPTURE_URI, :orderId => order_id
     end
 
     context "when authorized" do
@@ -155,8 +155,8 @@ describe FakeBraspag::App do
       body.css("Valor").text
     end
 
-    def do_get(order_id)
-      get FakeBraspag::DADOS_PEDIDO_URI, :numeroPedido => order_id
+    def do_post(order_id)
+      post FakeBraspag::DADOS_PEDIDO_URI, :numeroPedido => order_id
     end
 
     context "when the order has been paid" do
@@ -164,7 +164,7 @@ describe FakeBraspag::App do
 
       before do
         do_authorize card_number 
-        do_get order_id
+        do_post order_id
       end
 
       it "returns an XML with the paid status" do
@@ -181,7 +181,7 @@ describe FakeBraspag::App do
 
       before do
         do_authorize card_number 
-        do_get order_id
+        do_post order_id
       end
 
       it "returns an XML with the pending status" do
@@ -198,7 +198,7 @@ describe FakeBraspag::App do
 
       before do
         do_authorize card_number 
-        do_get order_id
+        do_post order_id
       end
 
       it "returns an XML with the cancelled status" do
@@ -214,7 +214,7 @@ describe FakeBraspag::App do
       let(:card_number) { FakeBraspag::CreditCards::AUTHORIZE_OK }
 
       it "returns an XML with an empty status" do
-        do_get order_id
+        do_post order_id
         returned_status.should == ""
       end
     end

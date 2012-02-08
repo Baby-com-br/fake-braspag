@@ -5,7 +5,7 @@ Bundler.require
 module FakeBraspag
   AUTHORIZE_URI    = "/webservices/pagador/Pagador.asmx/Authorize"
   CAPTURE_URI      = "/webservices/pagador/Pagador.asmx/Capture"
-  DADOS_PEDIDO_URI = "/webservices/pagador/pedido.asmx/GetDadosPedido"
+  DADOS_PEDIDO_URI = "/pagador/webservice/pedido.asmx/GetDadosPedido"
 
   module CreditCards
     AUTHORIZE_OK                 = "5340749871433512"
@@ -49,7 +49,7 @@ module FakeBraspag
       end
 
       def authorize_request(params)
-        authorized_requests[params[:order_id]] = {:card_number => params[:card_number], :amount => params[:amount]}
+        authorized_requests[params[:orderId]] = {:card_number => params[:cardNumber], :amount => params[:amount]}
       end
 
       def capture_request(order_id)
@@ -78,7 +78,7 @@ module FakeBraspag
           <authorisationNumber>733610</authorisationNumber>
           <returnCode>7</returnCode>
           <status>#{authorize_status}</status>
-          <transactionId>#{params[:order_id]}</transactionId>
+          <transactionId>#{params[:orderId]}</transactionId>
         </PagadorReturn>
       EOXML
     end
@@ -98,7 +98,7 @@ module FakeBraspag
       EOXML
     end
 
-    get DADOS_PEDIDO_URI do
+    post DADOS_PEDIDO_URI do
       <<-EOXML
       <?xml version="1.0" encoding="utf-8"?>
       <DadosPedido xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -120,7 +120,7 @@ module FakeBraspag
 
     private
     def card_number
-      params[:card_number]
+      params[:cardNumber]
     end
 
     def authorize_request
@@ -132,7 +132,7 @@ module FakeBraspag
     end
 
     def capture_request
-      self.class.capture_request params[:order_id]
+      self.class.capture_request params[:orderId]
     end
 
     def authorize_with_success?
@@ -162,8 +162,8 @@ module FakeBraspag
     end
 
     def capture_status
-      return nil if authorized_requests[params[:order_id]].nil? 
-      case authorized_requests[params[:order_id]][:card_number]
+      return nil if authorized_requests[params[:orderId]].nil? 
+      case authorized_requests[params[:orderId]][:card_number]
       when CreditCards::CAPTURE_OK, CreditCards::AUTHORIZE_AND_CAPTURE_OK; Capture::Status::CAPTURED
       when CreditCards::CAPTURE_DENIED, CreditCards::AUTHORIZE_AND_CAPTURE_DENIED; Capture::Status::DENIED
       end
