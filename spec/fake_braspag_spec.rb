@@ -151,6 +151,10 @@ describe FakeBraspag::App do
       body.css("Status").text
     end
 
+    def returned_amount
+      body.css("Valor").text
+    end
+
     def do_get(order_id)
       get FakeBraspag::DADOS_PEDIDO_URI, :numeroPedido => order_id
     end
@@ -158,33 +162,51 @@ describe FakeBraspag::App do
     context "when the order has been paid" do
       let(:card_number) { FakeBraspag::CreditCards::AUTHORIZE_AND_CAPTURE_OK }
 
-      before { do_authorize card_number }
+      before do
+        do_authorize card_number 
+        do_get order_id
+      end
 
       it "returns an XML with the paid status" do
-        do_get order_id
         returned_status.should == FakeBraspag::DadosPedido::Status::PAID
+      end
+
+      it "returns the paid amount" do
+        returned_amount.should == amount
       end
     end
 
     context "when the order is pending" do
       let(:card_number) { FakeBraspag::CreditCards::AUTHORIZE_OK }  
 
-      before { do_authorize card_number }
+      before do
+        do_authorize card_number 
+        do_get order_id
+      end
 
       it "returns an XML with the pending status" do
-        do_get order_id
         returned_status.should == FakeBraspag::DadosPedido::Status::PENDING
+      end
+
+      it "returns an XML with the paid amount" do
+        returned_amount.should == amount
       end
     end
 
     context "when the order has been cancelled" do
       let(:card_number) { FakeBraspag::CreditCards::CAPTURE_DENIED }
 
-      before { do_authorize card_number }
+      before do
+        do_authorize card_number 
+        do_get order_id
+      end
 
       it "returns an XML with the cancelled status" do
-        do_get order_id
         returned_status.should == FakeBraspag::DadosPedido::Status::CANCELLED
+      end
+
+      it "returns an XML with the paid amount" do
+        returned_amount.should == amount
       end
     end
 

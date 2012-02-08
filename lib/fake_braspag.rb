@@ -109,7 +109,7 @@ module FakeBraspag
         <FormaPagamento>American Express 2P</FormaPagamento>
         <NumeroParcelas>1</NumeroParcelas>
         <Status>#{dados_pedido_status}</Status>
-        <Valor>0.01</Valor>
+        <Valor>#{amount_for_get_dados_pedido}</Valor>
         <DataPagamento>7/8/2011 1:19:38 PM</DataPagamento>
         <DataPedido>7/8/2011 1:06:06 PM</DataPedido>
         <TransId>398591</TransId>
@@ -125,6 +125,10 @@ module FakeBraspag
 
     def authorize_request
       self.class.authorize_request params
+    end
+
+    def amount_for_get_dados_pedido
+      authorized_requests[params[:numeroPedido]].nil? ? "" : authorized_requests[params[:numeroPedido]][:amount]
     end
 
     def capture_request
