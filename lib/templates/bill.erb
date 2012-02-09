@@ -5,9 +5,9 @@
     <title>Boleto</title>
   </head>
   <body>
-    <form action="" method="post" accept-charset="utf-8">
-      <p><button class="pay"    name="action" value="Pagar">Pagar</button></p>
-      <p><button class="cancel" name="action" value="Cancelar">Cancelar</button></p>
+    <form action="?order_id=<%= params[:Id_Transacao]%>" method="post" accept-charset="utf-8">
+      <p><button class="pay"    name="action" value="pay">Pagar</button></p>
+      <p><button class="cancel" name="action" value="cancel">Cancelar</button></p>
     </form>
   </body>
 </html>
