@@ -15,10 +15,7 @@ describe FakeBraspag::App do
   context "GetDadosPedido method" do
     let(:order_id) { "1234" }
 
-    after do
-      FakeBraspag::App.clear_captured_requests 
-      FakeBraspag::App.clear_authorized_requests
-    end
+    after { FakeBraspag::Order.clear_orders }
 
     def returned_status
       body.css("Status").text

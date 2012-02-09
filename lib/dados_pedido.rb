@@ -4,17 +4,8 @@ module FakeBraspag
   class App < Sinatra::Base
     private
     def dados_pedido_status
-      return nil if authorized_requests[params[:numeroPedido]].nil?
-      if captured_requests.include? params[:numeroPedido]
-        DadosPedido::Status::PAID 
-      else
-        case authorized_requests[params[:numeroPedido]][:card_number]
-        when CreditCard::AUTHORIZE_OK, CreditCard::AUTHORIZE_AND_CAPTURE_OK
-          DadosPedido::Status::PENDING
-        else
-          DadosPedido::Status::CANCELLED
-        end
-      end
+      return nil if Order.orders[params[:numeroPedido]].nil?
+      Order.orders[params[:numeroPedido]][:status]
     end
   end
 

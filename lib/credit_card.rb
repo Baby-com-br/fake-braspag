@@ -19,45 +19,25 @@ module FakeBraspag
   end
 
   class App < Sinatra::Base
-    def self.authorized_requests
-      @authorized_requests ||= {}
-    end
-
-    def self.captured_requests
-      @captured_requests ||= []
-    end
-
-    def self.authorize_request(params)
-      authorized_requests[params[:orderId]] = {:card_number => params[:cardNumber], :amount => params[:amount]}
-    end
-
-    def self.capture_request(order_id)
-      captured_requests << order_id
-    end
-
-    def self.clear_authorized_requests
-      authorized_requests.clear
-    end
-
-    def self.clear_captured_requests
-      captured_requests.clear
-    end
-
     private
     def card_number
       params[:cardNumber]
     end
 
     def authorize_request
-      self.class.authorize_request params
+      params[:order_id]    = params[:orderId]
+      params[:card_number] = params[:cardNumber]
+      params[:status]      = order_status
+      params[:type]        = PaymentType::CREDIT_CARD
+      Order.save_order params
     end
 
     def amount_for_get_dados_pedido
-      authorized_requests[params[:numeroPedido]].nil? ? "" : authorized_requests[params[:numeroPedido]][:amount].gsub(",",".")
+      Order.orders[params[:numeroPedido]].nil? ? "" : Order.orders[params[:numeroPedido]][:amount]
     end
 
     def capture_request
-      self.class.capture_request params[:orderId]
+      Order.change_status params[:orderId], order_status
     end
 
     def authorize_with_success?
@@ -78,17 +58,17 @@ module FakeBraspag
       end
     end
 
-    def authorized_requests
-      self.class.authorized_requests
-    end
-
-    def captured_requests
-      self.class.captured_requests
+    def order_status
+      case card_number
+      when CreditCard::CAPTURE_DENIED, CreditCard::AUTHORIZE_DENIED, CreditCard::AUTHORIZE_AND_CAPTURE_DENIED; Order::Status::CANCELLED
+      when CreditCard::AUTHORIZE_OK; Order::Status::PENDING
+      when CreditCard::CAPTURE_OK, CreditCard::AUTHORIZE_AND_CAPTURE_OK; Order::Status::PAID
+      end
     end
 
     def capture_status
-      return nil if authorized_requests[params[:orderId]].nil? 
-      case authorized_requests[params[:orderId]][:card_number]
+      return nil if Order.orders[params[:orderId]].nil? 
+      case Order.orders[params[:orderId]][:card_number]
       when CreditCard::CAPTURE_OK, CreditCard::AUTHORIZE_AND_CAPTURE_OK; Capture::Status::CAPTURED
       when CreditCard::CAPTURE_DENIED, CreditCard::AUTHORIZE_AND_CAPTURE_DENIED; Capture::Status::DENIED
       end

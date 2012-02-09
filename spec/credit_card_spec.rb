@@ -17,7 +17,7 @@ describe FakeBraspag::App do
       body.css("status").text
     end
 
-    after { FakeBraspag::App.clear_authorized_requests }
+    after { FakeBraspag::Order.clear_orders }
 
     def returned_order_id
       body.css("transactionId").text
@@ -26,9 +26,16 @@ describe FakeBraspag::App do
     context "when authorized" do
       let(:card_number) { FakeBraspag::CreditCard::AUTHORIZE_OK }
 
-      it "adds the received credit card, amout and order id to the list of authorized requests" do
+      it "adds the received credit card, amount and order id to the list of authorized requests" do
         do_authorize card_number
-        FakeBraspag::App.authorized_requests.should == {order_id => {:card_number => FakeBraspag::CreditCard::AUTHORIZE_OK, :amount => amount_for_post}}
+        FakeBraspag::Order.orders.should == {
+          order_id => {
+            :type        => FakeBraspag::PaymentType::CREDIT_CARD,
+            :card_number => FakeBraspag::CreditCard::AUTHORIZE_OK,
+            :amount      => amount,
+            :status      => FakeBraspag::Order::Status::PENDING
+          }
+        }
       end
 
       it "returns an XML with the sent order id" do
@@ -47,7 +54,7 @@ describe FakeBraspag::App do
 
       it "does not add the received credit card and order id to the list of received requests" do
         do_authorize card_number
-        FakeBraspag::App.authorized_requests.should == {}
+        FakeBraspag::Order.orders.should == {}
       end      
 
       it "returns an XML with the sent order id" do
@@ -65,16 +72,18 @@ describe FakeBraspag::App do
       context "when confirmed" do
         let(:card_number) { FakeBraspag::CreditCard::AUTHORIZE_AND_CAPTURE_OK }
 
-        after { FakeBraspag::App.clear_captured_requests }
+        after { FakeBraspag::Order.clear_orders }
 
         it "adds the received credit card and order id to the list of authorized requests" do
           do_authorize card_number
-          FakeBraspag::App.authorized_requests.should == {order_id => {:card_number => card_number, :amount => amount_for_post}}
-        end
-
-        it "adds the order id to the list of captured orders" do
-          do_authorize card_number
-          FakeBraspag::App.captured_requests.should == [order_id]
+          FakeBraspag::Order.orders.should == {
+            order_id => {
+              :type        => FakeBraspag::PaymentType::CREDIT_CARD,
+              :card_number => card_number,
+              :amount      => amount,
+              :status      => FakeBraspag::Order::Status::PAID
+            }
+          }
         end
 
         it "returns an XML with the sent order id" do
@@ -93,7 +102,14 @@ describe FakeBraspag::App do
 
         it "adds the received credit card and order id to the list of authorized requests" do
           do_authorize card_number
-          FakeBraspag::App.authorized_requests.should == {order_id => {:card_number => card_number, :amount => amount_for_post}}
+          FakeBraspag::Order.orders.should == {
+            order_id => {
+              :card_number => card_number,
+              :amount      => amount,
+              :status      => FakeBraspag::Order::Status::CANCELLED,
+              :type        => FakeBraspag::PaymentType::CREDIT_CARD
+            }
+          }
         end
 
         it "returns an XML with the sent order id" do
