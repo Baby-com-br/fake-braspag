@@ -36,24 +36,6 @@ module FakeBraspag
     def bill_order_status
       bill_ok? ? Order::Status::PENDING : Order::Status::CANCELLED
     end
-
-    def change_bill_status(status)
-      Order.change_status params[:order_id], status
-    end
-
-    def pay_bill
-      change_bill_status Order::Status::PAID 
-    end
-
-    def cancel_bill
-      change_bill_status Order::Status::CANCELLED
-    end
-    
-    def crypt_value
-      Braspag::Crypto::JarWebservice.encrypt({
-        :VENDAID => params[:order_id]
-      })
-    end
   end
 
   module Bill
@@ -89,7 +71,7 @@ module FakeBraspag
       end
       
       app.get BILL_URL do
-        erb :bill
+        erb :choice
       end
 
       app.post BILL_URL do
