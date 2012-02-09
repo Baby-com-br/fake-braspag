@@ -3,6 +3,10 @@ module FakeBraspag
 
   class App < Sinatra::Base
     private
+    def amount_for_get_dados_pedido
+      Order.orders[params[:numeroPedido]].nil? ? "" : Order.orders[params[:numeroPedido]][:amount]
+    end
+    
     def dados_pedido_status
       return nil if Order.orders[params[:numeroPedido]].nil?
       Order.orders[params[:numeroPedido]][:status]

@@ -54,9 +54,10 @@ describe FakeBraspag::App do
         FakeBraspag::Order.orders.should == {
           order_id => {
             :type        => FakeBraspag::PaymentType::BILL,
-            :status      => FakeBraspag::Order::Status::PENDING,
+            :card_number => nil,
             :amount      => amount,
-            :card_number => nil
+            :ipn_sent    => false,
+            :status      => FakeBraspag::Order::Status::PENDING
           }
         }
       end
@@ -85,9 +86,10 @@ describe FakeBraspag::App do
         FakeBraspag::Order.orders.should == {
           order_id => {
             :type        => FakeBraspag::PaymentType::BILL,
-            :status      => FakeBraspag::Order::Status::CANCELLED,
+            :card_number => nil,
             :amount      => amount,
-            :card_number => nil
+            :ipn_sent    => true,
+            :status      => FakeBraspag::Order::Status::CANCELLED
           }
         }
       end
