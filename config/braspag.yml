@@ -1,0 +1,14 @@
+development:
+  merchant_id: "{11223344-0000-AAAC-4G1A-BCDEFGHIJKLM}"
+  crypto_url: "http://0.0.0.0:9292"
+  crypto_key: "CHAVE"
+
+test:
+  merchant_id: "{11223344-0000-AAAC-4G1A-BCDEFGHIJKLM}"
+  crypto_url: "http://0.0.0.0:9292"
+  crypto_key: "CHAVE"
+  
+production:
+  merchant_id: "{11223344-0000-AAAC-4G1A-BCDEFGHIJKLM}"
+  crypto_url: "http://0.0.0.0:9292"
+  crypto_key: "CHAVE"

@@ -2,6 +2,11 @@
 require 'spec_helper'
 
 describe FakeBraspag::App do
+  before do
+    ::HTTPI.stub(:post)
+    Braspag::Crypto::JarWebservice.stub(:encrypt)
+  end
+
   let(:order_id) { "12345678" }
   let(:amount_for_post) { "123,45" }
   let(:amount) { "123.45" }

@@ -46,6 +46,14 @@ module FakeBraspag
     end
     
     def self.send_ipn(order_id)
+      request = ::HTTPI::Request.new(Settings.ipn_post)
+      request.body = {
+        :crypt => Braspag::Crypto::JarWebservice.encrypt({
+          :numpedido => order_id
+        })
+      }
+      ::HTTPI.post(request)
+      
       orders[order_id][:ipn_sent] = true 
     end
     

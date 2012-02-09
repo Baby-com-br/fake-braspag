@@ -5,6 +5,10 @@ gem "nokogiri"
 gem "rack", "1.2.3"
 gem "sinatra"
 gem "unicorn"
+gem "rbraspag"
+gem "settingslogic", "2.0.6"
+gem "cs-httpi", "0.9.5.2"
+
 
 group :test, :development do
   gem "pry"

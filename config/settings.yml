@@ -1,0 +1,7 @@
+test:
+  callback: "http://0.0.0.0:3000/callback.html"
+  ipn_post: "http://0.0.0.0:3000/ipn"
+
+development:
+  callback: "http://0.0.0.0:3000/callback.html"
+  ipn_post: "http://0.0.0.0:3000/ipn"

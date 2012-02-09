@@ -1,5 +1,7 @@
 require "bundler/setup"
 
+ENV["RACK_ENV"] ||= "development"
+
 Bundler.require 
 
 $: << File.dirname(__FILE__)
@@ -7,6 +9,7 @@ $: << File.dirname(__FILE__)
 require "order"
 require "credit_card"
 require "bill"
+require "settings"
 
 module FakeBraspag
   module PaymentType
