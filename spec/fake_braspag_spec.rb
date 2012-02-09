@@ -236,6 +236,10 @@ describe FakeBraspag::App do
       body.css("returnCode").text
     end
 
+    def returned_url
+      body.css("url").text
+    end
+
     def returned_amount
       body.css("amount").text
     end
@@ -249,6 +253,10 @@ describe FakeBraspag::App do
 
       it "returns an XML with the success return code" do
         returned_code.should == FakeBraspag::Bill::ReturnCode::SUCCESS
+      end
+      
+      it "returns an XML with an sample url" do
+        returned_url.should == "http://example.org/boleto?Id_Transacao=#{order_id}"
       end
 
       it "returns an XML with the success status" do
@@ -265,6 +273,10 @@ describe FakeBraspag::App do
 
       it "returns an XML with an empty status" do
         returned_status.should == ""
+      end
+
+      it "returns an XML with an empty url" do
+        returned_url.should == ""
       end
 
       it "returns an XML with the error return code" do

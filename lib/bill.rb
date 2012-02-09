@@ -9,7 +9,7 @@ module FakeBraspag
     end
     
     def bill_ok?
-      params[:paymentMethod] == Bill::PAYMENT_METHOD_OK
+      params[:paymentMethod] != Bill::PAYMENT_METHOD_ERROR
     end
     
     def bill_status
@@ -18,6 +18,11 @@ module FakeBraspag
     
     def bill_return_code
       bill_ok? ? Bill::ReturnCode::SUCCESS : Bill::ReturnCode::ERROR
+    end
+    
+    def bill_url
+      url = request.scheme + "://" + request.host_with_port + "/boleto?Id_Transacao=" + params[:orderId]
+      bill_ok? ? url : ""
     end
   end
 
@@ -37,7 +42,6 @@ module FakeBraspag
 
     def self.registered(app)
       app.post BILL_URL do
-        require 'ruby-debug'
         <<-EOXML
         <?xml version="1.0" encoding="utf-8"?>
           <PagadorBoletoReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -46,7 +50,7 @@ module FakeBraspag
             <amount>#{bill_amount}</amount>
             <boletoNumber>#{params[:orderId]}</boletoNumber>
             <expirationDate>2100-12-31T00:00:00-03:00</expirationDate>
-            <url>https://homologacao.pagador.com.br/pagador/reenvia.asp?Id_Transacao=12341234-1234-1234-1234-123412341234</url>
+            <url>#{bill_url}</url>
             <returnCode>#{bill_return_code}</returnCode>
             <status>#{bill_status}</status>
           </PagadorBoletoReturn>
