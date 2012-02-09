@@ -49,6 +49,17 @@ describe FakeBraspag::App do
       it "returns an XML with the success status" do
         returned_status.should == FakeBraspag::Bill::Status::SUCCESS
       end
+
+      it "adds the order to the list of received order" do
+        FakeBraspag::Order.orders.should == {
+          order_id => {
+            :type        => FakeBraspag::PaymentType::BILL,
+            :status      => FakeBraspag::Order::Status::PENDING,
+            :amount      => amount,
+            :card_number => nil
+          }
+        }
+      end
     end
 
     context "with error" do
@@ -68,6 +79,17 @@ describe FakeBraspag::App do
 
       it "returns an XML with the error return code" do
         returned_code.should == FakeBraspag::Bill::ReturnCode::ERROR
+      end
+
+      it "adds the order to the list of received order" do
+        FakeBraspag::Order.orders.should == {
+          order_id => {
+            :type        => FakeBraspag::PaymentType::BILL,
+            :status      => FakeBraspag::Order::Status::CANCELLED,
+            :amount      => amount,
+            :card_number => nil
+          }
+        }
       end
     end
   end
@@ -110,5 +132,35 @@ describe FakeBraspag::App do
     context "cancel Bill" do
       before { do_post(order_id, "cancel") }
     end
+  end
+
+  context "paying a bill" do
+    def do_post
+      post FakeBraspag::BILL_URL, :order_id => order_id, :action => "pay"
+    end
+
+    before { 
+      post FakeBraspag::GENERATE_BILL_URL, :orderId => order_id, :amount => amount_for_post, :paymentMethod => FakeBraspag::Bill::PAYMENT_METHOD_OK 
+    }
+
+    it "changes the order status to paid" do
+      do_post
+      FakeBraspag::Order.orders[order_id][:status].should == FakeBraspag::Order::Status::PAID
+    end
+  end
+
+  context "cancelling a bill" do
+    def do_post
+      post FakeBraspag::BILL_URL, :order_id => order_id, :action => "cancel"
+    end
+
+    before { 
+      post FakeBraspag::GENERATE_BILL_URL, :orderId => order_id, :amount => amount_for_post, :paymentMethod => FakeBraspag::Bill::PAYMENT_METHOD_OK 
+    }
+
+    it "changes the order status to cancelled" do
+      do_post
+      FakeBraspag::Order.orders[order_id][:status].should == FakeBraspag::Order::Status::CANCELLED
+    end    
   end
 end

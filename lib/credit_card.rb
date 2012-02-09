@@ -27,7 +27,7 @@ module FakeBraspag
     def authorize_request
       params[:order_id]    = params[:orderId]
       params[:card_number] = params[:cardNumber]
-      params[:status]      = order_status
+      params[:status]      = credit_card_order_status
       params[:type]        = PaymentType::CREDIT_CARD
       Order.save_order params
     end
@@ -37,7 +37,7 @@ module FakeBraspag
     end
 
     def capture_request
-      Order.change_status params[:orderId], order_status
+      Order.change_status params[:orderId], credit_card_order_status
     end
 
     def authorize_with_success?
@@ -58,7 +58,7 @@ module FakeBraspag
       end
     end
 
-    def order_status
+    def credit_card_order_status
       case card_number
       when CreditCard::CAPTURE_DENIED, CreditCard::AUTHORIZE_DENIED, CreditCard::AUTHORIZE_AND_CAPTURE_DENIED; Order::Status::CANCELLED
       when CreditCard::AUTHORIZE_OK; Order::Status::PENDING
@@ -85,7 +85,7 @@ module FakeBraspag
 
     def self.registered(app)
       app.post AUTHORIZE_URI do
-        authorize_request if authorize_with_success?
+        authorize_request 
         capture_request   if capture_with_success?
         <<-EOXML
         <?xml version="1.0" encoding="utf-8"?>

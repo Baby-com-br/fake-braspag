@@ -31,9 +31,10 @@ describe FakeBraspag::App do
         FakeBraspag::Order.orders.should == {
           order_id => {
             :type        => FakeBraspag::PaymentType::CREDIT_CARD,
-            :card_number => FakeBraspag::CreditCard::AUTHORIZE_OK,
+            :card_number => card_number,
             :amount      => amount,
-            :status      => FakeBraspag::Order::Status::PENDING
+            :status      => FakeBraspag::Order::Status::PENDING,
+            :ipn_sent    => false
           }
         }
       end
@@ -47,14 +48,27 @@ describe FakeBraspag::App do
         do_authorize card_number
         returned_status.should == FakeBraspag::Authorize::Status::AUTHORIZED
       end
+
+      it "does not send the IPN" do
+        FakeBraspag::Order.should_not_receive(:send_ipn)
+        do_authorize card_number
+      end
     end
 
     context "when denied" do
       let(:card_number) { FakeBraspag::CreditCard::AUTHORIZE_DENIED }
 
-      it "does not add the received credit card and order id to the list of received requests" do
+      it "adds the received credit card and order id to the list of received requests" do
         do_authorize card_number
-        FakeBraspag::Order.orders.should == {}
+        FakeBraspag::Order.orders.should == {
+          order_id => {
+            :type        => FakeBraspag::PaymentType::CREDIT_CARD,
+            :card_number => card_number,
+            :amount      => amount,
+            :status      => FakeBraspag::Order::Status::CANCELLED,
+            :ipn_sent    => true
+          }
+        }
       end      
 
       it "returns an XML with the sent order id" do
@@ -65,6 +79,11 @@ describe FakeBraspag::App do
       it "returns an XML with the denied status code" do
         do_authorize card_number
         returned_status.should == FakeBraspag::Authorize::Status::DENIED
+      end
+
+      it "sends the IPN" do
+        FakeBraspag::Order.should_receive(:send_ipn)
+        do_authorize card_number
       end
     end
 
@@ -81,7 +100,8 @@ describe FakeBraspag::App do
               :type        => FakeBraspag::PaymentType::CREDIT_CARD,
               :card_number => card_number,
               :amount      => amount,
-              :status      => FakeBraspag::Order::Status::PAID
+              :status      => FakeBraspag::Order::Status::PAID,
+              :ipn_sent    => true
             }
           }
         end
@@ -95,6 +115,11 @@ describe FakeBraspag::App do
           do_authorize card_number
           returned_status.should == FakeBraspag::Capture::Status::CAPTURED
         end
+
+        it "sends the IPN" do
+          FakeBraspag::Order.should_receive(:send_ipn)
+          do_authorize card_number
+        end
       end
 
       context "denied" do
@@ -107,7 +132,8 @@ describe FakeBraspag::App do
               :card_number => card_number,
               :amount      => amount,
               :status      => FakeBraspag::Order::Status::CANCELLED,
-              :type        => FakeBraspag::PaymentType::CREDIT_CARD
+              :type        => FakeBraspag::PaymentType::CREDIT_CARD,
+              :ipn_sent    => true
             }
           }
         end
@@ -120,6 +146,11 @@ describe FakeBraspag::App do
         it "returns an XML with the captured status code" do
           do_authorize card_number
           returned_status.should == FakeBraspag::Capture::Status::DENIED
+        end
+
+        it "sends the IPN" do
+          FakeBraspag::Order.should_receive(:send_ipn)
+          do_authorize card_number
         end
       end      
     end
@@ -143,6 +174,11 @@ describe FakeBraspag::App do
         do_capture 
         returned_status.should == FakeBraspag::Capture::Status::CAPTURED
       end
+
+      it "sends the IPN" do
+        FakeBraspag::Order.should_receive(:send_ipn)
+        do_capture
+      end
     end
 
     context "when denied" do
@@ -154,6 +190,11 @@ describe FakeBraspag::App do
         do_capture
         returned_status.should == FakeBraspag::Capture::Status::DENIED
       end      
+
+      it "sends the IPN" do
+        FakeBraspag::Order.should_receive(:send_ipn)
+        do_capture
+      end
     end
   end
 end

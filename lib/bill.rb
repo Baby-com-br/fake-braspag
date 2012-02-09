@@ -25,6 +25,29 @@ module FakeBraspag
       url = request.scheme + "://" + request.host_with_port + "/boleto?Id_Transacao=" + params[:orderId]
       bill_ok? ? url : ""
     end
+
+    def generate_bill
+      params[:order_id]    = params[:orderId]
+      params[:status]      = bill_order_status
+      params[:type]        = PaymentType::BILL
+      Order.save_order params
+    end
+
+    def bill_order_status
+      bill_ok? ? Order::Status::PENDING : Order::Status::CANCELLED
+    end
+
+    def change_bill_status(status)
+      Order.change_status params[:order_id], status
+    end
+
+    def pay_bill
+      change_bill_status Order::Status::PAID 
+    end
+
+    def cancel_bill
+      change_bill_status Order::Status::CANCELLED
+    end
   end
 
   module Bill
@@ -43,11 +66,12 @@ module FakeBraspag
 
     def self.registered(app)
       app.post GENERATE_BILL_URL do
+        generate_bill
         <<-EOXML
         <?xml version="1.0" encoding="utf-8"?>
           <PagadorBoletoReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                         xmlns="https://www.pagador.com.br/webservice/pagador">
+               xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+               xmlns="https://www.pagador.com.br/webservice/pagador">
             <amount>#{bill_amount}</amount>
             <boletoNumber>#{params[:orderId]}</boletoNumber>
             <expirationDate>2100-12-31T00:00:00-03:00</expirationDate>
@@ -60,6 +84,10 @@ module FakeBraspag
       
       app.get BILL_URL do
         erb :bill
+      end
+
+      app.post BILL_URL do
+        params[:action] == "pay" ? pay_bill : cancel_bill
       end
     end
   end

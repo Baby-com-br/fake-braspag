@@ -13,3 +13,13 @@ group :test, :development do
   gem 'rack-test', :require => "rack/test"
   gem "guard-rspec"
 end
+
+group :test do
+  if RUBY_PLATFORM =~ /darwin/i
+    gem "growl"
+    gem 'rb-fsevent', :require => false
+  elsif RUBY_PLATFORM =~ /linux/i
+    gem "libnotify"
+    gem "rb-inotify"
+  end
+end
