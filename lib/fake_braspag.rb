@@ -4,6 +4,7 @@ Bundler.require
 
 $: << File.dirname(__FILE__)
 
+require "order"
 require "credit_card"
 require "dados_pedido"
 require "bill"
