@@ -6,7 +6,6 @@ $: << File.dirname(__FILE__)
 
 require "order"
 require "credit_card"
-require "dados_pedido"
 require "bill"
 
 module FakeBraspag
@@ -21,8 +20,8 @@ module FakeBraspag
       set :root, File.dirname(__FILE__)
       set :views, settings.root + '/templates'
       set :show_expections, false
+      register Order
       register CreditCard
-      register DadosPedido
       register Bill
     end
   end
