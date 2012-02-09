@@ -133,7 +133,23 @@ describe FakeBraspag::App do
   end
 
   context "paying a bill" do
+    before { 
+      Braspag::Crypto::JarWebservice.should_receive(:encrypt)
+                                    .with({
+                                      :numpedido => order_id
+                                    })
+                                    .and_return("CRYPTO")
+      
+      post FakeBraspag::GENERATE_BILL_URL, :orderId => order_id, :amount => amount_for_post, :paymentMethod => FakeBraspag::Bill::PAYMENT_METHOD_OK 
+    }
+    
     def do_post
+      Braspag::Crypto::JarWebservice.should_receive(:encrypt)
+                                    .with({
+                                      :VENDAID => order_id
+                                    })
+                                    .and_return("CRYPTO")
+      
       post FakeBraspag::BILL_URL, :order_id => order_id, :action => "pay"
     end
     
@@ -141,30 +157,35 @@ describe FakeBraspag::App do
       body_html.css(button)[0]
     end
 
-    before { 
-      post FakeBraspag::GENERATE_BILL_URL, :orderId => order_id, :amount => amount_for_post, :paymentMethod => FakeBraspag::Bill::PAYMENT_METHOD_OK 
-    }
-
     it "changes the order status to paid" do
       do_post
       FakeBraspag::Order.orders[order_id][:status].should == FakeBraspag::Order::Status::PAID
     end
     
     it "generate crypt params" do
-      Braspag::Crypto::JarWebservice.should_receive(:encrypt)
-                                    .with({
-                                      :numpedido => order_id
-                                    })
-                                    .twice
-                                    .and_return("CRYPTO")
-      
       do_post
       returned_button("input.crypt")["value"].should == "CRYPTO"
     end
   end
 
   context "cancelling a bill" do
+    before { 
+      Braspag::Crypto::JarWebservice.should_receive(:encrypt)
+                                    .with({
+                                      :numpedido => order_id
+                                    })
+                                    .and_return("CRYPTO")
+      
+      post FakeBraspag::GENERATE_BILL_URL, :orderId => order_id, :amount => amount_for_post, :paymentMethod => FakeBraspag::Bill::PAYMENT_METHOD_OK 
+    }
+
     def do_post
+      Braspag::Crypto::JarWebservice.should_receive(:encrypt)
+                                    .with({
+                                      :VENDAID => order_id
+                                    })
+                                    .and_return("CRYPTO")
+      
       post FakeBraspag::BILL_URL, :order_id => order_id, :action => "cancel"
     end
 
@@ -172,23 +193,12 @@ describe FakeBraspag::App do
       body_html.css(button)[0]
     end
 
-    before { 
-      post FakeBraspag::GENERATE_BILL_URL, :orderId => order_id, :amount => amount_for_post, :paymentMethod => FakeBraspag::Bill::PAYMENT_METHOD_OK 
-    }
-
     it "changes the order status to cancelled" do
       do_post
       FakeBraspag::Order.orders[order_id][:status].should == FakeBraspag::Order::Status::CANCELLED
     end 
     
     it "generate crypt params" do
-      Braspag::Crypto::JarWebservice.should_receive(:encrypt)
-                                    .with({
-                                      :numpedido => order_id
-                                    })
-                                    .twice
-                                    .and_return("CRYPTO")
-      
       do_post
       returned_button("input.crypt")["value"].should == "CRYPTO"
     end

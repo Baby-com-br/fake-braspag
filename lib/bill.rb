@@ -51,7 +51,7 @@ module FakeBraspag
     
     def crypt_value
       Braspag::Crypto::JarWebservice.encrypt({
-        :numpedido => params[:order_id]
+        :VENDAID => params[:order_id]
       })
     end
   end
