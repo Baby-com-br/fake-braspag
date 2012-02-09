@@ -11,6 +11,8 @@ require "bill"
 module FakeBraspag
   class App < Sinatra::Base
     configure do
+      set :root, File.dirname(__FILE__)
+      set :views, settings.root + '/templates'
       set :show_expections, false
       register CreditCard
       register DadosPedido

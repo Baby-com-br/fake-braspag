@@ -6,6 +6,7 @@ describe FakeBraspag::App do
   let(:amount_for_post) { "123,45" }
   let(:amount) { "123.45" }
   let(:body) { Nokogiri::XML last_response.body }
+  let(:body_html) { Nokogiri::HTML last_response.body }
 
   def do_authorize(card_number)
     post FakeBraspag::AUTHORIZE_URI, :orderId => order_id, :cardNumber => card_number, :amount => amount_for_post
@@ -225,7 +226,7 @@ describe FakeBraspag::App do
     before { do_post payment_method }
 
     def do_post(payment_method)
-      post FakeBraspag::BILL_URL, :orderId => order_id, :amount => amount_for_post, :paymentMethod => payment_method
+      post FakeBraspag::GENERATE_BILL_URL, :orderId => order_id, :amount => amount_for_post, :paymentMethod => payment_method
     end
 
     def returned_status
@@ -281,6 +282,30 @@ describe FakeBraspag::App do
 
       it "returns an XML with the error return code" do
         returned_code.should == FakeBraspag::Bill::ReturnCode::ERROR
+      end
+    end
+  end
+
+  context "Boleto method" do
+    context "view bill" do
+      before { do_get order_id }
+
+      def do_get(order_id)
+        get FakeBraspag::BILL_URL, :Id_Transacao => order_id
+      end
+      
+      def returned_button(button)
+        body_html.css(button)[0]
+      end
+      
+      it "return a pay button" do
+        returned_button("button.pay")["value"].should == "Pagar"
+        returned_button("button.pay").text.should == "Pagar"
+      end
+      
+      it "return a cancel button" do
+        returned_button("button.cancel")["value"].should == "Cancelar"
+        returned_button("button.cancel").text.should == "Cancelar"
       end
     end
   end

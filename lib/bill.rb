@@ -1,6 +1,7 @@
 # encoding: utf-8
 module FakeBraspag
-  BILL_URL = "/webservices/pagador/Boleto.asmx/CreateBoleto"
+  GENERATE_BILL_URL = "/webservices/pagador/Boleto.asmx/CreateBoleto"
+  BILL_URL = "/boleto"
 
   class App < Sinatra::Base
     private
@@ -41,7 +42,7 @@ module FakeBraspag
     PAYMENT_METHOD_ERROR = "error"
 
     def self.registered(app)
-      app.post BILL_URL do
+      app.post GENERATE_BILL_URL do
         <<-EOXML
         <?xml version="1.0" encoding="utf-8"?>
           <PagadorBoletoReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -55,6 +56,10 @@ module FakeBraspag
             <status>#{bill_status}</status>
           </PagadorBoletoReturn>
         EOXML
+      end
+      
+      app.get BILL_URL do
+        erb :bill
       end
     end
   end
