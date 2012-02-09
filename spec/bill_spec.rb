@@ -2,11 +2,10 @@
 require 'spec_helper'
 
 describe FakeBraspag::App do
-  before do
+  before  do
     ::HTTPI.stub(:post)
-    Braspag::Crypto::JarWebservice.stub(:encrypt)
   end
-
+  
   let(:order_id) { "12345678" }
   let(:amount_for_post) { "123,45" }
   let(:amount) { "123.45" }
@@ -14,6 +13,10 @@ describe FakeBraspag::App do
   let(:body_html) { Nokogiri::HTML last_response.body }
 
   context "CreateBoleto method" do
+    before do
+      Braspag::Crypto::JarWebservice.stub(:encrypt)
+    end
+
     before { do_post payment_method }
 
     def do_post(payment_method)
@@ -102,10 +105,6 @@ describe FakeBraspag::App do
   end
 
   context "Boleto method" do
-    def do_post(order_id, action)
-      get FakeBraspag::BILL_URL, :order_id => order_id, :action => action
-    end
-
     def do_get(order_id)
       get FakeBraspag::BILL_URL, :Id_Transacao => order_id
     end
@@ -131,19 +130,15 @@ describe FakeBraspag::App do
         returned_button("button.cancel").text.should == "Cancelar"
       end
     end
-    
-    context "pay Bill" do
-      before { do_post(order_id, "pay") }
-    end
-    
-    context "cancel Bill" do
-      before { do_post(order_id, "cancel") }
-    end
   end
 
   context "paying a bill" do
     def do_post
       post FakeBraspag::BILL_URL, :order_id => order_id, :action => "pay"
+    end
+    
+    def returned_button(button)
+      body_html.css(button)[0]
     end
 
     before { 
@@ -154,11 +149,27 @@ describe FakeBraspag::App do
       do_post
       FakeBraspag::Order.orders[order_id][:status].should == FakeBraspag::Order::Status::PAID
     end
+    
+    it "generate crypt params" do
+      Braspag::Crypto::JarWebservice.should_receive(:encrypt)
+                                    .with({
+                                      :numpedido => order_id
+                                    })
+                                    .twice
+                                    .and_return("CRYPTO")
+      
+      do_post
+      returned_button("input.crypt")["value"].should == "CRYPTO"
+    end
   end
 
   context "cancelling a bill" do
     def do_post
       post FakeBraspag::BILL_URL, :order_id => order_id, :action => "cancel"
+    end
+
+    def returned_button(button)
+      body_html.css(button)[0]
     end
 
     before { 
@@ -168,6 +179,18 @@ describe FakeBraspag::App do
     it "changes the order status to cancelled" do
       do_post
       FakeBraspag::Order.orders[order_id][:status].should == FakeBraspag::Order::Status::CANCELLED
-    end    
+    end 
+    
+    it "generate crypt params" do
+      Braspag::Crypto::JarWebservice.should_receive(:encrypt)
+                                    .with({
+                                      :numpedido => order_id
+                                    })
+                                    .twice
+                                    .and_return("CRYPTO")
+      
+      do_post
+      returned_button("input.crypt")["value"].should == "CRYPTO"
+    end
   end
 end

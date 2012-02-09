@@ -48,6 +48,12 @@ module FakeBraspag
     def cancel_bill
       change_bill_status Order::Status::CANCELLED
     end
+    
+    def crypt_value
+      Braspag::Crypto::JarWebservice.encrypt({
+        :numpedido => params[:order_id]
+      })
+    end
   end
 
   module Bill
@@ -88,6 +94,7 @@ module FakeBraspag
 
       app.post BILL_URL do
         params[:action] == "pay" ? pay_bill : cancel_bill
+        erb :return
       end
     end
   end
