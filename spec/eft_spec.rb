@@ -28,14 +28,11 @@ describe FakeBraspag::App do
     end
     
     it "adds the order to the list of received order" do
-      FakeBraspag::Order.orders.should == {
-        order_id => {
-          :type        => FakeBraspag::PaymentType::EFT,
-          :card_number => nil,
-          :amount      => amount,
-          :ipn_sent    => false,
-          :status      => FakeBraspag::Order::Status::PENDING
-        }
+      FakeBraspag::Order.order(order_id).should == {
+        :type        => FakeBraspag::PaymentType::EFT,
+        :card_number => nil,
+        :amount      => amount,
+        :status      => FakeBraspag::Order::Status::PENDING
       }
     end
     
@@ -88,7 +85,7 @@ describe FakeBraspag::App do
 
     it "changes the order status to paid" do
       do_post
-      FakeBraspag::Order.orders[order_id][:status].should == FakeBraspag::Order::Status::PAID
+      FakeBraspag::Order.order(order_id)[:status].should == FakeBraspag::Order::Status::PAID
     end
     
     it "generate crypt params" do
@@ -131,7 +128,7 @@ describe FakeBraspag::App do
 
     it "changes the order status to cancelled" do
       do_post
-      FakeBraspag::Order.orders[order_id][:status].should == FakeBraspag::Order::Status::CANCELLED
+      FakeBraspag::Order.order(order_id)[:status].should == FakeBraspag::Order::Status::CANCELLED
     end 
     
     it "generate crypt params" do

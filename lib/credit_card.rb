@@ -41,7 +41,7 @@ module FakeBraspag
   class App < Sinatra::Base
     private
     def credit_card_amount
-      Order.orders[credit_card_order_id][:amount]
+      Order.order(credit_card_order_id)[:amount]
     end
     
     def authorize_number
@@ -108,7 +108,7 @@ module FakeBraspag
     end
     
     def capture_credit_card_number
-      Order.orders[credit_card_order_id][:card_number]
+      Order.order(credit_card_order_id)[:card_number]
     end
     
     def capture_message

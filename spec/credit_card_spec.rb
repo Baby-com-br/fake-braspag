@@ -32,14 +32,11 @@ describe FakeBraspag::App do
       
       it "adds the received credit card, amount and order id to the list of order requests" do
         do_authorize
-        FakeBraspag::Order.orders.should == {
-          order_id => {
-            :type        => FakeBraspag::PaymentType::CREDIT_CARD,
-            :card_number => card_number,
-            :amount      => amount,
-            :status      => FakeBraspag::Order::Status::PAID,
-            :ipn_sent    => true
-          }
+        FakeBraspag::Order.order(order_id).should == {
+          :type        => FakeBraspag::PaymentType::CREDIT_CARD,
+          :card_number => card_number,
+          :amount      => amount,
+          :status      => FakeBraspag::Order::Status::PAID
         }
       end
 
@@ -84,14 +81,11 @@ describe FakeBraspag::App do
       
       it "adds the received credit card, amount and order id to the list of order requests" do
         do_authorize
-        FakeBraspag::Order.orders.should == {
-          order_id => {
-            :type        => FakeBraspag::PaymentType::CREDIT_CARD,
-            :card_number => card_number,
-            :amount      => amount,
-            :status      => FakeBraspag::Order::Status::CANCELLED,
-            :ipn_sent    => true
-          }
+        FakeBraspag::Order.order(order_id).should == {
+          :type        => FakeBraspag::PaymentType::CREDIT_CARD,
+          :card_number => card_number,
+          :amount      => amount,
+          :status      => FakeBraspag::Order::Status::CANCELLED
         }
       end
 
@@ -136,14 +130,11 @@ describe FakeBraspag::App do
 
       it "adds the received credit card, amount and order id to the list of order requests" do
         do_authorize
-        FakeBraspag::Order.orders.should == {
-          order_id => {
-            :type        => FakeBraspag::PaymentType::CREDIT_CARD,
-            :card_number => card_number,
-            :amount      => amount,
-            :status      => FakeBraspag::Order::Status::CANCELLED,
-            :ipn_sent    => true
-          }
+        FakeBraspag::Order.order(order_id).should == {
+          :type        => FakeBraspag::PaymentType::CREDIT_CARD,
+          :card_number => card_number,
+          :amount      => amount,
+          :status      => FakeBraspag::Order::Status::CANCELLED
         }
       end
 
@@ -188,14 +179,11 @@ describe FakeBraspag::App do
 
       it "adds the received credit card, amount and order id to the list of order requests" do
         do_authorize
-        FakeBraspag::Order.orders.should == {
-          order_id => {
-            :type        => FakeBraspag::PaymentType::CREDIT_CARD,
-            :card_number => card_number,
-            :amount      => amount,
-            :status      => FakeBraspag::Order::Status::PENDING,
-            :ipn_sent    => false
-          }
+        FakeBraspag::Order.order(order_id).should == {
+          :type        => FakeBraspag::PaymentType::CREDIT_CARD,
+          :card_number => card_number,
+          :amount      => amount,
+          :status      => FakeBraspag::Order::Status::PENDING
         }
       end
 
@@ -240,14 +228,11 @@ describe FakeBraspag::App do
 
       it "adds the received credit card, amount and order id to the list of order requests" do
         do_authorize
-        FakeBraspag::Order.orders.should == {
-          order_id => {
-            :type        => FakeBraspag::PaymentType::CREDIT_CARD,
-            :card_number => card_number,
-            :amount      => amount,
-            :status      => FakeBraspag::Order::Status::PENDING,
-            :ipn_sent    => false
-          }
+        FakeBraspag::Order.order(order_id).should == {
+          :type        => FakeBraspag::PaymentType::CREDIT_CARD,
+          :card_number => card_number,
+          :amount      => amount,
+          :status      => FakeBraspag::Order::Status::PENDING
         }
       end
 
@@ -296,14 +281,11 @@ describe FakeBraspag::App do
 
       it "change the received credit card, amount and order id to the list of order requests" do
         do_capture
-        FakeBraspag::Order.orders.should == {
-          order_id => {
-            :type        => FakeBraspag::PaymentType::CREDIT_CARD,
-            :card_number => card_number,
-            :amount      => amount,
-            :status      => FakeBraspag::Order::Status::PAID,
-            :ipn_sent    => true
-          }
+        FakeBraspag::Order.order(order_id).should == {
+          :type        => FakeBraspag::PaymentType::CREDIT_CARD,
+          :card_number => card_number,
+          :amount      => amount,
+          :status      => FakeBraspag::Order::Status::PAID
         }
       end
 
@@ -338,14 +320,11 @@ describe FakeBraspag::App do
 
       it "change the received credit card, amount and order id to the list of order requests" do
         do_capture
-        FakeBraspag::Order.orders.should == {
-          order_id => {
-            :type        => FakeBraspag::PaymentType::CREDIT_CARD,
-            :card_number => card_number,
-            :amount      => amount,
-            :status      => FakeBraspag::Order::Status::CANCELLED,
-            :ipn_sent    => true
-          }
+        FakeBraspag::Order.order(order_id).should == {
+          :type        => FakeBraspag::PaymentType::CREDIT_CARD,
+          :card_number => card_number,
+          :amount      => amount,
+          :status      => FakeBraspag::Order::Status::CANCELLED
         }
       end
 

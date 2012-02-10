@@ -8,7 +8,7 @@ describe FakeBraspag::App do
   let(:amount) { "123.45" }
 
   def do_authorize
-    post FakeBraspag::AUTHORIZE_URI, :orderId => order_id, :cardNumber => card_number, :amount => amount_for_post
+    post FakeBraspag::AUTHORIZE_URI, :orderId => order_id, :cardNumber => card_number, :amount => amount_for_post    
   end
 
   context "GetDadosPedido method" do
@@ -30,7 +30,7 @@ describe FakeBraspag::App do
         do_post
       end
 
-      it "returns an XML with the pending status" do
+      it "returns an XML with the pending status" do        
         returned_node("Status").should == FakeBraspag::Order::Status::PENDING
       end
 
@@ -52,7 +52,7 @@ describe FakeBraspag::App do
       do_authorize
     end
     
-    it "should mark order as ipn_sent" do
+    it "should send the IPN" do
       Braspag::Crypto::JarWebservice.should_receive(:encrypt)
                                     .with({
                                       :NumPedido => order_id
@@ -69,17 +69,7 @@ describe FakeBraspag::App do
 
       ::HTTPI.should_receive(:post).with(request)
       
-      FakeBraspag::Order.send_ipn(order_id)
-      
-      FakeBraspag::Order.orders.should == {
-        order_id => {
-          :type        => FakeBraspag::PaymentType::CREDIT_CARD,
-          :card_number => card_number,
-          :amount      => amount,
-          :status      => FakeBraspag::Order::Status::PENDING,
-          :ipn_sent    => true
-        }
-      }
+      FakeBraspag::Order.send_ipn(order_id)      
     end
   end
 end

@@ -5,6 +5,8 @@ GEM
     cs-httpi (0.9.5.2)
       rack
     diff-lcs (1.1.3)
+    fakeredis (0.2.2)
+      redis (~> 2.2.0)
     ffi (1.0.11)
     growl (1.0.3)
     guard (1.0.0)
@@ -33,6 +35,7 @@ GEM
       cs-httpi (>= 0.9.5.2)
       json (>= 1.6.1)
       nokogiri (>= 1.4.7)
+    redis (2.2.2)
     rspec (2.8.0)
       rspec-core (~> 2.8.0)
       rspec-expectations (~> 2.8.0)
@@ -52,6 +55,7 @@ GEM
       kgio (~> 2.6)
       rack
       raindrops (~> 0.7)
+    yajl-ruby (1.1.0)
     yard (0.7.5)
 
 PLATFORMS
@@ -59,6 +63,7 @@ PLATFORMS
 
 DEPENDENCIES
   cs-httpi (= 0.9.5.2)
+  fakeredis
   growl
   guard-rspec
   nokogiri
@@ -69,7 +74,9 @@ DEPENDENCIES
   rake
   rb-fsevent
   rbraspag
+  redis
   rspec
   settingslogic (= 2.0.6)
   sinatra
   unicorn
+  yajl-ruby

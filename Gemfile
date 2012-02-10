@@ -8,6 +8,8 @@ gem "unicorn"
 gem "rbraspag"
 gem "settingslogic", "2.0.6"
 gem "cs-httpi", "0.9.5.2"
+gem "yajl-ruby"
+gem "redis"
 
 
 group :test, :development do
@@ -19,6 +21,7 @@ group :test, :development do
 end
 
 group :test do
+  gem "fakeredis", :require => "fakeredis/rspec"
   if RUBY_PLATFORM =~ /darwin/i
     gem "growl"
     gem 'rb-fsevent', :require => false

@@ -1,7 +1,7 @@
 test:
-  callback: "http://0.0.0.0:3000/callback.html"
-  ipn_post: "http://0.0.0.0:3000/ipn"
+  callback: "http://0.0.0.0:3000/tef/callback"
+  ipn_post: "http://0.0.0.0:3000/api/braspag/confirmacao"
 
 development:
-  callback: "http://0.0.0.0:3000/callback.html"
-  ipn_post: "http://0.0.0.0:3000/ipn"
+  callback: "http://0.0.0.0:3000/tef/callback"
+  ipn_post: "http://0.0.0.0:3000/api/braspag/confirmacao"
