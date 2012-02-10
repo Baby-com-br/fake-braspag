@@ -35,7 +35,7 @@ module FakeBraspag
       Yajl::Parser.parse(redis.get("fake_braspag_#{order_id}")).inject({}) { |hash, pair| 
         hash[pair.first.to_sym] = pair.last
         hash
-      }      
+      }
     end
     
     def self.set_on_redis(order_id, _order)
