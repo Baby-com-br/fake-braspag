@@ -20,7 +20,7 @@ module FakeBraspag
   module Eft
     def self.registered(app)
       app.post EFT_URL do
-        if params[:action].blank?
+        if params[:action].nil?
           generate_eft
           erb :choice
         else
