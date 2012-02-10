@@ -55,7 +55,7 @@ describe FakeBraspag::App do
     it "should mark order as ipn_sent" do
       Braspag::Crypto::JarWebservice.should_receive(:encrypt)
                                     .with({
-                                      :numpedido => order_id
+                                      :NumPedido => order_id
                                     })
                                     .and_return("crypto_string")
       request = mock

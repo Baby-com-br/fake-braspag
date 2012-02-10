@@ -49,7 +49,7 @@ module FakeBraspag
       request = ::HTTPI::Request.new(Settings.ipn_post)
       request.body = {
         :crypt => Braspag::Crypto::JarWebservice.encrypt({
-          :numpedido => order_id
+          :NumPedido => order_id
         })
       }
       ::HTTPI.post(request)

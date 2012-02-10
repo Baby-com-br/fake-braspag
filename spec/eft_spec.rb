@@ -69,7 +69,7 @@ describe FakeBraspag::App do
     def do_post
       Braspag::Crypto::JarWebservice.should_receive(:encrypt)
                                     .with({
-                                      :numpedido => order_id
+                                      :NumPedido => order_id
                                     })
                                     .and_return("CRYPTO")
 
@@ -112,7 +112,7 @@ describe FakeBraspag::App do
     def do_post
       Braspag::Crypto::JarWebservice.should_receive(:encrypt)
                                     .with({
-                                      :numpedido => order_id
+                                      :NumPedido => order_id
                                     })
                                     .and_return("CRYPTO")
 
