@@ -6,11 +6,11 @@ module FakeBraspag
     private
 
     def generate_eft
-      data = Braspag::Crypto::JarWebservice.decrypt(params[:crypt], ["order_id","amount"])
-      
-      params[:amount] = data[:amount]
-      params[:order_id] = data[:order_id]
-      params[:Id_Transacao] = data[:order_id]
+      data = Braspag::Crypto::JarWebservice.decrypt(params[:crypt], ["VENDAID","VALOR"])
+
+      params[:amount] = data[:valor]
+      params[:order_id] = data[:vendaid]
+      params[:Id_Transacao] = data[:vendaid]
       params[:status]   = Order::Status::PENDING
       params[:type]     = PaymentType::EFT
       Order.save_order params

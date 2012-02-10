@@ -14,10 +14,10 @@ describe FakeBraspag::App do
   context "Generate EFT" do
     before do
       Braspag::Crypto::JarWebservice.should_receive(:decrypt)
-                                    .with("CRYPTO", ["order_id","amount"])
+                                    .with("CRYPTO", ["VENDAID","VALOR"])
                                     .and_return({
-                                      :amount => amount,
-                                      :order_id => order_id
+                                      :valor => amount,
+                                      :vendaid => order_id
                                     })
       
       post FakeBraspag::EFT_URL, :crypt => "CRYPTO"
@@ -57,10 +57,10 @@ describe FakeBraspag::App do
   context "paying a eft" do
     before { 
       Braspag::Crypto::JarWebservice.should_receive(:decrypt)
-                                    .with("CRYPTO", ["order_id","amount"])
+                                    .with("CRYPTO", ["VENDAID","VALOR"])
                                     .and_return({
-                                      :amount => amount,
-                                      :order_id => order_id
+                                      :valor => amount,
+                                      :vendaid => order_id
                                     })
       
       post FakeBraspag::EFT_URL, :crypt => "CRYPTO"
@@ -100,10 +100,10 @@ describe FakeBraspag::App do
   context "cancelling a eft" do
     before { 
       Braspag::Crypto::JarWebservice.should_receive(:decrypt)
-                                    .with("CRYPTO", ["order_id","amount"])
+                                    .with("CRYPTO", ["VENDAID","VALOR"])
                                     .and_return({
-                                      :amount => amount,
-                                      :order_id => order_id
+                                      :valor => amount,
+                                      :vendaid => order_id
                                     })
       
       post FakeBraspag::EFT_URL, :crypt => "CRYPTO"
