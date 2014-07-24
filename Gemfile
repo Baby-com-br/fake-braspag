@@ -1,5 +1,7 @@
 source 'http://rubygems.org'
 
+ruby '2.1.2'
+
 gem "rake"
 gem "nokogiri"
 gem "rack", "1.2.3"
