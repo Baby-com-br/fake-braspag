@@ -1,10 +1,11 @@
 require 'spec_helper'
 
 describe FakeBraspag::Application do
-  it 'responds to' do
-    post '/webservices/pagador/Pagador.asmx/Capture'
+  context 'capture' do
+    it 'responds with a success response' do
+      post '/webservices/pagador/Pagador.asmx/Capture'
 
-    expect(last_response.body).to eq <<-XML
+      expect(last_response.body).to eq <<-XML
 <?xml version="1.0" encoding="UTF-8"?>
 <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
   <amount>20.01</amount>
@@ -12,6 +13,7 @@ describe FakeBraspag::Application do
   <returnCode>0</returnCode>
   <transactionId>257575054</transactionId>
 </PagadorReturn>
-    XML
+      XML
+    end
   end
 end
