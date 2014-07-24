@@ -3,6 +3,7 @@ source 'http://rubygems.org'
 ruby '2.1.2'
 
 gem 'sinatra', '~> 1.4.5'
+gem 'builder'
 
 group :test, :development do
   gem 'rspec', '~> 3.0.0'
