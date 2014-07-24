@@ -15,20 +15,10 @@ gem "redis"
 
 
 group :test, :development do
-  gem "pry"
-  gem "pry-doc"
-  gem "rspec" 
+  gem "rspec"
   gem 'rack-test', :require => "rack/test"
-  gem "guard-rspec"
 end
 
 group :test do
   gem "fakeredis", :require => "fakeredis/rspec"
-  if RUBY_PLATFORM =~ /darwin/i
-    gem "growl"
-    gem 'rb-fsevent', :require => false
-  elsif RUBY_PLATFORM =~ /linux/i
-    gem "libnotify"
-    gem "rb-inotify"
-  end
 end
