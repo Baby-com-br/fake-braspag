@@ -4,14 +4,11 @@ ENV["RACK_ENV"] ||= "development"
 
 Bundler.setup
 
-require 'sinatra'
+require 'sinatra/base'
 
 $: << File.dirname(__FILE__)
 
 module FakeBraspag
-  class App < Sinatra::Base
-    configure do
-      set :root, File.dirname(__FILE__)
-    end
+  class Application < Sinatra::Base
   end
 end
