@@ -10,5 +10,8 @@ $: << File.dirname(__FILE__)
 
 module FakeBraspag
   class Application < Sinatra::Base
+    post '/webservices/pagador/Pagador.asmx/Capture' do
+      "1"
+    end
   end
 end

@@ -1,3 +1,9 @@
+require 'rack/test'
+
+require File.expand_path '../../lib/fake_braspag', __FILE__
+
+ENV['RACK_ENV'] = 'test'
+
 RSpec.configure do |config|
   # These two settings work together to allow you to limit a spec run
   # to individual examples or groups you care about by tagging them with
@@ -54,5 +60,11 @@ RSpec.configure do |config|
     # Prevents you from mocking or stubbing a method that does not exist on
     # a real object. This is generally recommended.
     mocks.verify_partial_doubles = true
+  end
+
+  include Rack::Test::Methods
+
+  def app
+    described_class
   end
 end
