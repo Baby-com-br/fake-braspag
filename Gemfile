@@ -2,8 +2,8 @@ source 'http://rubygems.org'
 
 ruby '2.1.2'
 
-gem 'sinatra'
+gem 'sinatra', '~> 1.4.5'
 
 group :test, :development do
-  gem 'rspec'
+  gem 'rspec', '~> 3.0.0'
 end
