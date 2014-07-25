@@ -1,6 +1,7 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    builder (3.2.2)
     diff-lcs (1.2.5)
     rack (1.5.2)
     rack-protection (1.5.3)
@@ -29,6 +30,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  builder
   rack-test
   rspec (~> 3.0.0)
   sinatra (~> 1.4.5)
