@@ -10,6 +10,7 @@ class Order
 
   def self.create(parameters)
     parameters['amount'] = normalize_amount(parameters['amount'])
+    parameters['cardNumber'] = mask_card_number(parameters['cardNumber'])
     @@connection.set parameters['orderId'], parameters.to_json
     parameters
   end
@@ -18,4 +19,9 @@ class Order
     amount.gsub(',', '.')
   end
   private_class_method :normalize_amount
+
+  def self.mask_card_number(card_number)
+    "************%s" % card_number[-4..-1]
+  end
+  private_class_method :mask_card_number
 end
