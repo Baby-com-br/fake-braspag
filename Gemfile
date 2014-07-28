@@ -4,6 +4,7 @@ ruby '2.1.2'
 
 gem 'sinatra', '~> 1.4.5'
 gem 'builder'
+gem 'redis', '~> 3.0.7'
 
 group :test, :development do
   gem 'rspec', '~> 3.0.0'

@@ -30,7 +30,25 @@ describe FakeBraspag::Application do
       XML
     end
 
-    it 'persists the order data'
+    it 'persists the order data' do
+      post '/webservices/pagador/Pagador.asmx/Authorize', { 'merchantId' => '{E8D92C40-BDA5-C19F-5C4B-F3504A0CFE80}',
+                                                            'order' => '',
+                                                            'orderId' => '783842',
+                                                            'customerName' => 'Rafael França',
+                                                            'amount' => '18,36',
+                                                            'paymentMethod' => '997',
+                                                            'holder' => 'Rafael Franca',
+                                                            'cardNumber' => '4242424242424242',
+                                                            'expiration' => '05/17',
+                                                            'securityCode' => '123',
+                                                            'numberPayments' => '1',
+                                                            'typePayment' => '0' }
+
+      expect(last_response.status).to eq 200
+
+      order = Order.find('783842')
+      expect(order['amount']).to eq '18,36'
+    end
   end
 
   context 'capture' do
