@@ -1,20 +1,26 @@
 require 'spec_helper'
 
 describe FakeBraspag::Application do
+  let(:order_params) do
+    {
+      'merchantId' => '{E8D92C40-BDA5-C19F-5C4B-F3504A0CFE80}',
+      'order' => '',
+      'orderId' => '783842',
+      'customerName' => 'Rafael França',
+      'amount' => '18,36',
+      'paymentMethod' => '997',
+      'holder' => 'Rafael Franca',
+      'cardNumber' => '4242424242424242',
+      'expiration' => '05/17',
+      'securityCode' => '123',
+      'numberPayments' => '1',
+      'typePayment' => '0'
+    }
+  end
+
   context 'authorization' do
     it 'responds with a success response' do
-      post '/webservices/pagador/Pagador.asmx/Authorize', { 'merchantId' => '{E8D92C40-BDA5-C19F-5C4B-F3504A0CFE80}',
-                                                            'order' => '',
-                                                            'orderId' => '783842',
-                                                            'customerName' => 'Rafael França',
-                                                            'amount' => '18,36',
-                                                            'paymentMethod' => '997',
-                                                            'holder' => 'Rafael Franca',
-                                                            'cardNumber' => '4242424242424242',
-                                                            'expiration' => '05/17',
-                                                            'securityCode' => '123',
-                                                            'numberPayments' => '1',
-                                                            'typePayment' => '0' }
+      post '/webservices/pagador/Pagador.asmx/Authorize', order_params
 
       expect(last_response.status).to eq 200
       expect(last_response.body).to eq <<-XML
@@ -31,18 +37,7 @@ describe FakeBraspag::Application do
     end
 
     it 'persists the order data' do
-      post '/webservices/pagador/Pagador.asmx/Authorize', { 'merchantId' => '{E8D92C40-BDA5-C19F-5C4B-F3504A0CFE80}',
-                                                            'order' => '',
-                                                            'orderId' => '783842',
-                                                            'customerName' => 'Rafael França',
-                                                            'amount' => '18,36',
-                                                            'paymentMethod' => '997',
-                                                            'holder' => 'Rafael Franca',
-                                                            'cardNumber' => '4242424242424242',
-                                                            'expiration' => '05/17',
-                                                            'securityCode' => '123',
-                                                            'numberPayments' => '1',
-                                                            'typePayment' => '0' }
+      post '/webservices/pagador/Pagador.asmx/Authorize', order_params
 
       expect(last_response.status).to eq 200
 
@@ -53,23 +48,10 @@ describe FakeBraspag::Application do
 
   context 'capture' do
     it 'responds with a success response' do
-      params = {
-        'merchantId' => '{E8D92C40-BDA5-C19F-5C4B-F3504A0CFE80}',
-        'order' => '',
-        'orderId' => '783842',
-        'customerName' => 'Rafael França',
-        'amount' => '18,36',
-        'paymentMethod' => '997',
-        'holder' => 'Rafael Franca',
-        'cardNumber' => '4242424242424242',
-        'expiration' => '05/17',
-        'securityCode' => '123',
-        'numberPayments' => '1',
-        'typePayment' => '0'
-      }
-      order = Order.create(params)
-      post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => '{E8D92C40-BDA5-C19F-5C4B-F3504A0CFE80}',
-                                                          'orderId' => '783842' }
+      order = Order.create(order_params)
+
+      post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => order_params['merchantId'],
+                                                          'orderId' => order_params['orderId'] }
 
 
 
