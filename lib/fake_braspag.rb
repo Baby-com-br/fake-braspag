@@ -15,11 +15,12 @@ module FakeBraspag
   class Application < Sinatra::Base
     post '/webservices/pagador/Pagador.asmx/Authorize' do
       Order.create params
-      builder :authorize_success, params
+      builder :authorize_success, {}, { order: params }
     end
 
     post '/webservices/pagador/Pagador.asmx/Capture' do
-      builder :capture_success
+      order = Order.find(params['orderId'])
+      builder :capture_success, {}, { order: order }
     end
   end
 end

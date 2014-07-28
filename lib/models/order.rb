@@ -10,5 +10,6 @@ class Order
 
   def self.create(parameters)
     @@connection.set parameters['orderId'], parameters.to_json
+    parameters
   end
 end
