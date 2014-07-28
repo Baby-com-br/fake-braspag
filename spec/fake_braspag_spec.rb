@@ -1,10 +1,43 @@
 require 'spec_helper'
 
 describe FakeBraspag::Application do
+  context 'authorization' do
+    it 'responds with a success response' do
+      post '/webservices/pagador/Pagador.asmx/Authorize', { 'merchantId' => '{E8D92C40-BDA5-C19F-5C4B-F3504A0CFE80}',
+                                                            'order' => '',
+                                                            'orderId' => '783842',
+                                                            'customerName' => 'Rafael França',
+                                                            'amount' => '18,36',
+                                                            'paymentMethod' => '997',
+                                                            'holder' => 'Rafael Franca',
+                                                            'cardNumber' => '4242424242424242',
+                                                            'expiration' => '05/17',
+                                                            'securityCode' => '123',
+                                                            'numberPayments' => '1',
+                                                            'typePayment' => '0' }
+
+      expect(last_response.status).to eq 200
+      expect(last_response.body).to eq <<-XML
+<?xml version="1.0" encoding="UTF-8"?>
+<PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+  <amount>18.36</amount>
+  <authorisationNumber>505369</authorisationNumber>
+  <message>Operation Successful</message>
+  <returnCode>4</returnCode>
+  <status>1</status>
+  <transactionId>0728043853882</transactionId>
+</PagadorReturn>
+      XML
+    end
+
+    it 'persists the order data'
+  end
+
   context 'capture' do
     it 'responds with a success response' do
       post '/webservices/pagador/Pagador.asmx/Capture'
 
+      expect(last_response.status).to eq 200
       expect(last_response.body).to eq <<-XML
 <?xml version="1.0" encoding="UTF-8"?>
 <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">

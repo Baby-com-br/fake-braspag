@@ -11,6 +11,10 @@ $: << File.dirname(__FILE__)
 
 module FakeBraspag
   class Application < Sinatra::Base
+    post '/webservices/pagador/Pagador.asmx/Authorize' do
+      builder :authorize_success, params
+    end
+
     post '/webservices/pagador/Pagador.asmx/Capture' do
       builder :capture_success
     end
