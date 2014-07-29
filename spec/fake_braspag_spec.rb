@@ -22,7 +22,7 @@ describe FakeBraspag::Application do
     it 'responds with a success response' do
       post '/webservices/pagador/Pagador.asmx/Authorize', order_params
 
-      expect(last_response.status).to eq 200
+      expect(last_response).to be_ok
       expect(last_response.body).to eq <<-XML
 <?xml version="1.0" encoding="UTF-8"?>
 <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
@@ -39,7 +39,7 @@ describe FakeBraspag::Application do
     it 'persists the order data' do
       post '/webservices/pagador/Pagador.asmx/Authorize', order_params
 
-      expect(last_response.status).to eq 200
+      expect(last_response).to be_ok
 
       order = Order.find('783842')
       expect(order['amount']).to eq '18.36'
@@ -55,7 +55,7 @@ describe FakeBraspag::Application do
 
 
 
-      expect(last_response.status).to eq 200
+      expect(last_response).to be_ok
       expect(last_response.body).to eq <<-XML
 <?xml version="1.0" encoding="UTF-8"?>
 <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
