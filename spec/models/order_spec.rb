@@ -73,20 +73,6 @@ describe Order do
     end
   end
 
-  describe '#captured?' do
-    it 'returns true if status is captured' do
-      order = Order.new(order_params.merge('status' => 'captured'))
-
-      expect(order).to be_captured
-    end
-
-    it 'returns false if status is not captured' do
-      order = Order.new(order_params.merge('status' => 'authorized'))
-
-      expect(order).not_to be_captured
-    end
-  end
-
   describe '#initialize' do
     it 'normalizes the amount' do
       order = Order.new(order_params)
@@ -158,6 +144,20 @@ describe Order do
       order.reload
 
       expect(order).to be_captured
+    end
+  end
+
+  describe '#captured?' do
+    it 'returns true if status is captured' do
+      order = Order.new(order_params.merge('status' => 'captured'))
+
+      expect(order).to be_captured
+    end
+
+    it 'returns false if status is not captured' do
+      order = Order.new(order_params.merge('status' => 'authorized'))
+
+      expect(order).not_to be_captured
     end
   end
 end
