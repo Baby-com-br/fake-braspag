@@ -27,6 +27,14 @@ class Order
     connection.keys(KEY_PREFIX + '*').size
   end
 
+  def initialize(attributes)
+    @attributes = attributes
+  end
+
+  def captured?
+    @attributes['status'] == 'captured'
+  end
+
   def self.normalize_amount(amount)
     amount.gsub(',', '.')
   end

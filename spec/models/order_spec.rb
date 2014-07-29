@@ -53,4 +53,18 @@ describe Order do
       expect(order['cardNumber']).to eq '************4242'
     end
   end
+
+  describe '#captured' do
+    it 'returns true if status is captured' do
+      order = Order.new('status' => 'captured')
+
+      expect(order).to be_captured
+    end
+
+    it 'returns false if status is not captured' do
+      order = Order.new('status' => 'autorized')
+
+      expect(order).not_to be_captured
+    end
+  end
 end
