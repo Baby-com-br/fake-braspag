@@ -1,7 +1,7 @@
 require 'redis'
 require 'json'
 
-# Public: Class responsible to make operation with an order.
+# Public: Class responsible to make operations upon an order.
 class Order
   # Public: Raised when there is no order with the provided id on the
   # persistence layer.
