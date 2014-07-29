@@ -73,7 +73,7 @@ describe Order do
     end
   end
 
-  describe '#captured' do
+  describe '#captured?' do
     it 'returns true if status is captured' do
       order = Order.new(order_params.merge('status' => 'captured'))
 
