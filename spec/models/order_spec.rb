@@ -35,7 +35,12 @@ describe Order do
       expect(Order.create(order_params)).to be_falsy
     end
 
-    it 'return the parameters if persisted'
+    it 'return the parameters if persisted' do
+      value = Order.create(order_params)
+
+      expect(value['orderId']).to eq order_params['orderId']
+    end
+
     it 'normalizes the amount'
     it 'masks the card number'
   end
