@@ -59,6 +59,10 @@ class Order
     @attributes.to_json
   end
 
+  def connection
+    self.class.connection
+  end
+
   private
 
   def normalize_amount(amount)
