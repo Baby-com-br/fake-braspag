@@ -81,4 +81,27 @@ describe Order do
       expect(persisted_order['amount']).to eq order['amount']
     end
   end
+
+  describe '#reload' do
+    it 'get the order attributes from the database' do
+      Order.create(order_params)
+      order = Order.new('orderId' => order_params['orderId'])
+
+      expect(order['amount']).to be_nil
+
+      order.reload
+
+      expect(order['amount']).to eq '18.36'
+    end
+
+    it 'raises error when not found on database' do
+      order = Order.new('orderId' => order_params['orderId'])
+
+      expect(order['amount']).to be_nil
+
+      expect {
+        order.reload
+      }.to raise_error(Order::NotFoundError)
+    end
+  end
 end

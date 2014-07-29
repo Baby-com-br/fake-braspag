@@ -2,6 +2,8 @@ require 'redis'
 require 'json'
 
 class Order
+  class NotFoundError < StandardError; end
+
   KEY_PREFIX = 'fake-braspag.order.'
 
   @@connection = Redis.new
@@ -40,11 +42,22 @@ class Order
   def save
     options = @persisted ? { xx: true } : { nx: true }
 
-    success = self.class.connection.set(self.class.key_for(self['orderId']), to_json, options)
+    success = connection.set(self.class.key_for(self['orderId']), to_json, options)
 
     @persisted = true if success
 
     success
+  end
+
+  def reload
+    value = connection.get(self.class.key_for(self['orderId']))
+
+    if value
+      @attributes = JSON.load(value)
+      @persisted = true
+    else
+      raise NotFoundError
+    end
   end
 
   def captured?
@@ -66,10 +79,10 @@ class Order
   private
 
   def normalize_amount(amount)
-    amount.gsub(',', '.')
+    amount.gsub(',', '.') if amount
   end
 
   def mask_card_number(card_number)
-    "************%s" % card_number[-4..-1]
+    "************%s" % card_number[-4..-1] if card_number
   end
 end
