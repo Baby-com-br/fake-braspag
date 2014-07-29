@@ -2,6 +2,8 @@ require 'redis'
 require 'json'
 
 class Order
+  KEY_PREFIX = 'fake-braspag.order.'
+
   @@connection = Redis.new
 
   def self.connection
@@ -9,7 +11,7 @@ class Order
   end
 
   def self.find(id)
-    JSON.load(@@connection.get(id))
+    JSON.load(connection.get(key_for(id)))
   end
 
   def self.create(parameters)
@@ -17,6 +19,10 @@ class Order
     parameters['cardNumber'] = mask_card_number(parameters['cardNumber'])
     @@connection.set parameters['orderId'], parameters.to_json
     parameters
+  end
+
+  def self.count
+    connection.keys(KEY_PREFIX + '*').size
   end
 
   def self.normalize_amount(amount)
@@ -28,4 +34,9 @@ class Order
     "************%s" % card_number[-4..-1]
   end
   private_class_method :mask_card_number
+
+  def self.key_for(id)
+    KEY_PREFIX + id.to_s
+  end
+  private_class_method :key_for
 end

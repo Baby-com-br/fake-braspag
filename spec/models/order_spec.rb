@@ -1,0 +1,33 @@
+require 'spec_helper'
+
+describe Order do
+  before do
+    Order.connection.flushdb
+  end
+
+  describe '.create' do
+    it 'persists the object' do
+      Order.create(
+        'merchantId' => '{E8D92C40-BDA5-C19F-5C4B-F3504A0CFE80}',
+        'order' => '',
+        'orderId' => '783842',
+        'customerName' => 'Rafael França',
+        'amount' => '18,36',
+        'paymentMethod' => '997',
+        'holder' => 'Rafael Franca',
+        'cardNumber' => '4242424242424242',
+        'expiration' => '05/17',
+        'securityCode' => '123',
+        'numberPayments' => '1',
+        'typePayment' => '0'
+      )
+
+      expect(Order.count).to eq 1
+    end
+
+    it 'return false if it is already persisted'
+    it 'return the parameters if persisted'
+    it 'normalizes the amount'
+    it 'masks the card number'
+  end
+end
