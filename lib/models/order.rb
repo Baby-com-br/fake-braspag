@@ -17,8 +17,10 @@ class Order
   def self.create(parameters)
     parameters['amount'] = normalize_amount(parameters['amount'])
     parameters['cardNumber'] = mask_card_number(parameters['cardNumber'])
-    @@connection.set parameters['orderId'], parameters.to_json
-    parameters
+
+    return_value = connection.set(key_for(parameters['orderId']), parameters.to_json, nx: true)
+
+    parameters if return_value
   end
 
   def self.count
