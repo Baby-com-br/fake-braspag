@@ -82,5 +82,21 @@ describe FakeBraspag::Application do
       order = Order.find('783842')
       expect(order).to be_captured
     end
+
+    it 'retuns a order not found error when the order does not exist' do
+      post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => order_params['merchantId'],
+                                                          'orderId' => order_params['orderId'] }
+
+      expect(last_response).to be_ok
+      expect(last_response.body).to eq <<-XML
+<?xml version="1.0" encoding="UTF-8"?>
+<PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+  <amount xsi:nil="true"/>
+  <message>Transaction not available for capture. Please check the status of this transaction.</message>
+  <returnCode>1111</returnCode>
+  <status xsi:nil="true"/>
+</PagadorReturn>
+      XML
+    end
   end
 end

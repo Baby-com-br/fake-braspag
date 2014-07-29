@@ -19,9 +19,14 @@ module FakeBraspag
     end
 
     post '/webservices/pagador/Pagador.asmx/Capture' do
-      order = Order.find(params['orderId'])
-      order.capture!
-      builder :capture_success, {}, { order: order }
+      order = Order.find!(params['orderId'])
+
+      if order
+        order.capture!
+        builder :capture_success, {}, { order: order }
+      else
+        builder :capture_not_available
+      end
     end
   end
 end

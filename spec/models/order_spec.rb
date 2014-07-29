@@ -59,6 +59,20 @@ describe Order do
     end
   end
 
+  describe '.find!' do
+    it 'get the order from the database' do
+      Order.create(order_params)
+      order = Order.find(order_params['orderId'])
+
+      expect(order).to be_a Order
+      expect(order['amount']).to eq '18.36'
+    end
+
+    it 'returns nil when not found on database' do
+      expect(Order.find!(order_params['orderId'])).to be_nil
+    end
+  end
+
   describe '#captured' do
     it 'returns true if status is captured' do
       order = Order.new(order_params.merge('status' => 'captured'))

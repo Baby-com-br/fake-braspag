@@ -35,6 +35,14 @@ class Order
     Order.new(get_value_for(key_for(id)), persisted: true)
   end
 
+  # Public: Same as `.find` but returns `nil` if no order is found with the in
+  # on the persistence layer.
+  def self.find!(id)
+    Order.new(get_value_for(key_for(id)), persisted: true)
+  rescue NotFoundError
+    nil
+  end
+
   # Public: Created a order with the provided `parameters`.
   #
   # Examples
