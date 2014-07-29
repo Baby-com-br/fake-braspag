@@ -11,23 +11,29 @@ class Order
   end
 
   def self.find(id)
-    JSON.load(connection.get(key_for(id)))
+    Order.new(JSON.load(connection.get(key_for(id))))
   end
 
   def self.create(parameters)
-    parameters['amount'] = normalize_amount(parameters['amount'])
-    parameters['cardNumber'] = mask_card_number(parameters['cardNumber'])
+    order = new(parameters)
+    return_value = connection.set(key_for(parameters['orderId']), order.to_json, nx: true)
 
-    return_value = connection.set(key_for(parameters['orderId']), parameters.to_json, nx: true)
-
-    parameters if return_value
+    order if return_value
   end
 
   def self.count
     connection.keys(KEY_PREFIX + '*').size
   end
 
+  def self.key_for(id)
+    KEY_PREFIX + id.to_s
+  end
+  private_class_method :key_for
+
   def initialize(attributes)
+    attributes['amount'] = normalize_amount(attributes['amount'])
+    attributes['cardNumber'] = mask_card_number(attributes['cardNumber'])
+
     @attributes = attributes
   end
 
@@ -35,18 +41,21 @@ class Order
     @attributes['status'] == 'captured'
   end
 
-  def self.normalize_amount(amount)
+  def [](attribute)
+    @attributes[attribute]
+  end
+
+  def to_json
+    @attributes.to_json
+  end
+
+  private
+
+  def normalize_amount(amount)
     amount.gsub(',', '.')
   end
-  private_class_method :normalize_amount
 
-  def self.mask_card_number(card_number)
+  def mask_card_number(card_number)
     "************%s" % card_number[-4..-1]
   end
-  private_class_method :mask_card_number
-
-  def self.key_for(id)
-    KEY_PREFIX + id.to_s
-  end
-  private_class_method :key_for
 end

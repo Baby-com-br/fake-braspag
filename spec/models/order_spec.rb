@@ -35,36 +35,39 @@ describe Order do
       expect(Order.create(order_params)).to be_falsy
     end
 
-    it 'return the parameters if persisted' do
+    it 'return the order if persisted' do
       order = Order.create(order_params)
 
+      expect(order).to be_a Order
       expect(order['orderId']).to eq order_params['orderId']
-    end
-
-    it 'normalizes the amount' do
-      order = Order.create(order_params)
-
-      expect(order['amount']).to eq '18.36'
-    end
-
-    it 'masks the card number' do
-      order = Order.create(order_params)
-
-      expect(order['cardNumber']).to eq '************4242'
     end
   end
 
   describe '#captured' do
     it 'returns true if status is captured' do
-      order = Order.new('status' => 'captured')
+      order = Order.new(order_params.merge('status' => 'captured'))
 
       expect(order).to be_captured
     end
 
     it 'returns false if status is not captured' do
-      order = Order.new('status' => 'autorized')
+      order = Order.new(order_params.merge('status' => 'autorized'))
 
       expect(order).not_to be_captured
+    end
+  end
+
+  describe '#initialize' do
+    it 'normalizes the amount' do
+      order = Order.new(order_params)
+
+      expect(order['amount']).to eq '18.36'
+    end
+
+    it 'masks the card number' do
+      order = Order.new(order_params)
+
+      expect(order['cardNumber']).to eq '************4242'
     end
   end
 end
