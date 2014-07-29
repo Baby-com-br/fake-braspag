@@ -4,6 +4,10 @@ require 'json'
 class Order
   @@connection = Redis.new
 
+  def self.connection
+    @@connection
+  end
+
   def self.find(id)
     JSON.load(@@connection.get(id))
   end

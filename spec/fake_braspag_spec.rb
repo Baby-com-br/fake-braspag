@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe FakeBraspag::Application do
+  before do
+    Order.connection.flushdb
+  end
+
   let(:order_params) do
     {
       'merchantId' => '{E8D92C40-BDA5-C19F-5C4B-F3504A0CFE80}',
