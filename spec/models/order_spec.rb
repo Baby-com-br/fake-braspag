@@ -81,7 +81,7 @@ describe Order do
     end
 
     it 'returns false if status is not captured' do
-      order = Order.new(order_params.merge('status' => 'autorized'))
+      order = Order.new(order_params.merge('status' => 'authorized'))
 
       expect(order).not_to be_captured
     end

@@ -83,7 +83,7 @@ describe FakeBraspag::Application do
       expect(order).to be_captured
     end
 
-    it 'retuns a order not found error when the order does not exist' do
+    it 'returns a order not found error when the order does not exist' do
       post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => order_params['merchantId'],
                                                           'orderId' => order_params['orderId'] }
 
