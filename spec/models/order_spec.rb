@@ -120,4 +120,30 @@ describe Order do
       }.to raise_error(Order::NotFoundError)
     end
   end
+
+  describe '#capture!' do
+    it 'marks the order as captured' do
+      order = Order.new(order_params)
+
+      expect(order).not_to be_captured
+
+      order.capture!
+
+      expect(order).to be_captured
+    end
+
+    it 'saves the change' do
+      order = Order.new(order_params)
+
+      expect(order).not_to be_captured
+
+      order.save
+
+      order.capture!
+
+      order.reload
+
+      expect(order).to be_captured
+    end
+  end
 end

@@ -70,5 +70,17 @@ describe FakeBraspag::Application do
 </PagadorReturn>
       XML
     end
+
+    it 'marks the order as captured when the success happen' do
+      order = Order.create(order_params)
+
+      post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => order_params['merchantId'],
+                                                          'orderId' => order_params['orderId'] }
+
+      expect(last_response).to be_ok
+
+      order = Order.find('783842')
+      expect(order).to be_captured
+    end
   end
 end

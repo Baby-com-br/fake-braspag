@@ -20,6 +20,7 @@ module FakeBraspag
 
     post '/webservices/pagador/Pagador.asmx/Capture' do
       order = Order.find(params['orderId'])
+      order.capture!
       builder :capture_success, {}, { order: order }
     end
   end

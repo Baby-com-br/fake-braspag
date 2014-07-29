@@ -64,6 +64,9 @@ class Order
     @persisted = true
   end
 
+  def capture!
+    @attributes['status'] = 'captured'
+    save
   end
 
   def captured?
