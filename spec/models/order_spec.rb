@@ -70,4 +70,15 @@ describe Order do
       expect(order['cardNumber']).to eq '************4242'
     end
   end
+
+  describe '#save' do
+    it 'persists the order' do
+      order = Order.new(order_params)
+
+      expect(order.save).to be_truthy
+
+      persisted_order = Order.find(order['orderId'])
+      expect(persisted_order['amount']).to eq order['amount']
+    end
+  end
 end

@@ -28,13 +28,16 @@ class Order
   def self.key_for(id)
     KEY_PREFIX + id.to_s
   end
-  private_class_method :key_for
 
   def initialize(attributes)
     attributes['amount'] = normalize_amount(attributes['amount'])
     attributes['cardNumber'] = mask_card_number(attributes['cardNumber'])
 
     @attributes = attributes
+  end
+
+  def save
+    self.class.connection.set(self.class.key_for(self['orderId']), to_json)
   end
 
   def captured?
