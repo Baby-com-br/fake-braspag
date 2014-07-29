@@ -38,7 +38,7 @@ class Order
   # Public: Same as `.find` but returns `nil` if no order is found with the id
   # on the persistence layer.
   def self.find!(id)
-    Order.new(get_value_for(key_for(id)), persisted: true)
+    find(id)
   rescue NotFoundError
     nil
   end
