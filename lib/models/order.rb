@@ -11,12 +11,12 @@ class Order
   end
 
   def self.find(id)
-    Order.new(JSON.load(connection.get(key_for(id))))
+    Order.new(JSON.load(connection.get(key_for(id))), persisted: true)
   end
 
   def self.create(parameters)
     order = new(parameters)
-    return_value = connection.set(key_for(parameters['orderId']), order.to_json, nx: true)
+    return_value = order.save
 
     order if return_value
   end
@@ -29,15 +29,22 @@ class Order
     KEY_PREFIX + id.to_s
   end
 
-  def initialize(attributes)
+  def initialize(attributes, persisted: false)
     attributes['amount'] = normalize_amount(attributes['amount'])
     attributes['cardNumber'] = mask_card_number(attributes['cardNumber'])
 
     @attributes = attributes
+    @persisted = persisted
   end
 
   def save
-    self.class.connection.set(self.class.key_for(self['orderId']), to_json)
+    options = @persisted ? { xx: true } : { nx: true }
+
+    success = self.class.connection.set(self.class.key_for(self['orderId']), to_json, options)
+
+    @persisted = true if success
+
+    success
   end
 
   def captured?
