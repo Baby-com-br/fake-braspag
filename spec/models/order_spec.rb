@@ -47,6 +47,10 @@ describe Order do
       expect(order['amount']).to eq '18.36'
     end
 
-    it 'masks the card number'
+    it 'masks the card number' do
+      order = Order.create(order_params)
+
+      expect(order['cardNumber']).to eq '************4242'
+    end
   end
 end
