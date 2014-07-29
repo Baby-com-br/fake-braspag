@@ -35,7 +35,7 @@ class Order
     Order.new(get_value_for(key_for(id)), persisted: true)
   end
 
-  # Public: Same as `.find` but returns `nil` if no order is found with the in
+  # Public: Same as `.find` but returns `nil` if no order is found with the id
   # on the persistence layer.
   def self.find!(id)
     Order.new(get_value_for(key_for(id)), persisted: true)
@@ -43,7 +43,7 @@ class Order
     nil
   end
 
-  # Public: Created a order with the provided `parameters`.
+  # Public: Create an order with the provided `parameters`.
   #
   # Examples
   #
@@ -135,7 +135,7 @@ class Order
     @attributes[attribute]
   end
 
-  # Internal: Serializes the attributes to json.
+  # Internal: Serializes the attributes to JSON.
   def to_json
     @attributes.to_json
   end
