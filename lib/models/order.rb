@@ -13,7 +13,7 @@ class Order
   end
 
   def self.find(id)
-    Order.new(JSON.load(connection.get(key_for(id))), persisted: true)
+    Order.new(get_value_for(key_for(id)), persisted: true)
   end
 
   def self.create(parameters)
@@ -29,6 +29,16 @@ class Order
 
   def self.key_for(id)
     KEY_PREFIX + id.to_s
+  end
+
+  def self.get_value_for(key)
+    value = connection.get(key)
+
+    if value
+      JSON.load(value)
+    else
+      raise NotFoundError
+    end
   end
 
   def initialize(attributes, persisted: false)
@@ -50,14 +60,10 @@ class Order
   end
 
   def reload
-    value = connection.get(self.class.key_for(self['orderId']))
+    @attributes = self.class.get_value_for(self.class.key_for(self['orderId']))
+    @persisted = true
+  end
 
-    if value
-      @attributes = JSON.load(value)
-      @persisted = true
-    else
-      raise NotFoundError
-    end
   end
 
   def captured?
