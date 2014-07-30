@@ -121,6 +121,57 @@ describe Order do
     end
   end
 
+  describe '#authorize!' do
+    context 'when the credit card is valid' do
+      it 'marks the order as authorized' do
+        order = Order.new(order_params)
+
+        expect(order).not_to be_authorized
+
+        order.authorize!
+
+        expect(order).to be_authorized
+      end
+
+      it 'saves the change' do
+        order = Order.new(order_params)
+
+        expect(order).not_to be_authorized
+
+        order.save
+
+        order.authorize!
+
+        order.reload
+
+        expect(order).to be_authorized
+      end
+    end
+
+    context 'when the credit card is invalid' do
+      it 'raise a AuthorizationFailureError' do
+        order = Order.new(order_params.merge('cardNumber' => '4242424242424242'))
+
+        expect(order).not_to be_authorized
+
+        expect {
+          order.authorize!
+        }.to raise_error(Order::AuthorizationFailureError)
+      end
+
+      it 'raise a AuthorizationFailureError when the order is persisted' do
+        Order.create(order_params.merge('cardNumber' => '4242424242424242'))
+        order = Order.find(order_params['orderId'])
+
+        expect(order).not_to be_authorized
+
+        expect {
+          order.authorize!
+        }.to raise_error(Order::AuthorizationFailureError)
+      end
+    end
+  end
+
   describe '#capture!' do
     it 'marks the order as captured' do
       order = Order.new(order_params)
@@ -144,6 +195,20 @@ describe Order do
       order.reload
 
       expect(order).to be_captured
+    end
+  end
+
+  describe '#authorized?' do
+    it 'returns true if status is authorized' do
+      order = Order.new(order_params.merge('status' => 'authorized'))
+
+      expect(order).to be_authorized
+    end
+
+    it 'returns false if status is not authorized' do
+      order = Order.new(order_params.merge('status' => 'captured'))
+
+      expect(order).not_to be_authorized
     end
   end
 

@@ -7,6 +7,9 @@ class Order
   # persistence layer.
   class NotFoundError < StandardError; end
 
+  # Public: Raised when the there is a failure on the authorization.
+  class AuthorizationFailureError < StandardError; end
+
   # Internal: The redis key prefix used to store the orders.
   KEY_PREFIX = 'fake-braspag.order.'
 
@@ -115,10 +118,28 @@ class Order
     @persisted = true
   end
 
+  # Public: Marks the order as authorized.
+  #
+  # Raises `Order::AuthorizationFailureError` if the there is a failure on
+  # the authorization.
+  def authorize!
+    if can_be_authorized?
+      @attributes['status'] = 'authorized'
+      save
+    else
+      raise AuthorizationFailureError
+    end
+  end
+
   # Public: Marks the order as captured.
   def capture!
     @attributes['status'] = 'captured'
     save
+  end
+
+  # Public: Checks if the order is authorized.
+  def authorized?
+    @attributes['status'] == 'authorized'
   end
 
   # Public: Checks if the order is captured.
@@ -155,5 +176,10 @@ class Order
   # Internal: Add a mask to `card_number` to only show the last 4 digits.
   def mask_card_number(card_number)
     "************%s" % card_number[-4..-1] if card_number
+  end
+
+  # Internal: Checks if the order can be authorized.
+  def can_be_authorized?
+    @attributes['cardNumber'] != '4242424242424242'
   end
 end
