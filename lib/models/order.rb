@@ -1,5 +1,7 @@
 require 'redis'
 require 'json'
+require 'active_support'
+require 'active_support/core_ext/string/inflections'
 
 # Public: Class responsible to make operations upon an order.
 class Order
@@ -101,7 +103,7 @@ class Order
   def save
     options = @persisted ? { xx: true } : { nx: true }
 
-    success = connection.set(self.class.key_for(self['orderId']), to_json, options)
+    success = connection.set(self.class.key_for(id), to_json, options)
 
     @persisted = true if success
 
@@ -113,7 +115,7 @@ class Order
   # Raises `Order::NotFoundError` if no order is found with the id on the
   # persistence layer.
   def reload
-    @attributes = self.class.get_value_for(self.class.key_for(self['orderId']))
+    @attributes = self.class.get_value_for(self.class.key_for(id))
     @persisted = true
   end
 
@@ -146,13 +148,9 @@ class Order
     @attributes['status'] == 'captured'
   end
 
-  # Public: Get the attribute from the order.
-  #
-  # Example:
-  #
-  #     order['orderId'] # => '2223'
-  def [](attribute)
-    @attributes[attribute]
+  # Public: Returns the order id.
+  def id
+    @attributes['orderId']
   end
 
   # Public: Returns the card number used on the order.
@@ -187,5 +185,35 @@ class Order
   # Internal: Checks if the order can be authorized.
   def can_be_authorized?
     @attributes['cardNumber'] != '4242424242424242'
+  end
+
+  # Public: Retrive the order attributes using a method.
+  #
+  # Examples:
+  #
+  #   order = Order.new('amount' => '4.20', 'customerName' => 'Rafael França')
+  #   order.amount # => "4.20"
+  #   order.customer_name # => "Rafael França"
+  def method_missing(name, *args)
+    camelized_name = name.to_s.camelize(:lower)
+
+    if @attributes.key?(camelized_name)
+      @attributes[camelized_name]
+    else
+      super
+    end
+  end
+
+  # Public: Checks if the attribute method exists.
+  #
+  # Examples:
+  #
+  #   order = Order.new('amount' => '4.20')
+  #   order.respond_to?(:amount) # => true
+  #   order.respond_to?(:inexistent_method) # => false
+  def respond_to_missing?(name, include_private = false)
+    camelized_name = name.to_s.camelize(:lower)
+
+    @attributes.key?(camelized_name) || super
   end
 end

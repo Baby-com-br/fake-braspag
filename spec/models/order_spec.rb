@@ -39,7 +39,7 @@ describe Order do
       order = Order.create(order_params)
 
       expect(order).to be_a Order
-      expect(order['orderId']).to eq order_params['orderId']
+      expect(order.id).to eq order_params['orderId']
     end
   end
 
@@ -49,7 +49,7 @@ describe Order do
       order = Order.find(order_params['orderId'])
 
       expect(order).to be_a Order
-      expect(order['amount']).to eq '18.36'
+      expect(order.amount).to eq '18.36'
     end
 
     it 'raises error when not found on database' do
@@ -65,7 +65,7 @@ describe Order do
       order = Order.find(order_params['orderId'])
 
       expect(order).to be_a Order
-      expect(order['amount']).to eq '18.36'
+      expect(order.amount).to eq '18.36'
     end
 
     it 'returns nil when not found on database' do
@@ -77,7 +77,7 @@ describe Order do
     it 'normalizes the amount' do
       order = Order.new(order_params)
 
-      expect(order['amount']).to eq '18.36'
+      expect(order.amount).to eq '18.36'
     end
   end
 
@@ -95,8 +95,8 @@ describe Order do
 
       expect(order.save).to be_truthy
 
-      persisted_order = Order.find(order['orderId'])
-      expect(persisted_order['amount']).to eq order['amount']
+      persisted_order = Order.find(order.id)
+      expect(persisted_order.amount).to eq order.amount
     end
   end
 
@@ -105,17 +105,17 @@ describe Order do
       Order.create(order_params)
       order = Order.new('orderId' => order_params['orderId'])
 
-      expect(order['amount']).to be_nil
+      expect(order.amount).to be_nil
 
       order.reload
 
-      expect(order['amount']).to eq '18.36'
+      expect(order.amount).to eq '18.36'
     end
 
     it 'raises error when not found on database' do
       order = Order.new('orderId' => order_params['orderId'])
 
-      expect(order['amount']).to be_nil
+      expect(order.amount).to be_nil
 
       expect {
         order.reload
@@ -225,6 +225,31 @@ describe Order do
       order = Order.new(order_params.merge('status' => 'authorized'))
 
       expect(order).not_to be_captured
+    end
+  end
+
+  describe '#method_missing' do
+    it 'returns the value of the attribute key with the same name' do
+      order = Order.new(order_params)
+
+      expect(order.respond_to?(:holder)).to be_truthy
+      expect(order.holder).to eq 'Rafael Franca'
+    end
+
+    it 'returns the value of the camelized key if it is on attribute' do
+      order = Order.new(order_params)
+
+      expect(order.respond_to?(:customer_name)).to be_truthy
+      expect(order.customer_name).to eq 'Rafael França'
+    end
+
+    it 'raises NoMethodError if the key is not on the attributes hash' do
+      order = Order.new(order_params)
+
+      expect(order.respond_to?(:inexistent_method)).to be_falsy
+      expect {
+        order.inexistent_method
+      }.to raise_error(NoMethodError, /inexistent_method/)
     end
   end
 end
