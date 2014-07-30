@@ -15,6 +15,9 @@ class Order
   # Internal: The redis key prefix used to store the orders.
   KEY_PREFIX = 'fake-braspag.order.'
 
+  # Internal: Represent the quantity of seconds in a day.
+  DAY_IN_SECONDS = 24 * 60 * 60
+
   @@connection = Redis.new
 
   # Public: Returns the connection object.
@@ -101,7 +104,7 @@ class Order
   #
   # Returns true if the object could be salved, false otherwise.
   def save
-    options = @persisted ? { xx: true } : { nx: true }
+    options = @persisted ? { xx: true, ex: 30 * DAY_IN_SECONDS } : { nx: true, ex: 30 * DAY_IN_SECONDS }
 
     success = connection.set(self.class.key_for(id), to_json, options)
 
