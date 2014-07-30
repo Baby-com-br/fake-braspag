@@ -1,5 +1,7 @@
 require 'redis'
 require 'json'
+require 'active_support'
+require 'active_support/core_ext/string/inflections'
 
 # Public: Class responsible to make operations upon an order.
 class Order
@@ -7,8 +9,14 @@ class Order
   # persistence layer.
   class NotFoundError < StandardError; end
 
+  # Public: Raised when the there is a failure on the authorization.
+  class AuthorizationFailureError < StandardError; end
+
   # Internal: The redis key prefix used to store the orders.
   KEY_PREFIX = 'fake-braspag.order.'
+
+  # Internal: Represent the quantity of seconds in a day.
+  DAY_IN_SECONDS = 24 * 60 * 60
 
   @@connection = Redis.new
 
@@ -87,7 +95,6 @@ class Order
   # attributes - a Hash with the order attributes.
   def initialize(attributes, persisted: false)
     attributes['amount'] = normalize_amount(attributes['amount'])
-    attributes['cardNumber'] = mask_card_number(attributes['cardNumber'])
 
     @attributes = attributes
     @persisted = persisted
@@ -97,9 +104,9 @@ class Order
   #
   # Returns true if the object could be salved, false otherwise.
   def save
-    options = @persisted ? { xx: true } : { nx: true }
+    options = @persisted ? { xx: true, ex: 30 * DAY_IN_SECONDS } : { nx: true, ex: 30 * DAY_IN_SECONDS }
 
-    success = connection.set(self.class.key_for(self['orderId']), to_json, options)
+    success = connection.set(self.class.key_for(id), to_json, options)
 
     @persisted = true if success
 
@@ -111,8 +118,21 @@ class Order
   # Raises `Order::NotFoundError` if no order is found with the id on the
   # persistence layer.
   def reload
-    @attributes = self.class.get_value_for(self.class.key_for(self['orderId']))
+    @attributes = self.class.get_value_for(self.class.key_for(id))
     @persisted = true
+  end
+
+  # Public: Marks the order as authorized.
+  #
+  # Raises `Order::AuthorizationFailureError` if the there is a failure on
+  # the authorization.
+  def authorize!
+    if can_be_authorized?
+      @attributes['status'] = 'authorized'
+      save
+    else
+      raise AuthorizationFailureError
+    end
   end
 
   # Public: Marks the order as captured.
@@ -121,18 +141,26 @@ class Order
     save
   end
 
+  # Public: Checks if the order is authorized.
+  def authorized?
+    @attributes['status'] == 'authorized'
+  end
+
   # Public: Checks if the order is captured.
   def captured?
     @attributes['status'] == 'captured'
   end
 
-  # Public: Get the attribute from the order.
+  # Public: Returns the order id.
+  def id
+    @attributes['orderId']
+  end
+
+  # Public: Returns the card number used on the order.
   #
-  # Example:
-  #
-  #     order['orderId'] # => '2223'
-  def [](attribute)
-    @attributes[attribute]
+  # Returns the masked value with only the last four digits present.
+  def card_number
+    mask_card_number(@attributes['cardNumber'])
   end
 
   # Internal: Serializes the attributes to JSON.
@@ -155,5 +183,36 @@ class Order
   # Internal: Add a mask to `card_number` to only show the last 4 digits.
   def mask_card_number(card_number)
     "************%s" % card_number[-4..-1] if card_number
+  end
+
+  # Internal: Checks if the order can be authorized.
+  def can_be_authorized?
+    @attributes['cardNumber'] != '4242424242424242'
+  end
+
+  # Public: Retrive the order attributes using a method.
+  #
+  # Examples:
+  #
+  #   order = Order.new('amount' => '4.20', 'customerName' => 'Rafael França')
+  #   order.amount # => "4.20"
+  #   order.customer_name # => "Rafael França"
+  def method_missing(name, *args)
+    camelized_name = name.to_s.camelize(:lower)
+
+    @attributes.fetch(camelized_name) { super }
+  end
+
+  # Public: Checks if the attribute method exists.
+  #
+  # Examples:
+  #
+  #   order = Order.new('amount' => '4.20')
+  #   order.respond_to?(:amount) # => true
+  #   order.respond_to?(:inexistent_method) # => false
+  def respond_to_missing?(name, include_private = false)
+    camelized_name = name.to_s.camelize(:lower)
+
+    @attributes.key?(camelized_name) || super
   end
 end
