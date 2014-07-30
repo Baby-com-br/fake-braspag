@@ -90,7 +90,6 @@ class Order
   # attributes - a Hash with the order attributes.
   def initialize(attributes, persisted: false)
     attributes['amount'] = normalize_amount(attributes['amount'])
-    attributes['cardNumber'] = mask_card_number(attributes['cardNumber'])
 
     @attributes = attributes
     @persisted = persisted
@@ -154,6 +153,13 @@ class Order
   #     order['orderId'] # => '2223'
   def [](attribute)
     @attributes[attribute]
+  end
+
+  # Public: Returns the card number used on the order.
+  #
+  # Returns the masked value with only the last four digits present.
+  def card_number
+    mask_card_number(@attributes['cardNumber'])
   end
 
   # Internal: Serializes the attributes to JSON.

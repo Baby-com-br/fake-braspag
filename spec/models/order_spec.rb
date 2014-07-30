@@ -14,7 +14,7 @@ describe Order do
       'amount' => '18,36',
       'paymentMethod' => '997',
       'holder' => 'Rafael Franca',
-      'cardNumber' => '4242424242424242',
+      'cardNumber' => '4111111111111111',
       'expiration' => '05/17',
       'securityCode' => '123',
       'numberPayments' => '1',
@@ -79,11 +79,13 @@ describe Order do
 
       expect(order['amount']).to eq '18.36'
     end
+  end
 
+  describe '#card_number' do
     it 'masks the card number' do
       order = Order.new(order_params)
 
-      expect(order['cardNumber']).to eq '************4242'
+      expect(order.card_number).to eq '************1111'
     end
   end
 

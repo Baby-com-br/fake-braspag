@@ -10,7 +10,7 @@ xml.PagadorReturn 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
     "24.07.14-16:27:33 TERM:RO128278/528374@" +
     "AUTORIZACAO EMISSOR: 642980           @" +
     "CODIGO PRE-AUTORIZACAO: 52978         @" +
-    "CARTAO: #{order['cardNumber']}              @" +
+    "CARTAO: #{order.card_number}              @" +
     "     RECONHECO E PAGAREI A DIVIDA     @" +
     "          AQUI REPRESENTADA           @@@" +
     "     ____________________________     @@"
