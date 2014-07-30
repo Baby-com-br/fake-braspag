@@ -197,11 +197,7 @@ class Order
   def method_missing(name, *args)
     camelized_name = name.to_s.camelize(:lower)
 
-    if @attributes.key?(camelized_name)
-      @attributes[camelized_name]
-    else
-      super
-    end
+    @attributes.fetch(camelized_name) { super }
   end
 
   # Public: Checks if the attribute method exists.
