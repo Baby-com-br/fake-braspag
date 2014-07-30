@@ -14,8 +14,15 @@ require 'models/order'
 module FakeBraspag
   class Application < Sinatra::Base
     post '/webservices/pagador/Pagador.asmx/Authorize' do
-      order = Order.create params
-      builder :authorize_success, {}, { order: order }
+      order = Order.new params
+
+      begin
+        order.authorize!
+
+        builder :authorize_success, {}, { order: order }
+      rescue Order::AuthorizationFailureError
+        builder :authorize_failure, {}, { order: order }
+      end
     end
 
     post '/webservices/pagador/Pagador.asmx/Capture' do

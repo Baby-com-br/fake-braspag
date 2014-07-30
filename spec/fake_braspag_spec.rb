@@ -23,11 +23,12 @@ describe FakeBraspag::Application do
   end
 
   context 'authorization' do
-    it 'responds with a success response' do
-      post '/webservices/pagador/Pagador.asmx/Authorize', order_params
+    context 'with valid credit card' do
+      it 'responds with a success response' do
+        post '/webservices/pagador/Pagador.asmx/Authorize', order_params
 
-      expect(last_response).to be_ok
-      expect(last_response.body).to eq <<-XML
+        expect(last_response).to be_ok
+        expect(last_response.body).to eq <<-XML
 <?xml version="1.0" encoding="UTF-8"?>
 <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
   <amount>18.36</amount>
@@ -37,16 +38,42 @@ describe FakeBraspag::Application do
   <status>1</status>
   <transactionId>0728043853882</transactionId>
 </PagadorReturn>
-      XML
+        XML
+      end
+
+      it 'persists the order data' do
+        post '/webservices/pagador/Pagador.asmx/Authorize', order_params
+
+        expect(last_response).to be_ok
+
+        order = Order.find('783842')
+        expect(order.amount).to eq '18.36'
+      end
     end
 
-    it 'persists the order data' do
-      post '/webservices/pagador/Pagador.asmx/Authorize', order_params
+    context 'with invalid credit card' do
+      it 'responds with a error response' do
+        post '/webservices/pagador/Pagador.asmx/Authorize', order_params.merge('cardNumber' => '4242424242424242')
 
-      expect(last_response).to be_ok
+        expect(last_response).to be_ok
+        expect(last_response.body).to eq <<-XML
+<?xml version="1.0" encoding="UTF-8"?>
+<PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+  <amount>18.36</amount>
+  <message>Not Authorized</message>
+  <returnCode>2</returnCode>
+  <status>2</status>
+  <transactionId>0728043853882</transactionId>
+</PagadorReturn>
+        XML
+      end
 
-      order = Order.find('783842')
-      expect(order.amount).to eq '18.36'
+      it 'does not persist the order data' do
+        post '/webservices/pagador/Pagador.asmx/Authorize', order_params.merge('cardNumber' => '4242424242424242')
+
+        expect(last_response).to be_ok
+        expect(Order.count).to eq 0
+      end
     end
   end
 
