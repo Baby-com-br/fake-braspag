@@ -27,26 +27,26 @@ class Order
     @@connection
   end
 
-  # Public: Finds and return an order with the provided `id`.
+  # Public: Find and return an order with the provided `id`.
   #
   # Examples
   #
-  #   Order.find('12345')
+  #   Order.find!('12345')
   #   # => #<Order:... @attributes={"orderId"=>"12345", "amount"=>"18.36"}, @persisted=true>
   #
-  #   Order.find('non existend')
+  #   Order.find!('non existend')
   #   # => Order::NotFoundError
   #
   # Raises `Order::NotFoundError` if no order is found with the id on the
   # persistence layer.
-  def self.find(id)
+  def self.find!(id)
     Order.new(get_value_for(key_for(id)), persisted: true)
   end
 
-  # Public: Same as `.find` but returns `nil` if no order is found with the id
+  # Public: Same as `.find!` but returns `nil` if no order is found with the given id
   # on the persistence layer.
-  def self.find!(id)
-    find(id)
+  def self.find(id)
+    find!(id)
   rescue NotFoundError
     nil
   end

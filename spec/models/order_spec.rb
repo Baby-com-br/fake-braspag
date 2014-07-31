@@ -43,10 +43,10 @@ describe Order do
     end
   end
 
-  describe '.find' do
-    it 'get the order from the database' do
+  describe '.find!' do
+    it 'gets the order from the database' do
       Order.create(order_params)
-      order = Order.find(order_params['orderId'])
+      order = Order.find!(order_params['orderId'])
 
       expect(order).to be_a Order
       expect(order.amount).to eq '18.36'
@@ -54,13 +54,13 @@ describe Order do
 
     it 'raises error when not found on database' do
       expect {
-        Order.find(order_params['orderId'])
+        Order.find!(order_params['orderId'])
       }.to raise_error(Order::NotFoundError)
     end
   end
 
-  describe '.find!' do
-    it 'get the order from the database' do
+  describe '.find' do
+    it 'gets the order from the database' do
       Order.create(order_params)
       order = Order.find(order_params['orderId'])
 
@@ -69,7 +69,7 @@ describe Order do
     end
 
     it 'returns nil when not found on database' do
-      expect(Order.find!(order_params['orderId'])).to be_nil
+      expect(Order.find(order_params['orderId'])).to be_nil
     end
   end
 

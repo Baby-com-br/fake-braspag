@@ -26,7 +26,7 @@ module FakeBraspag
     end
 
     post '/webservices/pagador/Pagador.asmx/Capture' do
-      order = Order.find!(params['orderId'])
+      order = Order.find(params['orderId'])
 
       if order
         order.capture!
