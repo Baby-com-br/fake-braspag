@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'active_support/core_ext/string/strip'
 
 describe FakeBraspag::Application do
   before do
@@ -28,16 +29,16 @@ describe FakeBraspag::Application do
         post '/webservices/pagador/Pagador.asmx/Authorize', order_params
 
         expect(last_response).to be_ok
-        expect(last_response.body).to eq <<-XML
-<?xml version="1.0" encoding="UTF-8"?>
-<PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
-  <amount>18.36</amount>
-  <authorisationNumber>505369</authorisationNumber>
-  <message>Operation Successful</message>
-  <returnCode>4</returnCode>
-  <status>1</status>
-  <transactionId>0728043853882</transactionId>
-</PagadorReturn>
+        expect(last_response.body).to eq <<-XML.strip_heredoc
+          <?xml version="1.0" encoding="UTF-8"?>
+          <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+            <amount>18.36</amount>
+            <authorisationNumber>505369</authorisationNumber>
+            <message>Operation Successful</message>
+            <returnCode>4</returnCode>
+            <status>1</status>
+            <transactionId>0728043853882</transactionId>
+          </PagadorReturn>
         XML
       end
 
@@ -56,15 +57,15 @@ describe FakeBraspag::Application do
         post '/webservices/pagador/Pagador.asmx/Authorize', order_params.merge('cardNumber' => '4242424242424242')
 
         expect(last_response).to be_ok
-        expect(last_response.body).to eq <<-XML
-<?xml version="1.0" encoding="UTF-8"?>
-<PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
-  <amount>18.36</amount>
-  <message>Not Authorized</message>
-  <returnCode>2</returnCode>
-  <status>2</status>
-  <transactionId>0728043853882</transactionId>
-</PagadorReturn>
+        expect(last_response.body).to eq <<-XML.strip_heredoc
+          <?xml version="1.0" encoding="UTF-8"?>
+          <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+            <amount>18.36</amount>
+            <message>Not Authorized</message>
+            <returnCode>2</returnCode>
+            <status>2</status>
+            <transactionId>0728043853882</transactionId>
+          </PagadorReturn>
         XML
       end
 
@@ -87,14 +88,14 @@ describe FakeBraspag::Application do
 
 
       expect(last_response).to be_ok
-      expect(last_response.body).to eq <<-XML
-<?xml version="1.0" encoding="UTF-8"?>
-<PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
-  <amount>#{order.amount}</amount>
-  <message>F                 REDE                 @    CONFIRMACAO DE PRE-AUTORIZACAO    @COMPR:257575054    VALOR:        #{order.amount}@ESTAB:040187624 DINDA COM BR          @24.07.14-16:27:33 TERM:RO128278/528374@AUTORIZACAO EMISSOR: 642980           @CODIGO PRE-AUTORIZACAO: 52978         @CARTAO: ************1111              @     RECONHECO E PAGAREI A DIVIDA     @          AQUI REPRESENTADA           @@@     ____________________________     @@</message>
-  <returnCode>0</returnCode>
-  <transactionId>257575054</transactionId>
-</PagadorReturn>
+      expect(last_response.body).to eq <<-XML.strip_heredoc
+        <?xml version="1.0" encoding="UTF-8"?>
+        <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+          <amount>#{order.amount}</amount>
+          <message>F                 REDE                 @    CONFIRMACAO DE PRE-AUTORIZACAO    @COMPR:257575054    VALOR:        #{order.amount}@ESTAB:040187624 DINDA COM BR          @24.07.14-16:27:33 TERM:RO128278/528374@AUTORIZACAO EMISSOR: 642980           @CODIGO PRE-AUTORIZACAO: 52978         @CARTAO: ************1111              @     RECONHECO E PAGAREI A DIVIDA     @          AQUI REPRESENTADA           @@@     ____________________________     @@</message>
+          <returnCode>0</returnCode>
+          <transactionId>257575054</transactionId>
+        </PagadorReturn>
       XML
     end
 
@@ -115,14 +116,14 @@ describe FakeBraspag::Application do
                                                           'orderId' => order_params['orderId'] }
 
       expect(last_response).to be_ok
-      expect(last_response.body).to eq <<-XML
-<?xml version="1.0" encoding="UTF-8"?>
-<PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
-  <amount xsi:nil="true"/>
-  <message>Transaction not available for capture. Please check the status of this transaction.</message>
-  <returnCode>1111</returnCode>
-  <status xsi:nil="true"/>
-</PagadorReturn>
+      expect(last_response.body).to eq <<-XML.strip_heredoc
+        <?xml version="1.0" encoding="UTF-8"?>
+        <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+          <amount xsi:nil="true"/>
+          <message>Transaction not available for capture. Please check the status of this transaction.</message>
+          <returnCode>1111</returnCode>
+          <status xsi:nil="true"/>
+        </PagadorReturn>
       XML
     end
   end
