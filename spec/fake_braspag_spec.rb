@@ -23,7 +23,7 @@ describe FakeBraspag::Application do
     }
   end
 
-  context 'authorization' do
+  describe 'authorization' do
     context 'with valid credit card' do
       it 'responds with a success response' do
         post '/webservices/pagador/Pagador.asmx/Authorize', order_params
@@ -78,7 +78,7 @@ describe FakeBraspag::Application do
     end
   end
 
-  context 'capture' do
+  describe 'capture' do
     it 'responds with a success response' do
       order = Order.create(order_params)
 
