@@ -182,7 +182,7 @@ class Order
 
   # Internal: Add a mask to `card_number` to only show the last 4 digits.
   def mask_card_number(card_number)
-    "************%s" % card_number[-4..-1] if card_number
+    "xxxxxxxxxxxx%s" % card_number[-4..-1] if card_number
   end
 
   # Internal: Checks if the order can be authorized.

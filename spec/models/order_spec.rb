@@ -85,7 +85,7 @@ describe Order do
     it 'masks the card number' do
       order = Order.new(order_params)
 
-      expect(order.card_number).to eq '************1111'
+      expect(order.card_number).to eq 'xxxxxxxxxxxx1111'
     end
   end
 
