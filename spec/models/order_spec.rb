@@ -175,9 +175,8 @@ describe Order do
   end
 
   describe '#capture!' do
-    subject(:order) { Order.new(order_params) }
-
     it 'marks the order as captured' do
+      order = Order.new(order_params)
       expect(order).not_to be_captured
 
       order.capture!
@@ -186,6 +185,7 @@ describe Order do
     end
 
     it 'persists the change' do
+      order = Order.new(order_params)
       expect(order).not_to be_captured
 
       order.save
@@ -196,6 +196,7 @@ describe Order do
     end
 
     it 'records the partially captured amount' do
+      order = Order.new(order_params)
       expect(order).not_to be_captured
 
       order.capture!('12,34')
