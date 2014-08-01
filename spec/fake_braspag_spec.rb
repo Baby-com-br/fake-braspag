@@ -125,4 +125,45 @@ describe FakeBraspag::Application do
       XML
     end
   end
+
+  describe 'partial capture' do
+    it 'renders a success response with the captured amount and the transaction status' do
+      order = Order.create(order_params)
+      amount = '12,34'
+
+      post '/webservices/pagador/Pagador.asmx/CapturePartial', { 'merchantId' => order_params['merchantId'],
+                                                                 'orderId' => order_params['orderId'],
+                                                                 'captureAmount' => amount }
+
+      expect(last_response).to be_ok
+      expect(last_response.body).to eq <<-XML.strip_heredoc
+        <?xml version="1.0" encoding="UTF-8"?>
+        <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+          <amount>12.34</amount>
+          <message>F                 REDE                 @    CONFIRMACAO DE PRE-AUTORIZACAO    @COMPR:247524362    VALOR:       12,34@                NUM. PARCELA:      01@ESTAB:040187624 DINDA COM BR          @24.07.14-16:38:47 TERM:RO128278/531425@AUTORIZACAO EMISSOR: 214111           @CODIGO PRE-AUTORIZACAO: 14111         @CARTAO: xxxxxxxxxxxx1111              @     RECONHECO E PAGAREI A DIVIDA     @          AQUI REPRESENTADA           @@@     ____________________________     @@</message>
+          <returnCode>0</returnCode>
+          <status>0</status>
+        </PagadorReturn>
+      XML
+    end
+
+    it 'returns a transacition not found error when the order does not exist' do
+      amount = '12,34'
+
+      post '/webservices/pagador/Pagador.asmx/CapturePartial', { 'merchantId' => order_params['merchantId'],
+                                                                 'orderId' => order_params['orderId'],
+                                                                 'captureAmount' => amount }
+
+      expect(last_response).to be_ok
+      expect(last_response.body).to eq <<-XML.strip_heredoc
+        <?xml version="1.0" encoding="UTF-8"?>
+        <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+          <amount xsi:nil="true"/>
+          <message>Transaction specified was not found in the database</message>
+          <returnCode>1003</returnCode>
+          <status xsi:nil="true"/>
+        </PagadorReturn>
+      XML
+    end
+  end
 end

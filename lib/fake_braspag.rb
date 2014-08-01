@@ -35,5 +35,17 @@ module FakeBraspag
         builder :capture_not_available
       end
     end
+
+    post '/webservices/pagador/Pagador.asmx/CapturePartial' do
+      order = Order.find(params['orderId'])
+      amount = params['captureAmount']
+
+      if order
+        order.capture!(amount)
+        builder :capture_partial_success, {}, { order: order }
+      else
+        builder :capture_partial_not_found
+      end
+    end
   end
 end
