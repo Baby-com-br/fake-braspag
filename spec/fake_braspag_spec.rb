@@ -79,7 +79,7 @@ describe FakeBraspag::Application do
   end
 
   describe 'capture' do
-    it 'responds with a success response' do
+    it 'renders a success response with the order amount, return code and transaction id' do
       order = Order.create(order_params)
 
       post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => order_params['merchantId'],
@@ -97,7 +97,7 @@ describe FakeBraspag::Application do
       XML
     end
 
-    it 'marks the order as captured when the success happen' do
+    it 'marks the order as captured when successful' do
       order = Order.create(order_params)
 
       post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => order_params['merchantId'],
