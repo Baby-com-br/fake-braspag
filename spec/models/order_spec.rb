@@ -85,7 +85,7 @@ describe Order do
     it 'masks the card number' do
       order = Order.new(order_params)
 
-      expect(order.card_number).to eq '************1111'
+      expect(order.card_number).to eq 'xxxxxxxxxxxx1111'
     end
   end
 
@@ -177,7 +177,6 @@ describe Order do
   describe '#capture!' do
     it 'marks the order as captured' do
       order = Order.new(order_params)
-
       expect(order).not_to be_captured
 
       order.capture!
@@ -185,18 +184,25 @@ describe Order do
       expect(order).to be_captured
     end
 
-    it 'saves the change' do
+    it 'persists the change' do
       order = Order.new(order_params)
-
       expect(order).not_to be_captured
 
       order.save
-
       order.capture!
-
       order.reload
 
       expect(order).to be_captured
+    end
+
+    it 'records the partially captured amount' do
+      order = Order.new(order_params)
+      expect(order).not_to be_captured
+
+      order.capture!('12,34')
+
+      expect(order).to be_captured
+      expect(order.captured_amount).to eq '12.34'
     end
   end
 
