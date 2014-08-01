@@ -102,7 +102,7 @@ class Order
 
   # Public: Saves the object on the persistence layer.
   #
-  # Returns true if the object could be salved, false otherwise.
+  # Returns true if the object could be saved, false otherwise.
   def save
     options = @persisted ? { xx: true, ex: 30 * DAY_IN_SECONDS } : { nx: true, ex: 30 * DAY_IN_SECONDS }
 
@@ -135,9 +135,20 @@ class Order
     end
   end
 
-  # Public: Marks the order as captured.
-  def capture!
+  # Public: Simulates an order capture. Either full or partial.
+  #
+  # amount - The amount to be charged. Making it a partial capture (default: nil).
+  #
+  # Examples
+  #
+  #   order.capture('12,34')
+  #   # => true
+  #
+  # Returns true if the capture was successful and false otherwise.
+  def capture!(amount = nil)
     @attributes['status'] = 'captured'
+    @attributes['capturedAmount'] = normalize_amount(amount) if amount
+
     save
   end
 
