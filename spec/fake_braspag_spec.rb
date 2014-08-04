@@ -25,7 +25,7 @@ describe FakeBraspag::Application do
 
   describe 'authorization' do
     context 'with valid credit card' do
-      it 'responds with a success response' do
+      it 'responds with a successful response' do
         post '/webservices/pagador/Pagador.asmx/Authorize', order_params
 
         expect(last_response).to be_ok
@@ -84,7 +84,7 @@ describe FakeBraspag::Application do
         ResponseToggler.enable('capture')
       end
 
-      it 'renders a success response with the order amount, return code and transaction id' do
+      it 'renders a successful response with the order amount, return code and transaction id' do
         order = Order.create(order_params)
 
         post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => order_params['merchantId'],
@@ -114,7 +114,7 @@ describe FakeBraspag::Application do
         expect(order).to be_captured
       end
 
-      it 'returns a order not found error when the order does not exist' do
+      it 'returns an order not found error when the order does not exist' do
         post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => order_params['merchantId'],
                                                             'orderId' => order_params['orderId'] }
 
@@ -166,7 +166,7 @@ describe FakeBraspag::Application do
         expect(order).not_to be_captured
       end
 
-      it 'returns a order not found error when the order does not exist' do
+      it 'returns an order not found error when the order does not exist' do
         post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => order_params['merchantId'],
                                                             'orderId' => order_params['orderId'] }
 
@@ -185,7 +185,7 @@ describe FakeBraspag::Application do
   end
 
   describe 'partial capture' do
-    it 'renders a success response with the captured amount and the transaction status' do
+    it 'renders a successful response with the captured amount and the transaction status' do
       order = Order.create(order_params)
       amount = '12,34'
 
@@ -205,7 +205,7 @@ describe FakeBraspag::Application do
       XML
     end
 
-    it 'returns a transacition not found error when the order does not exist' do
+    it 'returns a transaction not found error when the order does not exist' do
       amount = '12,34'
 
       post '/webservices/pagador/Pagador.asmx/CapturePartial', { 'merchantId' => order_params['merchantId'],
