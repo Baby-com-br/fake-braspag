@@ -20,4 +20,9 @@ class ResponseToggler
   def self.enable(namespace)
     connection.del(KEY_PREFIX + namespace)
   end
+
+  # Public: Check if the response is enabled got the given `namespace`.
+  def self.enabled?(namespace)
+    !connection.exists(KEY_PREFIX + namespace)
+  end
 end
