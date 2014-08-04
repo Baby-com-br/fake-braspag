@@ -6,7 +6,7 @@ It can be used to:
 
 * Execute performance tests.
 * Execute END-2-END tests.
-* Test failure of operations that the Braspag's sandbox doesn't provide.
+* Test failed operations that Braspag doesn't provide on its sandbox environment.
 
 ## Supported operations
 
