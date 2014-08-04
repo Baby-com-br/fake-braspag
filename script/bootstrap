@@ -37,6 +37,7 @@ test_dependency() {
 (
   set -e
   test_dependency "bundle" "Bundler" "gem install bundler"
+  test_dependency "redis-cli" "Redis" "brew install redis"
 )
 
 if (( $? != 0 )); then
