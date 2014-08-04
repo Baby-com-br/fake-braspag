@@ -52,7 +52,7 @@ typePayment
 
 **Variants:**
 
-Use `cardNumber` with the value `4242424242424242` to get a failure response.
+1 - Use `cardNumber` with the value `4242424242424242` to get a failure response.
 
 Example of the failure response:
 
