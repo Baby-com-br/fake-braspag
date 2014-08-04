@@ -6,14 +6,14 @@ describe ResponseToggler do
   end
 
   describe '.disable' do
-    it 'set the namespace key to true' do
+    it 'marks a given namespace as disabled' do
       ResponseToggler.disable('capture')
       expect(ResponseToggler.connection.get('fake-braspag.disabled_response.capture')).to be_truthy
     end
   end
 
   describe '.enable' do
-    it 'remove the namespace from the collection' do
+    it 'marks a given namespace as enabled' do
       ResponseToggler.disable('capture')
 
       expect(ResponseToggler.connection.get('fake-braspag.disabled_response.capture')).to be_truthy
