@@ -5,14 +5,14 @@ describe ResponseToggler do
     ResponseToggler.connection.flushdb
   end
 
-  describe '#disable' do
+  describe '.disable' do
     it 'set the namespace key to true' do
       ResponseToggler.disable('capture')
       expect(ResponseToggler.connection.get('fake-braspag.disabled_response.capture')).to be_truthy
     end
   end
 
-  describe '#enable' do
+  describe '.enable' do
     it 'remove the namespace from the collection' do
       ResponseToggler.disable('capture')
 
