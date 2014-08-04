@@ -147,7 +147,7 @@ describe FakeBraspag::Application do
         <?xml version="1.0" encoding="UTF-8"?>
         <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
           <amount>#{order.amount}</amount>
-          <message>Captura negada pela operadora</message>
+          <message>Capture denied</message>
           <returnCode>2</returnCode>
           <transactionId>257575054</transactionId>
         </PagadorReturn>
