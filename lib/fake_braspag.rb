@@ -12,6 +12,11 @@ $: << File.dirname(__FILE__)
 require 'models/order'
 require 'models/response_toggler'
 
+connection = Redis.new
+
+Order.connection = connection
+ResponseToggler.connection = connection
+
 module FakeBraspag
   class Application < Sinatra::Base
     post '/webservices/pagador/Pagador.asmx/Authorize' do

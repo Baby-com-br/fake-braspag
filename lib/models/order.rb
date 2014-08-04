@@ -18,13 +18,16 @@ class Order
   # Internal: Represent the quantity of seconds in a day.
   DAY_IN_SECONDS = 24 * 60 * 60
 
-  @@connection = Redis.new
-
   # Public: Returns the connection object.
   #
   # This object can be used to make raw operation on the persistence layer.
   def self.connection
     @@connection
+  end
+
+  # Public: Set the connection object.
+  def self.connection=(connection)
+    @@connection = connection
   end
 
   # Public: Find and return an order with the provided `id`.
