@@ -15,4 +15,9 @@ class ResponseToggler
   def self.disable(namespace)
     connection.set(KEY_PREFIX + namespace, true, ex: 60 * 60)
   end
+
+  # Public: Enable the response for the given `namespace`.
+  def self.enable(namespace)
+    connection.del(KEY_PREFIX + namespace)
+  end
 end
