@@ -131,7 +131,7 @@ describe FakeBraspag::Application do
       end
     end
 
-    context 'when the response is enabled' do
+    context 'when the response is disabled' do
       before do
         ResponseToggler.disable('capture')
       end
