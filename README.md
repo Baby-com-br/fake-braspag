@@ -92,7 +92,7 @@ orderId
 
 **Variants:**
 
-1. Returns a not found response when the order id is not authorized.
+1 - Returns a not found response when the order id is not authorized.
 
 Example of the not found response:
 
@@ -106,7 +106,7 @@ Example of the not found response:
 </PagadorReturn>
 ```
 
-2. Returns a failure response when the feature is disabled.
+2 - Returns a failure response when the feature is disabled.
 
 Example of the failure response:
 
