@@ -65,6 +65,6 @@ RSpec.configure do |config|
   include Rack::Test::Methods
 
   def app
-    described_class
+    FakeBraspag.app
   end
 end

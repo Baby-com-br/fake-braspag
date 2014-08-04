@@ -82,4 +82,15 @@ module FakeBraspag
       end
     end
   end
+
+  # Public: The Fake Braspag Rack application, assembled from one app.
+  #
+  # Returns a memoized Rack application.
+  def self.app
+    @app ||= Rack::Builder.app {
+      map "/" do
+        run FakeBraspag::Application
+      end
+    }
+  end
 end
