@@ -10,6 +10,7 @@ require 'builder'
 $: << File.dirname(__FILE__)
 
 require 'models/order'
+require 'models/response_toggler'
 
 module FakeBraspag
   class Application < Sinatra::Base
