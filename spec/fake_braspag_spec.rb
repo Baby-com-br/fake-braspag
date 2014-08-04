@@ -79,14 +79,15 @@ describe FakeBraspag::Application do
   end
 
   describe 'capture' do
-    it 'renders a success response with the order amount, return code and transaction id' do
-      order = Order.create(order_params)
+    context 'when the response is enabled' do
+      it 'renders a success response with the order amount, return code and transaction id' do
+        order = Order.create(order_params)
 
-      post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => order_params['merchantId'],
-                                                          'orderId' => order_params['orderId'] }
+        post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => order_params['merchantId'],
+                                                            'orderId' => order_params['orderId'] }
 
-      expect(last_response).to be_ok
-      expect(last_response.body).to eq <<-XML.strip_heredoc
+        expect(last_response).to be_ok
+        expect(last_response.body).to eq <<-XML.strip_heredoc
         <?xml version="1.0" encoding="UTF-8"?>
         <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
           <amount>#{order.amount}</amount>
@@ -94,27 +95,27 @@ describe FakeBraspag::Application do
           <returnCode>0</returnCode>
           <transactionId>257575054</transactionId>
         </PagadorReturn>
-      XML
-    end
+        XML
+      end
 
-    it 'marks the order as captured when successful' do
-      order = Order.create(order_params)
+      it 'marks the order as captured when successful' do
+        order = Order.create(order_params)
 
-      post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => order_params['merchantId'],
-                                                          'orderId' => order_params['orderId'] }
+        post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => order_params['merchantId'],
+                                                            'orderId' => order_params['orderId'] }
 
-      expect(last_response).to be_ok
+        expect(last_response).to be_ok
 
-      order = Order.find('783842')
-      expect(order).to be_captured
-    end
+        order = Order.find('783842')
+        expect(order).to be_captured
+      end
 
-    it 'returns a order not found error when the order does not exist' do
-      post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => order_params['merchantId'],
-                                                          'orderId' => order_params['orderId'] }
+      it 'returns a order not found error when the order does not exist' do
+        post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => order_params['merchantId'],
+                                                            'orderId' => order_params['orderId'] }
 
-      expect(last_response).to be_ok
-      expect(last_response.body).to eq <<-XML.strip_heredoc
+        expect(last_response).to be_ok
+        expect(last_response.body).to eq <<-XML.strip_heredoc
         <?xml version="1.0" encoding="UTF-8"?>
         <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
           <amount xsi:nil="true"/>
@@ -122,7 +123,8 @@ describe FakeBraspag::Application do
           <returnCode>1111</returnCode>
           <status xsi:nil="true"/>
         </PagadorReturn>
-      XML
+        XML
+      end
     end
   end
 
