@@ -11,6 +11,7 @@ $: << File.dirname(__FILE__)
 
 require 'models/order'
 require 'models/response_toggler'
+require 'fake_braspag/webservices'
 
 connection = Redis.new
 
@@ -19,49 +20,6 @@ ResponseToggler.connection = connection
 
 module FakeBraspag
   class Application < Sinatra::Base
-    post '/webservices/pagador/Pagador.asmx/Authorize' do
-      order = Order.new params
-
-      begin
-        order.authorize!
-
-        builder :authorize_success, {}, { order: order }
-      rescue Order::AuthorizationFailureError
-        builder :authorize_failure, {}, { order: order }
-      end
-    end
-
-    post '/webservices/pagador/Pagador.asmx/Capture' do
-      order = Order.find(params['orderId'])
-
-      if order
-        if ResponseToggler.enabled?('capture')
-          order.capture!
-          builder :capture_success, {}, { order: order }
-        else
-          builder :capture_failure, {}, { order: order }
-        end
-      else
-        builder :capture_not_available
-      end
-    end
-
-    post '/webservices/pagador/Pagador.asmx/CapturePartial' do
-      order = Order.find(params['orderId'])
-      amount = params['captureAmount']
-
-      if order
-        if ResponseToggler.enabled?('capture_partial')
-          order.capture!(amount)
-          builder :capture_partial_success, {}, { order: order }
-        else
-          builder :capture_partial_failure, {}, { order: order }
-        end
-      else
-        builder :capture_partial_not_found
-      end
-    end
-
     get '/:feature/disable' do
       if ResponseToggler.enabled?(params[:feature])
         ResponseToggler.disable(params[:feature])
@@ -83,12 +41,16 @@ module FakeBraspag
     end
   end
 
-  # Public: The Fake Braspag Rack application, assembled from one app.
+  # Public: The Fake Braspag Rack application, assembled from two apps.
   #
   # Returns a memoized Rack application.
   def self.app
     @app ||= Rack::Builder.app {
-      map "/" do
+      map '/webservices/pagador/Pagador.asmx' do
+        run FakeBraspag::Webservices
+      end
+
+      map '/' do
         run FakeBraspag::Application
       end
     }
