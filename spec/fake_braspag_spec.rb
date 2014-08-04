@@ -236,12 +236,12 @@ describe FakeBraspag::Application do
       expect(ResponseToggler.enabled?('capture')).to be_falsy
     end
 
-    it 'returns unprocessable entity if the capture is already disabled' do
+    it 'returns not modified if the capture is already disabled' do
       ResponseToggler.disable('capture')
 
       get '/capture/disable'
 
-      expect(last_response).to be_unprocessable
+      expect(last_response.status).to eq 304
     end
   end
 
@@ -256,12 +256,12 @@ describe FakeBraspag::Application do
       expect(ResponseToggler.enabled?('capture')).to be_truthy
     end
 
-    it 'returns unprocessable entity if the capture is already enabled' do
+    it 'returns not modified if the capture is already enabled' do
       ResponseToggler.enable('capture')
 
       get '/capture/enable'
 
-      expect(last_response).to be_unprocessable
+      expect(last_response.status).to eq 304
     end
   end
 end

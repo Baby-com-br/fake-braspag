@@ -59,7 +59,7 @@ module FakeBraspag
 
         halt 200
       else
-        halt 422
+        halt 304
       end
     end
 
@@ -69,7 +69,7 @@ module FakeBraspag
 
         halt 200
       else
-        halt 422
+        halt 304
       end
     end
   end
