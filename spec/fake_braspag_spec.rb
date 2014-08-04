@@ -166,4 +166,22 @@ describe FakeBraspag::Application do
       XML
     end
   end
+
+  describe 'disable capture' do
+    it 'disables the capture response' do
+      get '/capture/disable'
+
+      expect(last_response).to be_ok
+
+      expect(ResponseToggler.enabled?('capture')).to be_falsy
+    end
+
+    it 'returns unprocessable entity if the capture is already disabled' do
+      ResponseToggler.disable('capture')
+
+      get '/capture/disable'
+
+      expect(last_response).to be_unprocessable
+    end
+  end
 end

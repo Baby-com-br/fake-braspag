@@ -48,5 +48,13 @@ module FakeBraspag
         builder :capture_partial_not_found
       end
     end
+
+    get '/capture/disable' do
+      if ResponseToggler.enabled?('capture')
+        ResponseToggler.disable('capture')
+      else
+        halt 422
+      end
+    end
   end
 end
