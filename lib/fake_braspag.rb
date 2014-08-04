@@ -52,6 +52,18 @@ module FakeBraspag
     get '/capture/disable' do
       if ResponseToggler.enabled?('capture')
         ResponseToggler.disable('capture')
+
+        halt 200
+      else
+        halt 422
+      end
+    end
+
+    get '/capture/enable' do
+      if !ResponseToggler.enabled?('capture')
+        ResponseToggler.enable('capture')
+
+        halt 200
       else
         halt 422
       end
