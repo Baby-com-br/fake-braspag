@@ -69,7 +69,56 @@ Example of the failure response:
 
 ### Order capture
 
-TODO
+**Endpoint:** `POST /webservices/pagador/Pagador.asmx/Capture`
+
+**Valid parameters:**
+
+```
+merchantId
+orderId
+```
+
+**Example Response:**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+  <amount>10.20</amount>
+  <message>F                 REDE                 @    CONFIRMACAO DE PRE-AUTORIZACAO    @COMPR:257575054    VALOR:        10.20@ESTAB:040187624 DINDA COM BR          @24.07.14-16:27:33 TERM:RO128278/528374@AUTORIZACAO EMISSOR: 642980           @CODIGO PRE-AUTORIZACAO: 52978         @CARTAO: xxxxxxxxxxxx1111              @     RECONHECO E PAGAREI A DIVIDA     @          AQUI REPRESENTADA           @@@     ____________________________     @@</message>
+  <returnCode>0</returnCode>
+  <transactionId>257575054</transactionId>
+</PagadorReturn>
+```
+
+**Variants:**
+
+1. Returns a not found response when the order id is not authorized.
+
+Example of the not found response:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+  <amount xsi:nil="true"/>
+  <message>Transaction not available for capture. Please check the status of this transaction.</message>
+  <returnCode>1111</returnCode>
+  <status xsi:nil="true"/>
+</PagadorReturn>
+```
+
+2. Returns a failure response when the feature is disabled.
+
+Example of the failure response:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+  <amount>10.20</amount>
+  <message>Capture denied</message>
+  <returnCode>2</returnCode>
+  <transactionId>257575054</transactionId>
+</PagadorReturn>
+```
 
 ### Order partial capture
 
