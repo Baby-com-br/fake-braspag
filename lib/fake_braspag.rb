@@ -30,8 +30,12 @@ module FakeBraspag
       order = Order.find(params['orderId'])
 
       if order
-        order.capture!
-        builder :capture_success, {}, { order: order }
+        if ResponseToggler.enabled?('capture')
+          order.capture!
+          builder :capture_success, {}, { order: order }
+        else
+          builder :capture_failure, {}, { order: order }
+        end
       else
         builder :capture_not_available
       end

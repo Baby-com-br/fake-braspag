@@ -80,6 +80,10 @@ describe FakeBraspag::Application do
 
   describe 'capture' do
     context 'when the response is enabled' do
+      before do
+        ResponseToggler.enable('capture')
+      end
+
       it 'renders a success response with the order amount, return code and transaction id' do
         order = Order.create(order_params)
 
@@ -108,6 +112,58 @@ describe FakeBraspag::Application do
 
         order = Order.find('783842')
         expect(order).to be_captured
+      end
+
+      it 'returns a order not found error when the order does not exist' do
+        post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => order_params['merchantId'],
+                                                            'orderId' => order_params['orderId'] }
+
+        expect(last_response).to be_ok
+        expect(last_response.body).to eq <<-XML.strip_heredoc
+        <?xml version="1.0" encoding="UTF-8"?>
+        <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+          <amount xsi:nil="true"/>
+          <message>Transaction not available for capture. Please check the status of this transaction.</message>
+          <returnCode>1111</returnCode>
+          <status xsi:nil="true"/>
+        </PagadorReturn>
+        XML
+      end
+    end
+
+    context 'when the response is enabled' do
+      before do
+        ResponseToggler.disable('capture')
+      end
+
+      it 'renders a failure response with the order amount, return code and transaction id' do
+        order = Order.create(order_params)
+
+        post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => order_params['merchantId'],
+                                                            'orderId' => order_params['orderId'] }
+
+        expect(last_response).to be_ok
+        expect(last_response.body).to eq <<-XML.strip_heredoc
+        <?xml version="1.0" encoding="UTF-8"?>
+        <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+          <amount>#{order.amount}</amount>
+          <message>Captura negada pela operadora</message>
+          <returnCode>2</returnCode>
+          <transactionId>257575054</transactionId>
+        </PagadorReturn>
+        XML
+      end
+
+      it 'does not mark the order as captured when successful' do
+        order = Order.create(order_params)
+
+        post '/webservices/pagador/Pagador.asmx/Capture', { 'merchantId' => order_params['merchantId'],
+                                                            'orderId' => order_params['orderId'] }
+
+        expect(last_response).to be_ok
+
+        order = Order.find('783842')
+        expect(order).not_to be_captured
       end
 
       it 'returns a order not found error when the order does not exist' do
