@@ -1,3 +1,4 @@
+# Public: Class responsible to determine if a response will be successful.
 class ResponseToggler
   # Internal: The redis key prefix used to store the orders.
   KEY_PREFIX = 'fake-braspag.disabled_response.'
