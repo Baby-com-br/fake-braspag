@@ -10,6 +10,12 @@ require 'builder'
 $: << File.dirname(__FILE__)
 
 require 'models/order'
+require 'models/response_toggler'
+
+connection = Redis.new
+
+Order.connection = connection
+ResponseToggler.connection = connection
 
 module FakeBraspag
   class Application < Sinatra::Base
@@ -29,8 +35,12 @@ module FakeBraspag
       order = Order.find(params['orderId'])
 
       if order
-        order.capture!
-        builder :capture_success, {}, { order: order }
+        if ResponseToggler.enabled?('capture')
+          order.capture!
+          builder :capture_success, {}, { order: order }
+        else
+          builder :capture_failure, {}, { order: order }
+        end
       else
         builder :capture_not_available
       end
@@ -45,6 +55,26 @@ module FakeBraspag
         builder :capture_partial_success, {}, { order: order }
       else
         builder :capture_partial_not_found
+      end
+    end
+
+    get '/capture/disable' do
+      if ResponseToggler.enabled?('capture')
+        ResponseToggler.disable('capture')
+
+        halt 200
+      else
+        halt 304
+      end
+    end
+
+    get '/capture/enable' do
+      if !ResponseToggler.enabled?('capture')
+        ResponseToggler.enable('capture')
+
+        halt 200
+      else
+        halt 304
       end
     end
   end
