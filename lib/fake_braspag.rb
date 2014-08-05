@@ -51,16 +51,20 @@ module FakeBraspag
       amount = params['captureAmount']
 
       if order
-        order.capture!(amount)
-        builder :capture_partial_success, {}, { order: order }
+        if ResponseToggler.enabled?('capture_partial')
+          order.capture!(amount)
+          builder :capture_partial_success, {}, { order: order }
+        else
+          builder :capture_partial_failure, {}, { order: order }
+        end
       else
         builder :capture_partial_not_found
       end
     end
 
-    get '/capture/disable' do
-      if ResponseToggler.enabled?('capture')
-        ResponseToggler.disable('capture')
+    get '/:feature/disable' do
+      if ResponseToggler.enabled?(params[:feature])
+        ResponseToggler.disable(params[:feature])
 
         halt 200
       else
@@ -68,9 +72,9 @@ module FakeBraspag
       end
     end
 
-    get '/capture/enable' do
-      if !ResponseToggler.enabled?('capture')
-        ResponseToggler.enable('capture')
+    get '/:feature/enable' do
+      if !ResponseToggler.enabled?(params[:feature])
+        ResponseToggler.enable(params[:feature])
 
         halt 200
       else

@@ -185,43 +185,122 @@ describe FakeBraspag::Application do
   end
 
   describe 'partial capture' do
-    it 'renders a successful response with the captured amount and the transaction status' do
-      Order.create(order_params)
-      amount = '12,34'
+    context 'when the response is enabled' do
+      before do
+        ResponseToggler.enable('capture_partial')
+      end
 
-      post '/webservices/pagador/Pagador.asmx/CapturePartial', { 'merchantId' => order_params['merchantId'],
-                                                                 'orderId' => order_params['orderId'],
-                                                                 'captureAmount' => amount }
+      it 'renders a successful response with the captured amount and the transaction status' do
+        order = Order.create(order_params)
+        amount = '12,34'
 
-      expect(last_response).to be_ok
-      expect(last_response.body).to eq <<-XML.strip_heredoc
-        <?xml version="1.0" encoding="UTF-8"?>
-        <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
-          <amount>12.34</amount>
-          <message>F                 REDE                 @    CONFIRMACAO DE PRE-AUTORIZACAO    @COMPR:247524362    VALOR:       12,34@                NUM. PARCELA:      01@ESTAB:040187624 DINDA COM BR          @24.07.14-16:38:47 TERM:RO128278/531425@AUTORIZACAO EMISSOR: 214111           @CODIGO PRE-AUTORIZACAO: 14111         @CARTAO: xxxxxxxxxxxx1111              @     RECONHECO E PAGAREI A DIVIDA     @          AQUI REPRESENTADA           @@@     ____________________________     @@</message>
-          <returnCode>0</returnCode>
-          <status>0</status>
-        </PagadorReturn>
-      XML
+        post '/webservices/pagador/Pagador.asmx/CapturePartial', { 'merchantId' => order_params['merchantId'],
+                                                                   'orderId' => order_params['orderId'],
+                                                                   'captureAmount' => amount }
+
+        expect(last_response).to be_ok
+        expect(last_response.body).to eq <<-XML.strip_heredoc
+          <?xml version="1.0" encoding="UTF-8"?>
+          <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+            <amount>12.34</amount>
+            <message>F                 REDE                 @    CONFIRMACAO DE PRE-AUTORIZACAO    @COMPR:247524362    VALOR:       12,34@                NUM. PARCELA:      01@ESTAB:040187624 DINDA COM BR          @24.07.14-16:38:47 TERM:RO128278/531425@AUTORIZACAO EMISSOR: 214111           @CODIGO PRE-AUTORIZACAO: 14111         @CARTAO: xxxxxxxxxxxx1111              @     RECONHECO E PAGAREI A DIVIDA     @          AQUI REPRESENTADA           @@@     ____________________________     @@</message>
+            <returnCode>0</returnCode>
+            <status>0</status>
+          </PagadorReturn>
+        XML
+      end
+
+      it 'marks the order as captured when successful' do
+        order = Order.create(order_params)
+        amount = '12,34'
+
+        post '/webservices/pagador/Pagador.asmx/CapturePartial', { 'merchantId' => order_params['merchantId'],
+                                                                   'orderId' => order_params['orderId'],
+                                                                   'captureAmount' => amount }
+
+        expect(last_response).to be_ok
+
+        order = Order.find('783842')
+        expect(order).to be_captured
+      end
+
+      it 'returns a transaction not found error when the order does not exist' do
+        amount = '12,34'
+
+        post '/webservices/pagador/Pagador.asmx/CapturePartial', { 'merchantId' => order_params['merchantId'],
+                                                                   'orderId' => order_params['orderId'],
+                                                                   'captureAmount' => amount }
+
+        expect(last_response).to be_ok
+        expect(last_response.body).to eq <<-XML.strip_heredoc
+          <?xml version="1.0" encoding="UTF-8"?>
+          <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+            <amount xsi:nil="true"/>
+            <message>Transaction specified was not found in the database</message>
+            <returnCode>1003</returnCode>
+            <status xsi:nil="true"/>
+          </PagadorReturn>
+        XML
+      end
     end
 
-    it 'returns a transaction not found error when the order does not exist' do
-      amount = '12,34'
+    context 'when the response is disabled' do
+      before do
+        ResponseToggler.disable('capture_partial')
+      end
 
-      post '/webservices/pagador/Pagador.asmx/CapturePartial', { 'merchantId' => order_params['merchantId'],
-                                                                 'orderId' => order_params['orderId'],
-                                                                 'captureAmount' => amount }
+      it 'renders a failure response with the order amount, return code and transaction id' do
+        order = Order.create(order_params)
+        amount = '12,34'
 
-      expect(last_response).to be_ok
-      expect(last_response.body).to eq <<-XML.strip_heredoc
+        post '/webservices/pagador/Pagador.asmx/CapturePartial', { 'merchantId' => order_params['merchantId'],
+                                                                   'orderId' => order_params['orderId'],
+                                                                   'captureAmount' => amount }
+
+        expect(last_response).to be_ok
+        expect(last_response.body).to eq <<-XML.strip_heredoc
         <?xml version="1.0" encoding="UTF-8"?>
         <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
-          <amount xsi:nil="true"/>
-          <message>Transaction specified was not found in the database</message>
-          <returnCode>1003</returnCode>
-          <status xsi:nil="true"/>
+          <amount>#{order.amount}</amount>
+          <message>Capture partial denied</message>
+          <returnCode>2</returnCode>
+          <transactionId>257575054</transactionId>
         </PagadorReturn>
-      XML
+        XML
+      end
+
+      it 'does not mark the order as captured when successful' do
+        order = Order.create(order_params)
+        amount = '12,34'
+
+        post '/webservices/pagador/Pagador.asmx/CapturePartial', { 'merchantId' => order_params['merchantId'],
+                                                                   'orderId' => order_params['orderId'],
+                                                                   'captureAmount' => amount }
+
+        expect(last_response).to be_ok
+
+        order = Order.find('783842')
+        expect(order).not_to be_captured
+      end
+
+      it 'returns a transaction not found error when the order does not exist' do
+        amount = '12,34'
+
+        post '/webservices/pagador/Pagador.asmx/CapturePartial', { 'merchantId' => order_params['merchantId'],
+                                                                   'orderId' => order_params['orderId'],
+                                                                   'captureAmount' => amount }
+
+        expect(last_response).to be_ok
+        expect(last_response.body).to eq <<-XML.strip_heredoc
+          <?xml version="1.0" encoding="UTF-8"?>
+          <PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+            <amount xsi:nil="true"/>
+            <message>Transaction specified was not found in the database</message>
+            <returnCode>1003</returnCode>
+            <status xsi:nil="true"/>
+          </PagadorReturn>
+        XML
+      end
     end
   end
 
@@ -260,6 +339,46 @@ describe FakeBraspag::Application do
       ResponseToggler.enable('capture')
 
       get '/capture/enable'
+
+      expect(last_response.status).to eq 304
+    end
+  end
+
+  describe 'disable partial capture' do
+    it 'disables the partial capture response' do
+      ResponseToggler.enable('capture_partial')
+
+      get '/capture_partial/disable'
+
+      expect(last_response).to be_ok
+
+      expect(ResponseToggler.enabled?('capture_partial')).to be_falsy
+    end
+
+    it 'returns not modified if the partial capture is already disabled' do
+      ResponseToggler.disable('capture_partial')
+
+      get '/capture_partial/disable'
+
+      expect(last_response.status).to eq 304
+    end
+  end
+
+  describe 'enable partial capture' do
+    it 'enables the partial capture response' do
+      ResponseToggler.disable('capture_partial')
+
+      get '/capture_partial/enable'
+
+      expect(last_response).to be_ok
+
+      expect(ResponseToggler.enabled?('capture_partial')).to be_truthy
+    end
+
+    it 'returns not modified if the partial capture is already enabled' do
+      ResponseToggler.enable('capture_partial')
+
+      get '/capture_partial/enable'
 
       expect(last_response.status).to eq 304
     end
