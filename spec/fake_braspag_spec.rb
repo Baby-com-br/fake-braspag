@@ -343,4 +343,44 @@ describe FakeBraspag::Application do
       expect(last_response.status).to eq 304
     end
   end
+
+  describe 'disable partial capture' do
+    it 'disables the partial capture response' do
+      ResponseToggler.enable('capture_partial')
+
+      get '/capture_partial/disable'
+
+      expect(last_response).to be_ok
+
+      expect(ResponseToggler.enabled?('capture_partial')).to be_falsy
+    end
+
+    it 'returns not modified if the partial capture is already disabled' do
+      ResponseToggler.disable('capture_partial')
+
+      get '/capture_partial/disable'
+
+      expect(last_response.status).to eq 304
+    end
+  end
+
+  describe 'enable partial capture' do
+    it 'enables the partial capture response' do
+      ResponseToggler.disable('capture_partial')
+
+      get '/capture_partial/enable'
+
+      expect(last_response).to be_ok
+
+      expect(ResponseToggler.enabled?('capture_partial')).to be_truthy
+    end
+
+    it 'returns not modified if the partial capture is already enabled' do
+      ResponseToggler.enable('capture_partial')
+
+      get '/capture_partial/enable'
+
+      expect(last_response.status).to eq 304
+    end
+  end
 end

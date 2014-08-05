@@ -81,5 +81,25 @@ module FakeBraspag
         halt 304
       end
     end
+
+    get '/capture_partial/disable' do
+      if ResponseToggler.enabled?('capture_partial')
+        ResponseToggler.disable('capture_partial')
+
+        halt 200
+      else
+        halt 304
+      end
+    end
+
+    get '/capture_partial/enable' do
+      if !ResponseToggler.enabled?('capture_partial')
+        ResponseToggler.enable('capture_partial')
+
+        halt 200
+      else
+        halt 304
+      end
+    end
   end
 end
