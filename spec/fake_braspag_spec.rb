@@ -187,7 +187,7 @@ describe FakeBraspag::Application do
   describe 'partial capture' do
     context 'when the response is enabled' do
       before do
-        ResponseToggler.enable('capture')
+        ResponseToggler.enable('capture_partial')
       end
 
       it 'renders a successful response with the captured amount and the transaction status' do
@@ -246,7 +246,7 @@ describe FakeBraspag::Application do
 
     context 'when the response is disabled' do
       before do
-        ResponseToggler.disable('capture')
+        ResponseToggler.disable('capture_partial')
       end
 
       it 'renders a failure response with the order amount, return code and transaction id' do

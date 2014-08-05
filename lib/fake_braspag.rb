@@ -51,7 +51,7 @@ module FakeBraspag
       amount = params['captureAmount']
 
       if order
-        if ResponseToggler.enabled?('capture')
+        if ResponseToggler.enabled?('capture_partial')
           order.capture!(amount)
           builder :capture_partial_success, {}, { order: order }
         else
