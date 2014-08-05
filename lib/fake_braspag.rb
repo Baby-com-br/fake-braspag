@@ -62,9 +62,9 @@ module FakeBraspag
       end
     end
 
-    get '/capture/disable' do
-      if ResponseToggler.enabled?('capture')
-        ResponseToggler.disable('capture')
+    get '/:feature/disable' do
+      if ResponseToggler.enabled?(params[:feature])
+        ResponseToggler.disable(params[:feature])
 
         halt 200
       else
@@ -72,29 +72,9 @@ module FakeBraspag
       end
     end
 
-    get '/capture/enable' do
-      if !ResponseToggler.enabled?('capture')
-        ResponseToggler.enable('capture')
-
-        halt 200
-      else
-        halt 304
-      end
-    end
-
-    get '/capture_partial/disable' do
-      if ResponseToggler.enabled?('capture_partial')
-        ResponseToggler.disable('capture_partial')
-
-        halt 200
-      else
-        halt 304
-      end
-    end
-
-    get '/capture_partial/enable' do
-      if !ResponseToggler.enabled?('capture_partial')
-        ResponseToggler.enable('capture_partial')
+    get '/:feature/enable' do
+      if !ResponseToggler.enabled?(params[:feature])
+        ResponseToggler.enable(params[:feature])
 
         halt 200
       else
