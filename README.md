@@ -122,7 +122,57 @@ Example of the failure response:
 
 ### Order partial capture
 
-TODO
+**Endpoint:** `POST /webservices/pagador/Pagador.asmx/CapturePartial`
+
+**Valid parameters:**
+
+```
+merchantId
+orderId
+captureAmount
+```
+
+**Example Response:**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+  <amount>12.34</amount>
+  <message>F                 REDE                 @    CONFIRMACAO DE PRE-AUTORIZACAO    @COMPR:247524362    VALOR:       12,34@                NUM. PARCELA:      01@ESTAB:040187624 DINDA COM BR          @24.07.14-16:38:47 TERM:RO128278/531425@AUTORIZACAO EMISSOR: 214111           @CODIGO PRE-AUTORIZACAO: 14111         @CARTAO: xxxxxxxxxxxx1111              @     RECONHECO E PAGAREI A DIVIDA     @          AQUI REPRESENTADA           @@@     ____________________________     @@</message>
+  <returnCode>0</returnCode>
+  <status>0</status>
+</PagadorReturn>
+```
+
+**Variants:**
+
+1 - Returns a not found response when the order id is not authorized.
+
+Example of the not found response:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+  <amount xsi:nil="true"/>
+  <message>Transaction specified was not found in the database</message>
+  <returnCode>1003</returnCode>
+  <status xsi:nil="true"/>
+</PagadorReturn>
+```
+
+2 - Returns a failure response when the feature is disabled.
+
+Example of the failure response:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<PagadorReturn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="https://www.pagador.com.br/webservice/pagador">
+  <amount>12,34</amount>
+  <message>Capture partial denied</message>
+  <returnCode>2</returnCode>
+  <transactionId>257575054</transactionId>
+</PagadorReturn>
+```
 
 ## Toggles endpoint
 
