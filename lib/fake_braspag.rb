@@ -11,6 +11,8 @@ $: << File.dirname(__FILE__)
 
 require 'models/order'
 require 'models/response_toggler'
+require 'fake_braspag/webservices'
+require 'fake_braspag/toggler'
 
 connection = Redis.new
 
@@ -18,68 +20,18 @@ Order.connection = connection
 ResponseToggler.connection = connection
 
 module FakeBraspag
-  class Application < Sinatra::Base
-    post '/webservices/pagador/Pagador.asmx/Authorize' do
-      order = Order.new params
-
-      begin
-        order.authorize!
-
-        builder :authorize_success, {}, { order: order }
-      rescue Order::AuthorizationFailureError
-        builder :authorize_failure, {}, { order: order }
+  # Public: The Fake Braspag Rack application, assembled from two apps.
+  #
+  # Returns a memoized Rack application.
+  def self.app
+    @app ||= Rack::Builder.app {
+      map '/webservices/pagador/Pagador.asmx' do
+        run FakeBraspag::Webservices
       end
-    end
 
-    post '/webservices/pagador/Pagador.asmx/Capture' do
-      order = Order.find(params['orderId'])
-
-      if order
-        if ResponseToggler.enabled?('capture')
-          order.capture!
-          builder :capture_success, {}, { order: order }
-        else
-          builder :capture_failure, {}, { order: order }
-        end
-      else
-        builder :capture_not_available
+      map '/' do
+        run FakeBraspag::Toggler
       end
-    end
-
-    post '/webservices/pagador/Pagador.asmx/CapturePartial' do
-      order = Order.find(params['orderId'])
-      amount = params['captureAmount']
-
-      if order
-        if ResponseToggler.enabled?('capture_partial')
-          order.capture!(amount)
-          builder :capture_partial_success, {}, { order: order }
-        else
-          builder :capture_partial_failure, {}, { order: order }
-        end
-      else
-        builder :capture_partial_not_found
-      end
-    end
-
-    get '/:feature/disable' do
-      if ResponseToggler.enabled?(params[:feature])
-        ResponseToggler.disable(params[:feature])
-
-        halt 200
-      else
-        halt 304
-      end
-    end
-
-    get '/:feature/enable' do
-      if !ResponseToggler.enabled?(params[:feature])
-        ResponseToggler.enable(params[:feature])
-
-        halt 200
-      else
-        halt 304
-      end
-    end
+    }
   end
 end

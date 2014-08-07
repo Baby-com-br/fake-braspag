@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'active_support/core_ext/string/strip'
 
-describe FakeBraspag::Application do
+describe FakeBraspag do
   before do
     Order.connection.flushdb
   end
