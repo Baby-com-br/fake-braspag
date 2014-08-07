@@ -96,11 +96,11 @@ class Order
   # Public: Initialize a Order.
   #
   # attributes - a Hash with the order attributes.
-  def initialize(attributes, persisted: false)
+  def initialize(attributes, options = {})
     attributes['amount'] = normalize_amount(attributes['amount'])
 
     @attributes = attributes
-    @persisted = persisted
+    @persisted = options.fetch(:persisted, false)
   end
 
   # Public: Saves the object on the persistence layer.
