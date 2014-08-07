@@ -135,11 +135,19 @@ capture.
 
 Changes the response of the capture operation to be a failure response.
 
+#### `GET /capture_partial/disable`
+
+Changes the response of the partial capture operation to be a failure response.
+
 ### Enabling features
 
 #### `GET /capture/enable`
 
 Changes the response of the capture operation to be a successful response.
+
+#### `GET /capture_partial/enable`
+
+Changes the response of the partial capture operation to be a successful response.
 
 ## Development
 
