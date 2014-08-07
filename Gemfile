@@ -1,32 +1,9 @@
 source 'http://rubygems.org'
 
-gem "rake"
-gem "nokogiri"
-gem "rack", "1.2.3"
-gem "sinatra"
-gem "unicorn"
-gem "rbraspag"
-gem "settingslogic", "2.0.6"
-gem "cs-httpi", "0.9.5.2"
-gem "yajl-ruby"
-gem "redis"
-
+gemspec
 
 group :test, :development do
-  gem "pry"
-  gem "pry-doc"
-  gem "rspec" 
-  gem 'rack-test', :require => "rack/test"
-  gem "guard-rspec"
+  gem 'rspec', '~> 3.0.0'
 end
 
-group :test do
-  gem "fakeredis", :require => "fakeredis/rspec"
-  if RUBY_PLATFORM =~ /darwin/i
-    gem "growl"
-    gem 'rb-fsevent', :require => false
-  elsif RUBY_PLATFORM =~ /linux/i
-    gem "libnotify"
-    gem "rb-inotify"
-  end
-end
+gem 'rack-test', group: :test

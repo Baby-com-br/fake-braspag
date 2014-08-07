@@ -2,51 +2,36 @@ require "bundler/setup"
 
 ENV["RACK_ENV"] ||= "development"
 
-Bundler.require 
+Bundler.setup
+
+require 'sinatra/base'
+require 'builder'
 
 $: << File.dirname(__FILE__)
 
-require "order"
-require "credit_card"
-require "bill"
-require "eft"
-require "settings"
+require 'models/order'
+require 'models/response_toggler'
+require 'fake_braspag/webservices'
+require 'fake_braspag/toggler'
+
+connection = Redis.new
+
+Order.connection = connection
+ResponseToggler.connection = connection
 
 module FakeBraspag
-  module PaymentType
-    CREDIT_CARD = 1
-    BILL        = 2
-    EFT         = 3
-  end
-    
-  class App < Sinatra::Base
-    private
-    def change_bill_status(status)
-      Order.change_status params[:order_id], status
-    end
+  # Public: The Fake Braspag Rack application, assembled from two apps.
+  #
+  # Returns a memoized Rack application.
+  def self.app
+    @app ||= Rack::Builder.app {
+      map '/webservices/pagador/Pagador.asmx' do
+        run FakeBraspag::Webservices
+      end
 
-    def pay_bill
-      change_bill_status Order::Status::PAID 
-    end
-
-    def cancel_bill
-      change_bill_status Order::Status::CANCELLED
-    end
-    
-    def crypt_value
-      Braspag::Crypto::JarWebservice.encrypt({
-        :VENDAID => params[:order_id]
-      })
-    end
-    
-    configure do
-      set :root, File.dirname(__FILE__)
-      set :views, settings.root + '/templates'
-      set :show_expections, false
-      register Order
-      register CreditCard
-      register Bill
-      register Eft
-    end
+      map '/' do
+        run FakeBraspag::Toggler
+      end
+    }
   end
 end
