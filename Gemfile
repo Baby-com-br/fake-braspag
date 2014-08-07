@@ -1,7 +1,5 @@
 source 'http://rubygems.org'
 
-ruby '2.1.2'
-
 gem 'sinatra', '~> 1.4.5'
 gem 'builder', '~> 3.2'
 gem 'redis', '~> 3.1'
