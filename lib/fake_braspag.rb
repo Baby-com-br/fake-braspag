@@ -36,16 +36,16 @@ module FakeBraspag
   # Raises an Error when required settings are missing.
   # Returns nothing.
   def self.setup(settings)
-    @env = settings["RACK_ENV"]
+    @env = settings['RACK_ENV']
 
     if @env.blank?
-      raise Error, "RACK_ENV is required"
+      raise Error, 'RACK_ENV is required'
     end
 
     required_settings.each do |setting|
       next if settings[setting].present?
 
-      if @env == "production"
+      if @env == 'production' || @env == 'deployment'
         raise Error, "#{setting} setting is required"
       end
     end
@@ -78,8 +78,8 @@ module FakeBraspag
       end
 
       map '/' do
-        if FakeBraspag.env == 'production'
-          puts "Auth enabled"
+        if FakeBraspag.env == 'production' || FakeBraspag.env == 'deployment'
+          puts 'Auth enabled'
 
           use Rack::Auth::Basic do |username, password|
             username == FakeBraspag::Toggler.username &&
