@@ -15,5 +15,6 @@ xml.PagadorReturn 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
     "          AQUI REPRESENTADA           @@@" +
     "     ____________________________     @@"
   xml.returnCode 0
+  xml.status 0
   xml.transactionId 257575054
 end
