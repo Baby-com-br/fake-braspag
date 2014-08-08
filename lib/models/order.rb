@@ -1,6 +1,5 @@
 require 'redis'
 require 'json'
-require 'active_support'
 require 'active_support/core_ext/string/inflections'
 
 # Public: Class responsible to make operations upon an order.
