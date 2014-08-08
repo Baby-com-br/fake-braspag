@@ -79,6 +79,8 @@ module FakeBraspag
 
       map '/' do
         if FakeBraspag.env == 'production'
+          puts "Auth enabled"
+
           use Rack::Auth::Basic do |username, password|
             username == FakeBraspag::Toggler.username &&
               password == FakeBraspag::Toggler.password
