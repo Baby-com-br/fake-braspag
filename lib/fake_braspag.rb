@@ -14,6 +14,7 @@ $: << File.dirname(__FILE__)
 require 'models/order'
 require 'models/response_toggler'
 require 'fake_braspag/payments'
+require 'fake_braspag/credit_cards'
 require 'fake_braspag/toggler'
 
 connection = Redis.new
@@ -54,6 +55,9 @@ module FakeBraspag
       username: settings['FAKE_BRASPAG_TOGGLER_USERNAME'],
       password: settings['FAKE_BRASPAG_TOGGLER_PASSWORD']
     )
+
+    protected_card_url = settings['protected_card_url'] || 'http://localhost:9292/FakeCreditCard'
+    FakeBraspag::CreditCards.set(:wsdl_url, "#{protected_card_url}/CartaoProtegido.asmx")
   end
 
   # Internal: The application environment.
@@ -75,6 +79,10 @@ module FakeBraspag
     @app ||= Rack::Builder.app {
       map '/webservices/pagador/Pagador.asmx' do
         run FakeBraspag::Payments
+      end
+
+      map '/FakeCreditCard' do
+        run FakeBraspag::CreditCards
       end
 
       map '/' do
