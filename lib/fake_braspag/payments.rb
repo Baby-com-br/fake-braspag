@@ -1,5 +1,5 @@
 module FakeBraspag
-  class Webservices < Sinatra::Base
+  class Payments < Sinatra::Base
     post '/Authorize' do
       order = Order.new params
 

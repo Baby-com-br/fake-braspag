@@ -13,7 +13,7 @@ $: << File.dirname(__FILE__)
 
 require 'models/order'
 require 'models/response_toggler'
-require 'fake_braspag/webservices'
+require 'fake_braspag/payments'
 require 'fake_braspag/toggler'
 
 connection = Redis.new
@@ -74,7 +74,7 @@ module FakeBraspag
   def self.app
     @app ||= Rack::Builder.app {
       map '/webservices/pagador/Pagador.asmx' do
-        run FakeBraspag::Webservices
+        run FakeBraspag::Payments
       end
 
       map '/' do
