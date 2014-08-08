@@ -8,7 +8,7 @@ xml.PagadorReturn 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
     "    CONFIRMACAO DE PRE-AUTORIZACAO    @" +
     "COMPR:247524362    VALOR:       #{params['captureAmount']}@" +
     "                NUM. PARCELA:      01@" +
-    "ESTAB:040187624 DINDA COM BR          @" +
+    "ESTAB:040187624 FAKE BRASPAG          @" +
     "24.07.14-16:38:47 TERM:RO128278/531425@" +
     "AUTORIZACAO EMISSOR: 214111           @" +
     "CODIGO PRE-AUTORIZACAO: 14111         @" +
