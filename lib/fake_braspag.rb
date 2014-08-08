@@ -6,6 +6,8 @@ Bundler.setup
 
 require 'sinatra/base'
 require 'builder'
+require 'active_support'
+require 'active_support/core_ext/object/blank'
 
 $: << File.dirname(__FILE__)
 
@@ -36,7 +38,7 @@ module FakeBraspag
   def self.setup(settings)
     @env = settings["RACK_ENV"]
 
-    if @env.nil? || @env.empty?
+    if @env.blank?
       raise Error, "RACK_ENV is required"
     end
 
