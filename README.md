@@ -86,6 +86,7 @@ orderId
   <amount>10.20</amount>
   <message>F                 REDE                 @    CONFIRMACAO DE PRE-AUTORIZACAO    @COMPR:257575054    VALOR:        10.20@ESTAB:040187624 DINDA COM BR          @24.07.14-16:27:33 TERM:RO128278/528374@AUTORIZACAO EMISSOR: 642980           @CODIGO PRE-AUTORIZACAO: 52978         @CARTAO: xxxxxxxxxxxx1111              @     RECONHECO E PAGAREI A DIVIDA     @          AQUI REPRESENTADA           @@@     ____________________________     @@</message>
   <returnCode>0</returnCode>
+  <status>0</status>
   <transactionId>257575054</transactionId>
 </PagadorReturn>
 ```
@@ -116,6 +117,7 @@ Example of the failure response:
   <amount>10.20</amount>
   <message>Capture denied</message>
   <returnCode>2</returnCode>
+  <status>2</status>
   <transactionId>257575054</transactionId>
 </PagadorReturn>
 ```
@@ -170,6 +172,7 @@ Example of the failure response:
   <amount>12,34</amount>
   <message>Capture partial denied</message>
   <returnCode>2</returnCode>
+  <status>2</status>
   <transactionId>257575054</transactionId>
 </PagadorReturn>
 ```

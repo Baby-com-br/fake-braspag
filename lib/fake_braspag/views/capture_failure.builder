@@ -5,5 +5,6 @@ xml.PagadorReturn 'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
   xml.amount order.amount
   xml.message 'Capture denied'
   xml.returnCode 2
+  xml.status 2
   xml.transactionId 257575054
 end
