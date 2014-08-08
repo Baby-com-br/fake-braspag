@@ -43,7 +43,7 @@ module FakeBraspag
     end
 
     required_settings.each do |setting|
-      next if !settings[setting].nil? && !settings[setting].empty?
+      next if settings[setting].present?
 
       if @env == "production"
         raise Error, "#{setting} setting is required"
