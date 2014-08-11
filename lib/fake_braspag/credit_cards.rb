@@ -11,7 +11,10 @@ module FakeBraspag
         if card.valid?
           builder :save_credit_card_success, locals: { card: card }
         else
-          # TODO
+          builder :save_credit_card_failure, locals: {
+            error_code: 732,
+            error_message: 'SaveCreditCardRequestId can not be null'
+          }
         end
       when 'JustClickShop'
         # TODO
