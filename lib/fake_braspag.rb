@@ -12,6 +12,7 @@ require 'active_support/core_ext/object/blank'
 $: << File.dirname(__FILE__)
 
 require 'models/order'
+require 'models/credit_card'
 require 'models/response_toggler'
 require 'fake_braspag/payments'
 require 'fake_braspag/credit_cards'
