@@ -66,7 +66,7 @@ module FakeBraspag
     def just_click_shop(authorization_params)
       card = FakeBraspag::CreditCard.new(authorization_params)
 
-      if card.just_click_shop
+      if card.just_click_shop && ResponseToggler.enabled?('just_click_shop')
         builder :just_click_shop_success, locals: { card: card }
       else
         builder :just_click_shop_failure, locals: {

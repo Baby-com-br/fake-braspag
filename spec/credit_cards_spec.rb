@@ -161,105 +161,172 @@ describe FakeBraspag::CreditCards do
   end
 
   describe 'JustClickShop' do
-    it 'renders a successful response' do
-      request_id = 'bf4616ea-448a-4a15-9590-ce1163f3ad50'
-      just_click_key = '370a5342-c97a-4e55-8157-95c23fe18d03'
-      amount = 1234
+    context 'when the response is enabled' do
+      before do
+        allow(ResponseToggler).to receive(:enabled?).with('just_click_shop').and_return(true)
+      end
 
-      post 'FakeCreditCard/CartaoProtegido.asmx', <<-XML.strip_heredoc
-        <?xml version="1.0" encoding="UTF-8"?>
-        <env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.cartaoprotegido.com.br/WebService/" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
-          <env:Body>
-            <tns:JustClickShop>
-              <tns:justClickShopRequestWS>
-                <tns:RequestId>{#{request_id.upcase}}</tns:RequestId>
-                <tns:MerchantKey>{84BE7E7F-698A-6C74-F820-AE359C2A07C2}</tns:MerchantKey>
-                <tns:CustomerName>John</tns:CustomerName>
-                <tns:OrderId>123456</tns:OrderId>
-                <tns:Amount>#{amount}</tns:Amount>
-                <tns:PaymentMethod>997</tns:PaymentMethod>
-                <tns:NumberInstallments>1</tns:NumberInstallments>
-                <tns:PaymentType>0</tns:PaymentType>
-                <tns:JustClickKey>{#{just_click_key.upcase}}</tns:JustClickKey>
-                <tns:SecurityCode>123</tns:SecurityCode>
-              </tns:justClickShopRequestWS>
-            </tns:JustClickShop>
-          </env:Body>
-        </env:Envelope>
-      XML
+      it 'renders a successful response' do
+        request_id = 'bf4616ea-448a-4a15-9590-ce1163f3ad50'
+        just_click_key = '370a5342-c97a-4e55-8157-95c23fe18d03'
+        amount = 1234
 
-      expect(last_response).to be_ok
+        post 'FakeCreditCard/CartaoProtegido.asmx', <<-XML.strip_heredoc
+          <?xml version="1.0" encoding="UTF-8"?>
+          <env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.cartaoprotegido.com.br/WebService/" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
+            <env:Body>
+              <tns:JustClickShop>
+                <tns:justClickShopRequestWS>
+                  <tns:RequestId>{#{request_id.upcase}}</tns:RequestId>
+                  <tns:MerchantKey>{84BE7E7F-698A-6C74-F820-AE359C2A07C2}</tns:MerchantKey>
+                  <tns:CustomerName>John</tns:CustomerName>
+                  <tns:OrderId>123456</tns:OrderId>
+                  <tns:Amount>#{amount}</tns:Amount>
+                  <tns:PaymentMethod>997</tns:PaymentMethod>
+                  <tns:NumberInstallments>1</tns:NumberInstallments>
+                  <tns:PaymentType>0</tns:PaymentType>
+                  <tns:JustClickKey>{#{just_click_key.upcase}}</tns:JustClickKey>
+                  <tns:SecurityCode>123</tns:SecurityCode>
+                </tns:justClickShopRequestWS>
+              </tns:JustClickShop>
+            </env:Body>
+          </env:Envelope>
+        XML
 
-      expect(last_response.body).to eq <<-XML.strip_heredoc
-        <?xml version="1.0" encoding="UTF-8"?>
-        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-          <soap:Body>
-            <JustClickShopResponse xmlns="http://www.cartaoprotegido.com.br/WebService/">
-              <JustClickShopResult>
-                <Success>true</Success>
-                <CorrelationId>#{request_id}</CorrelationId>
-                <AquirerTransactionId>1234567890</AquirerTransactionId>
-                <Amount>#{amount}</Amount>
-                <AuthorizationCode>???</AuthorizationCode>
-                <Status>???</Status>
-                <ReturnCode>???</ReturnCode>
-                <ReturnMessage>???</ReturnMessage>
-              </JustClickShopResult>
-            </JustClickShopResponse>
-          </soap:Body>
-        </soap:Envelope>
-      XML
+        expect(last_response).to be_ok
+
+        expect(last_response.body).to eq <<-XML.strip_heredoc
+          <?xml version="1.0" encoding="UTF-8"?>
+          <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <soap:Body>
+              <JustClickShopResponse xmlns="http://www.cartaoprotegido.com.br/WebService/">
+                <JustClickShopResult>
+                  <Success>true</Success>
+                  <CorrelationId>#{request_id}</CorrelationId>
+                  <AquirerTransactionId>1234567890</AquirerTransactionId>
+                  <Amount>#{amount}</Amount>
+                  <AuthorizationCode>???</AuthorizationCode>
+                  <Status>???</Status>
+                  <ReturnCode>???</ReturnCode>
+                  <ReturnMessage>???</ReturnMessage>
+                </JustClickShopResult>
+              </JustClickShopResponse>
+            </soap:Body>
+          </soap:Envelope>
+        XML
+      end
+
+      it 'renders a failure response when no RequestId is provided' do
+        post 'FakeCreditCard/CartaoProtegido.asmx', <<-XML.strip_heredoc
+          <?xml version="1.0" encoding="UTF-8"?>
+          <env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.cartaoprotegido.com.br/WebService/" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
+            <env:Body>
+              <tns:JustClickShop>
+                <tns:justClickShopRequestWS>
+                  <tns:RequestId></tns:RequestId>
+                  <tns:MerchantKey></tns:MerchantKey>
+                  <tns:CustomerName></tns:CustomerName>
+                  <tns:OrderId></tns:OrderId>
+                  <tns:Amount></tns:Amount>
+                  <tns:PaymentMethod></tns:PaymentMethod>
+                  <tns:NumberInstallments></tns:NumberInstallments>
+                  <tns:PaymentType></tns:PaymentType>
+                  <tns:JustClickKey></tns:JustClickKey>
+                  <tns:SecurityCode></tns:SecurityCode>
+                </tns:justClickShopRequestWS>
+              </tns:JustClickShop>
+            </env:Body>
+          </env:Envelope>
+        XML
+
+        expect(last_response).to be_ok
+
+        expect(last_response.body).to eq <<-XML.strip_heredoc
+          <?xml version="1.0" encoding="UTF-8"?>
+          <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <soap:Body>
+              <JustClickShopResponse xmlns="http://www.cartaoprotegido.com.br/WebService/">
+                <JustClickShopResult>
+                  <Success>false</Success>
+                  <CorrelationId>00000000-0000-0000-0000-000000000000</CorrelationId>
+                  <AquirerTransactionId>???</AquirerTransactionId>
+                  <Amount>0</Amount>
+                  <Status>???</Status>
+                  <ReturnCode>???</ReturnCode>
+                  <ReturnMessage>???</ReturnMessage>
+                  <ErrorReportCollection>
+                    <ErrorReport>
+                      <ErrorCode>706</ErrorCode>
+                      <ErrorMessage>Card holder can not be null</ErrorMessage>
+                    </ErrorReport>
+                  </ErrorReportCollection>
+                </JustClickShopResult>
+              </JustClickShopResponse>
+            </soap:Body>
+          </soap:Envelope>
+        XML
+      end
     end
 
-    it 'renders a failure response when no RequestId is provided' do
-      post 'FakeCreditCard/CartaoProtegido.asmx', <<-XML.strip_heredoc
-        <?xml version="1.0" encoding="UTF-8"?>
-        <env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.cartaoprotegido.com.br/WebService/" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
-          <env:Body>
-            <tns:JustClickShop>
-              <tns:justClickShopRequestWS>
-                <tns:RequestId></tns:RequestId>
-                <tns:MerchantKey></tns:MerchantKey>
-                <tns:CustomerName></tns:CustomerName>
-                <tns:OrderId></tns:OrderId>
-                <tns:Amount></tns:Amount>
-                <tns:PaymentMethod></tns:PaymentMethod>
-                <tns:NumberInstallments></tns:NumberInstallments>
-                <tns:PaymentType></tns:PaymentType>
-                <tns:JustClickKey></tns:JustClickKey>
-                <tns:SecurityCode></tns:SecurityCode>
-              </tns:justClickShopRequestWS>
-            </tns:JustClickShop>
-          </env:Body>
-        </env:Envelope>
-      XML
+    context 'when the response is disabled' do
+      before do
+        allow(ResponseToggler).to receive(:enabled?).with('just_click_shop').and_return(false)
+      end
 
-      expect(last_response).to be_ok
+      it 'renders a failure response' do
+        request_id = 'bf4616ea-448a-4a15-9590-ce1163f3ad50'
+        just_click_key = '370a5342-c97a-4e55-8157-95c23fe18d03'
+        amount = 1234
 
-      expect(last_response.body).to eq <<-XML.strip_heredoc
-        <?xml version="1.0" encoding="UTF-8"?>
-        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-          <soap:Body>
-            <JustClickShopResponse xmlns="http://www.cartaoprotegido.com.br/WebService/">
-              <JustClickShopResult>
-                <Success>false</Success>
-                <CorrelationId>00000000-0000-0000-0000-000000000000</CorrelationId>
-                <AquirerTransactionId>???</AquirerTransactionId>
-                <Amount>0</Amount>
-                <Status>???</Status>
-                <ReturnCode>???</ReturnCode>
-                <ReturnMessage>???</ReturnMessage>
-                <ErrorReportCollection>
-                  <ErrorReport>
-                    <ErrorCode>706</ErrorCode>
-                    <ErrorMessage>Card holder can not be null</ErrorMessage>
-                  </ErrorReport>
-                </ErrorReportCollection>
-              </JustClickShopResult>
-            </JustClickShopResponse>
-          </soap:Body>
-        </soap:Envelope>
-      XML
+        post 'FakeCreditCard/CartaoProtegido.asmx', <<-XML.strip_heredoc
+          <?xml version="1.0" encoding="UTF-8"?>
+          <env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.cartaoprotegido.com.br/WebService/" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
+            <env:Body>
+              <tns:JustClickShop>
+                <tns:justClickShopRequestWS>
+                  <tns:RequestId>{#{request_id.upcase}}</tns:RequestId>
+                  <tns:MerchantKey>{84BE7E7F-698A-6C74-F820-AE359C2A07C2}</tns:MerchantKey>
+                  <tns:CustomerName>John</tns:CustomerName>
+                  <tns:OrderId>123456</tns:OrderId>
+                  <tns:Amount>#{amount}</tns:Amount>
+                  <tns:PaymentMethod>997</tns:PaymentMethod>
+                  <tns:NumberInstallments>1</tns:NumberInstallments>
+                  <tns:PaymentType>0</tns:PaymentType>
+                  <tns:JustClickKey>{#{just_click_key.upcase}}</tns:JustClickKey>
+                  <tns:SecurityCode>123</tns:SecurityCode>
+                </tns:justClickShopRequestWS>
+              </tns:JustClickShop>
+            </env:Body>
+          </env:Envelope>
+        XML
+
+        expect(last_response).to be_ok
+
+        expect(last_response.body).to eq <<-XML.strip_heredoc
+          <?xml version="1.0" encoding="UTF-8"?>
+          <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <soap:Body>
+              <JustClickShopResponse xmlns="http://www.cartaoprotegido.com.br/WebService/">
+                <JustClickShopResult>
+                  <Success>false</Success>
+                  <CorrelationId>00000000-0000-0000-0000-000000000000</CorrelationId>
+                  <AquirerTransactionId>???</AquirerTransactionId>
+                  <Amount>0</Amount>
+                  <Status>???</Status>
+                  <ReturnCode>???</ReturnCode>
+                  <ReturnMessage>???</ReturnMessage>
+                  <ErrorReportCollection>
+                    <ErrorReport>
+                      <ErrorCode>706</ErrorCode>
+                      <ErrorMessage>Card holder can not be null</ErrorMessage>
+                    </ErrorReport>
+                  </ErrorReportCollection>
+                </JustClickShopResult>
+              </JustClickShopResponse>
+            </soap:Body>
+          </soap:Envelope>
+        XML
+      end
     end
   end
 end
