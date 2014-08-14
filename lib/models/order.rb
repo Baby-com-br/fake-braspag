@@ -205,7 +205,7 @@ class Order
 
   # Public: Retrive the order attributes using a method.
   #
-  # Examples:
+  # Examples
   #
   #   order = Order.new('amount' => '4.20', 'customerName' => 'Rafael França')
   #   order.amount # => "4.20"
@@ -218,7 +218,7 @@ class Order
 
   # Public: Checks if the attribute method exists.
   #
-  # Examples:
+  # Examples
   #
   #   order = Order.new('amount' => '4.20')
   #   order.respond_to?(:amount) # => true

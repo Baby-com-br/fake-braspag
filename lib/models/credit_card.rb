@@ -68,7 +68,7 @@ module FakeBraspag
 
     # Public: Retrive the card attributes using a method.
     #
-    # Examples:
+    # Examples
     #
     #   card = CreditCard.new('Success' => true, 'CustomerName' => 'John Doe')
     #   card.success # => true
@@ -81,7 +81,7 @@ module FakeBraspag
 
     # Public: Check if the attribute method exists.
     #
-    # Examples:
+    # Examples
     #
     #   card = CreditCard.new('Amount' => '4.20')
     #   card.respond_to?(:amount) # => true
