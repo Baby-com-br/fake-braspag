@@ -36,10 +36,31 @@ module FakeBraspag
     #
     # A `JustClickKey` UUID token is generated upon saving.
     #
-    # Returns truthy if the request is valid and falsy otherwise.
+    # Returns truthy if the request is successful and falsy otherwise.
     def save
       if correlation_id
         @attributes['JustClickKey'] = SecureRandom.uuid
+      end
+    end
+
+    # Public: Perform a fake JustClickShop (card-free authorization) operation.
+    #
+    # A success `Status` is set, along with a `ReturnCode` and other
+    # required response fields.
+    #
+    # Returns truthy if the request is successful and falsy otherwise.
+    def just_click_shop
+      if correlation_id
+        @attributes['Success'] = true
+        @attributes['AquirerTransactionId'] = '1234567890'
+
+        # TODO optional, check if is being used
+        @attributes['AuthorizationCode'] = '???'
+
+        # TODO: Investigate logs for realistic values
+        @attributes['Status'] = '???'
+        @attributes['ReturnCode'] = '???'
+        @attributes['ReturnMessage'] = '???'
       end
     end
 

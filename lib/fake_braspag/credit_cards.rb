@@ -9,7 +9,7 @@ module FakeBraspag
       when 'SaveCreditCard'
         save_credit_card(data['saveCreditCardRequestWS'])
       when 'JustClickShop'
-        # TODO
+        just_click_shop(data['justClickShopRequestWS'])
       else
         # TODO 400 - bad request, unsupported method
       end
@@ -42,6 +42,14 @@ module FakeBraspag
           error_code: 732,
           error_message: 'SaveCreditCardRequestId can not be null'
         }
+      end
+    end
+
+    def just_click_shop(authorization_params)
+      card = FakeBraspag::CreditCard.new(authorization_params)
+
+      if card.just_click_shop
+        builder :just_click_shop_success, locals: { card: card }
       end
     end
   end
