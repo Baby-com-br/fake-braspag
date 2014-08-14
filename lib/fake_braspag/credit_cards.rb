@@ -53,7 +53,7 @@ module FakeBraspag
     def save_credit_card(credit_card_params)
       card = FakeBraspag::CreditCard.new(credit_card_params)
 
-      if card.save
+      if card.save && ResponseToggler.enabled?('save_credit_card')
         builder :save_credit_card_success, locals: { card: card }
       else
         builder :save_credit_card_failure, locals: {
