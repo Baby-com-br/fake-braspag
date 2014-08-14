@@ -41,7 +41,7 @@ describe FakeBraspag::CreditCards do
       expect(last_response).to be_ok
 
       expect(last_response.body).to eq <<-XML.strip_heredoc
-        <?xml version="1.0" encoding="utf-8"?>
+        <?xml version="1.0" encoding="UTF-8"?>
         <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
           <soap:Body>
             <SaveCreditCardResponse xmlns="http://www.cartaoprotegido.com.br/WebService/">
@@ -78,7 +78,7 @@ describe FakeBraspag::CreditCards do
       expect(last_response).to be_ok
 
       expect(last_response.body).to eq <<-XML.strip_heredoc
-        <?xml version="1.0" encoding="utf-8"?>
+        <?xml version="1.0" encoding="UTF-8"?>
         <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
           <soap:Body>
             <SaveCreditCardResponse xmlns="http://www.cartaoprotegido.com.br/WebService/">
@@ -131,7 +131,7 @@ describe FakeBraspag::CreditCards do
       expect(last_response).to be_ok
 
       expect(last_response.body).to eq <<-XML.strip_heredoc
-        <?xml version="1.0" encoding="utf-8"?>
+        <?xml version="1.0" encoding="UTF-8"?>
         <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
           <soap:Body>
             <JustClickShopResponse xmlns="http://www.cartaoprotegido.com.br/WebService/">
