@@ -21,9 +21,28 @@ module FakeBraspag
 
     private
 
-    # TODO: doc
-    # TODO: handle invalid input
+    # Internal: Extract operation data from the request SOAP Envelope (XML).
+    #
+    # Examples
+    #
+    #   Given the following request body:
+    #
+    #   <env:Envelope>
+    #     <env:Body>
+    #       <tns:SaveCreditCard>
+    #         <tns:saveCreditCardRequestWS>
+    #           <tns:Key>Value</tns:Key>
+    #         </tns:saveCreditCardRequestWS>
+    #       </tns:SaveCreditCard>
+    #     </env:Body>
+    #   </env:Envelope>
+    #
+    #   parse_soap_request
+    #   # => [ 'SaveCreditCard', {'Key' => 'Value'} ]
+    #
+    # Returns an operation identifier and an attributes Hash.
     def parse_soap_request
+      # TODO: handle invalid input
       soap_request = Hash.from_xml(request.body.read)
       request_data = soap_request['Envelope']['Body']
       operation = request_data.keys.first
@@ -31,7 +50,6 @@ module FakeBraspag
       [ operation, request_data[operation] ]
     end
 
-    # TODO: doc
     def save_credit_card(credit_card_params)
       card = FakeBraspag::CreditCard.new(credit_card_params)
 
