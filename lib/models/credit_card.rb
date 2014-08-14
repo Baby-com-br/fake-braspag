@@ -21,35 +21,55 @@ module FakeBraspag
   class CreditCard
     # Public: Initialize a CreditCard.
     #
-    # attributes - A hash containing card information such as number and expiration.
-    def initialize(attributes)
-      request_id = uuid(attributes['RequestId'])
-
-      @attributes = {
-        'JustClickKey' => SecureRandom.uuid,
-        'CorrelationId' => request_id
-      }
-    end
-
-    # Public: Random UUID key used to identify a customer-card pair uniquely.
-    def just_click_key
-      @attributes['JustClickKey']
-    end
-
-    # Public: A transaction UUID key, matching the request `RequestId` to the response.
-    def correlation_id
-      @attributes['CorrelationId']
-    end
-
-    # Public: Determine if this is a valid credit card.
+    # UUID attributes get normalized and a CorrelationId is included.
     #
-    # A valid credit card save request must contain a
-    # `RequestId`, so a `CorrelationId` can be returned.
-    def valid?
-      correlation_id
+    # attributes - A hash containing card request information, such as number and expiration.
+    def initialize(attributes)
+      @attributes = attributes.dup
+
+      request_id = uuid(attributes['RequestId'])
+      @attributes['RequestId'] = request_id
+      @attributes['CorrelationId'] = request_id
+    end
+
+    # Public: Perform a fake Save operation.
+    #
+    # A `JustClickKey` UUID token is generated upon saving.
+    #
+    # Returns truthy if the request is valid and falsy otherwise.
+    def save
+      if correlation_id
+        @attributes['JustClickKey'] = SecureRandom.uuid
+      end
     end
 
     private
+
+    # Public: Retrive the card attributes using a method.
+    #
+    # Examples:
+    #
+    #   card = CreditCard.new('Success' => true, 'CustomerName' => 'John Doe')
+    #   card.success # => true
+    #   card.customer_name # => "John Doe"
+    def method_missing(name, *args)
+      camelized_name = name.to_s.camelize
+
+      @attributes.fetch(camelized_name) { super }
+    end
+
+    # Public: Check if the attribute method exists.
+    #
+    # Examples:
+    #
+    #   card = CreditCard.new('Amount' => '4.20')
+    #   card.respond_to?(:amount) # => true
+    #   card.respond_to?(:inexistent_method) # => false
+    def respond_to_missing?(name, include_private = false)
+      camelized_name = name.to_s.camelize
+
+      @attributes.key?(camelized_name) || super
+    end
 
     # Private: Normalize a UUID value.
     #
