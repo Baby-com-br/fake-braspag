@@ -150,5 +150,56 @@ describe FakeBraspag::CreditCards do
         </soap:Envelope>
       XML
     end
+
+    it 'renders a failure response when no RequestId is provided' do
+      post 'FakeCreditCard/CartaoProtegido.asmx', <<-XML.strip_heredoc
+        <?xml version="1.0" encoding="UTF-8"?>
+        <env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.cartaoprotegido.com.br/WebService/" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
+          <env:Body>
+            <tns:JustClickShop>
+              <tns:justClickShopRequestWS>
+                <tns:RequestId></tns:RequestId>
+                <tns:MerchantKey></tns:MerchantKey>
+                <tns:CustomerName></tns:CustomerName>
+                <tns:OrderId></tns:OrderId>
+                <tns:Amount></tns:Amount>
+                <tns:PaymentMethod></tns:PaymentMethod>
+                <tns:NumberInstallments></tns:NumberInstallments>
+                <tns:PaymentType></tns:PaymentType>
+                <tns:JustClickKey></tns:JustClickKey>
+                <tns:SecurityCode></tns:SecurityCode>
+              </tns:justClickShopRequestWS>
+            </tns:JustClickShop>
+          </env:Body>
+        </env:Envelope>
+      XML
+
+      expect(last_response).to be_ok
+
+      expect(last_response.body).to eq <<-XML.strip_heredoc
+        <?xml version="1.0" encoding="UTF-8"?>
+        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+          <soap:Body>
+            <JustClickShopResponse xmlns="http://www.cartaoprotegido.com.br/WebService/">
+              <JustClickShopResult>
+                <Success>false</Success>
+                <CorrelationId>00000000-0000-0000-0000-000000000000</CorrelationId>
+                <AquirerTransactionId>???</AquirerTransactionId>
+                <Amount>0</Amount>
+                <Status>???</Status>
+                <ReturnCode>???</ReturnCode>
+                <ReturnMessage>???</ReturnMessage>
+                <ErrorReportCollection>
+                  <ErrorReport>
+                    <ErrorCode>706</ErrorCode>
+                    <ErrorMessage>Card holder can not be null</ErrorMessage>
+                  </ErrorReport>
+                </ErrorReportCollection>
+              </JustClickShopResult>
+            </JustClickShopResponse>
+          </soap:Body>
+        </soap:Envelope>
+      XML
+    end
   end
 end

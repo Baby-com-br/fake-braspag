@@ -68,6 +68,11 @@ module FakeBraspag
 
       if card.just_click_shop
         builder :just_click_shop_success, locals: { card: card }
+      else
+        builder :just_click_shop_failure, locals: {
+          error_code: 706,
+          error_message: 'Card holder can not be null'
+        }
       end
     end
   end
