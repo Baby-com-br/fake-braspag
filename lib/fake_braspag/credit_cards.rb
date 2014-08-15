@@ -53,7 +53,7 @@ module FakeBraspag
     def save_credit_card(credit_card_params)
       card = FakeBraspag::CreditCard.new(credit_card_params)
 
-      if card.save && ResponseToggler.enabled?('save_credit_card')
+      if ResponseToggler.enabled?('save_credit_card') && card.save
         builder :save_credit_card_success, locals: { card: card }
       else
         builder :save_credit_card_failure, locals: {
@@ -66,7 +66,7 @@ module FakeBraspag
     def just_click_shop(authorization_params)
       card = FakeBraspag::CreditCard.new(authorization_params)
 
-      if card.just_click_shop && ResponseToggler.enabled?('just_click_shop')
+      if ResponseToggler.enabled?('just_click_shop') && card.just_click_shop
         builder :just_click_shop_success, locals: { card: card }
       else
         builder :just_click_shop_failure, locals: {
