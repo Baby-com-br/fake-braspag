@@ -53,12 +53,12 @@ module FakeBraspag
       if correlation_id
         @attributes['Success'] = true
         @attributes['AquirerTransactionId'] = '1234567890'
+        @attributes['Status'] = 0
 
         # TODO optional, check if is being used
         @attributes['AuthorizationCode'] = '???'
 
         # TODO: Investigate logs for realistic values
-        @attributes['Status'] = '???'
         @attributes['ReturnCode'] = '???'
         @attributes['ReturnMessage'] = '???'
       end

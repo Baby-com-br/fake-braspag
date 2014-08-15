@@ -9,7 +9,7 @@ xml.soap :Envelope, 'xmlns:soap' => 'http://schemas.xmlsoap.org/soap/envelope/',
         xml.CorrelationId '00000000-0000-0000-0000-000000000000'
         xml.AquirerTransactionId '???'
         xml.Amount 0
-        xml.Status '???'
+        xml.Status 2
         xml.ReturnCode '???'
         xml.ReturnMessage '???'
 

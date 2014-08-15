@@ -206,7 +206,7 @@ describe FakeBraspag::CreditCards do
                   <AquirerTransactionId>1234567890</AquirerTransactionId>
                   <Amount>#{amount}</Amount>
                   <AuthorizationCode>???</AuthorizationCode>
-                  <Status>???</Status>
+                  <Status>0</Status>
                   <ReturnCode>???</ReturnCode>
                   <ReturnMessage>???</ReturnMessage>
                 </JustClickShopResult>
@@ -251,7 +251,7 @@ describe FakeBraspag::CreditCards do
                   <CorrelationId>00000000-0000-0000-0000-000000000000</CorrelationId>
                   <AquirerTransactionId>???</AquirerTransactionId>
                   <Amount>0</Amount>
-                  <Status>???</Status>
+                  <Status>2</Status>
                   <ReturnCode>???</ReturnCode>
                   <ReturnMessage>???</ReturnMessage>
                   <ErrorReportCollection>
@@ -312,7 +312,7 @@ describe FakeBraspag::CreditCards do
                   <CorrelationId>00000000-0000-0000-0000-000000000000</CorrelationId>
                   <AquirerTransactionId>???</AquirerTransactionId>
                   <Amount>0</Amount>
-                  <Status>???</Status>
+                  <Status>2</Status>
                   <ReturnCode>???</ReturnCode>
                   <ReturnMessage>???</ReturnMessage>
                   <ErrorReportCollection>
