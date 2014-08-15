@@ -57,7 +57,7 @@ module FakeBraspag
       password: settings['FAKE_BRASPAG_TOGGLER_PASSWORD']
     )
 
-    protected_card_url = settings['protected_card_url'] || 'http://localhost:9292/FakeCreditCard'
+    protected_card_url = settings['PROTECTED_CARD_URL'] || 'http://localhost:9292/FakeCreditCard'
     FakeBraspag::CreditCards.set(:wsdl_url, "#{protected_card_url}/CartaoProtegido.asmx")
   end
 
