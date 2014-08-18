@@ -10,8 +10,6 @@ module FakeBraspag
         save_credit_card(data['saveCreditCardRequestWS'])
       when 'JustClickShop'
         just_click_shop(data['justClickShopRequestWS'])
-      else
-        # TODO 400 - bad request, unsupported method
       end
     end
 
@@ -42,7 +40,6 @@ module FakeBraspag
     #
     # Returns an operation identifier and an attributes Hash.
     def parse_soap_request
-      # TODO: handle invalid input
       soap_request = Hash.from_xml(request.body.read)
       request_data = soap_request['Envelope']['Body']
       operation = request_data.keys.first
