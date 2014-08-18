@@ -6,11 +6,11 @@ xml.soap :Envelope, 'xmlns:soap' => 'http://schemas.xmlsoap.org/soap/envelope/',
     xml.SaveCreditCardResponse 'xmlns' => 'http://www.cartaoprotegido.com.br/WebService/' do
       xml.SaveCreditCardResult do
         xml.Success false
-        xml.CorrelationId '00000000-0000-0000-0000-000000000000'
+        xml.CorrelationId card.correlation_id || '00000000-0000-0000-0000-000000000000'
         xml.ErrorReportCollection do
           xml.ErrorReport do
-            xml.ErrorCode error_code
-            xml.ErrorMessage error_message
+            xml.ErrorCode 732
+            xml.ErrorMessage 'SaveCreditCardRequestId can not be null'
           end
         end
         xml.JustClickKey '00000000-0000-0000-0000-000000000000'

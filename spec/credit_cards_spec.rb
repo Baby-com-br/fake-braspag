@@ -143,7 +143,7 @@ describe FakeBraspag::CreditCards do
               <SaveCreditCardResponse xmlns="http://www.cartaoprotegido.com.br/WebService/">
                 <SaveCreditCardResult>
                   <Success>false</Success>
-                  <CorrelationId>00000000-0000-0000-0000-000000000000</CorrelationId>
+                  <CorrelationId>#{request_id}</CorrelationId>
                   <ErrorReportCollection>
                     <ErrorReport>
                       <ErrorCode>732</ErrorCode>
