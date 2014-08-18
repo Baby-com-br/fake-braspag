@@ -250,17 +250,15 @@ describe FakeBraspag::CreditCards do
                 <JustClickShopResult>
                   <Success>false</Success>
                   <CorrelationId>00000000-0000-0000-0000-000000000000</CorrelationId>
-                  <AquirerTransactionId>???</AquirerTransactionId>
-                  <Amount>0</Amount>
-                  <Status>2</Status>
-                  <ReturnCode>???</ReturnCode>
-                  <ReturnMessage>???</ReturnMessage>
                   <ErrorReportCollection>
                     <ErrorReport>
-                      <ErrorCode>706</ErrorCode>
-                      <ErrorMessage>Card holder can not be null</ErrorMessage>
+                      <ErrorCode>726</ErrorCode>
+                      <ErrorMessage>Credit card expired</ErrorMessage>
                     </ErrorReport>
                   </ErrorReportCollection>
+                  <BraspagTransactionId>00000000-0000-0000-0000-000000000000</BraspagTransactionId>
+                  <Amount>0</Amount>
+                  <Status xsi:nil="true"/>
                 </JustClickShopResult>
               </JustClickShopResponse>
             </soap:Body>
@@ -310,18 +308,16 @@ describe FakeBraspag::CreditCards do
               <JustClickShopResponse xmlns="http://www.cartaoprotegido.com.br/WebService/">
                 <JustClickShopResult>
                   <Success>false</Success>
-                  <CorrelationId>00000000-0000-0000-0000-000000000000</CorrelationId>
-                  <AquirerTransactionId>???</AquirerTransactionId>
-                  <Amount>0</Amount>
-                  <Status>2</Status>
-                  <ReturnCode>???</ReturnCode>
-                  <ReturnMessage>???</ReturnMessage>
+                  <CorrelationId>#{request_id}</CorrelationId>
                   <ErrorReportCollection>
                     <ErrorReport>
-                      <ErrorCode>706</ErrorCode>
-                      <ErrorMessage>Card holder can not be null</ErrorMessage>
+                      <ErrorCode>726</ErrorCode>
+                      <ErrorMessage>Credit card expired</ErrorMessage>
                     </ErrorReport>
                   </ErrorReportCollection>
+                  <BraspagTransactionId>00000000-0000-0000-0000-000000000000</BraspagTransactionId>
+                  <Amount>0</Amount>
+                  <Status xsi:nil="true"/>
                 </JustClickShopResult>
               </JustClickShopResponse>
             </soap:Body>

@@ -6,19 +6,18 @@ xml.soap :Envelope, 'xmlns:soap' => 'http://schemas.xmlsoap.org/soap/envelope/',
     xml.JustClickShopResponse 'xmlns' => 'http://www.cartaoprotegido.com.br/WebService/' do
       xml.JustClickShopResult do
         xml.Success false
-        xml.CorrelationId '00000000-0000-0000-0000-000000000000'
-        xml.AquirerTransactionId '???'
-        xml.Amount 0
-        xml.Status 2
-        xml.ReturnCode '???'
-        xml.ReturnMessage '???'
+        xml.CorrelationId card.correlation_id || '00000000-0000-0000-0000-000000000000'
 
         xml.ErrorReportCollection do
           xml.ErrorReport do
-            xml.ErrorCode error_code
-            xml.ErrorMessage error_message
+            xml.ErrorCode 726
+            xml.ErrorMessage 'Credit card expired'
           end
         end
+
+        xml.BraspagTransactionId '00000000-0000-0000-0000-000000000000'
+        xml.Amount 0
+        xml.Status 'xsi:nil' => true
       end
     end
   end
