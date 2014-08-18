@@ -52,15 +52,11 @@ module FakeBraspag
     def just_click_shop
       if correlation_id
         @attributes['Success'] = true
-        @attributes['AquirerTransactionId'] = '1234567890'
+        @attributes['AquirerTransactionId'] = '123456789'
+        @attributes['AuthorizationCode'] = '012345'
         @attributes['Status'] = 0
-
-        # TODO optional, check if is being used
-        @attributes['AuthorizationCode'] = '???'
-
-        # TODO: Investigate logs for realistic values
-        @attributes['ReturnCode'] = '???'
-        @attributes['ReturnMessage'] = '???'
+        @attributes['ReturnCode'] = 0
+        @attributes['ReturnMessage'] = 'Autorizado com sucesso'
       end
     end
 

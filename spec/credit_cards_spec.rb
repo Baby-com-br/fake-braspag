@@ -203,12 +203,13 @@ describe FakeBraspag::CreditCards do
                 <JustClickShopResult>
                   <Success>true</Success>
                   <CorrelationId>#{request_id}</CorrelationId>
-                  <AquirerTransactionId>1234567890</AquirerTransactionId>
+                  <BraspagTransactionId>00000000-0000-0000-0000-000000000000</BraspagTransactionId>
+                  <AquirerTransactionId>123456789</AquirerTransactionId>
                   <Amount>#{amount}</Amount>
-                  <AuthorizationCode>???</AuthorizationCode>
+                  <AuthorizationCode>012345</AuthorizationCode>
                   <Status>0</Status>
-                  <ReturnCode>???</ReturnCode>
-                  <ReturnMessage>???</ReturnMessage>
+                  <ReturnCode>0</ReturnCode>
+                  <ReturnMessage>Autorizado com sucesso</ReturnMessage>
                 </JustClickShopResult>
               </JustClickShopResponse>
             </soap:Body>

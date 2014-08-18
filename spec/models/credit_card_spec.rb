@@ -18,6 +18,28 @@ describe FakeBraspag::CreditCard do
     end
   end
 
+  describe '#just_click_shop' do
+    it 'sets a success status and extra attributes accordingly' do
+      card = described_class.new('RequestId' => 'bf4616ea-448a-4a15-9590-ce1163f3ad50')
+
+      expect(card.just_click_shop).to be_truthy
+
+      expect(card.success).to be true
+      expect(card.aquirer_transaction_id).to eq '123456789'
+      expect(card.authorization_code).to eq '012345'
+      expect(card.status).to be 0
+      expect(card.return_code).to be 0
+      expect(card.return_message).to eq 'Autorizado com sucesso'
+    end
+
+    it 'does nothing when it has no RequestId' do
+      card = described_class.new('NotRequestId' => 'Not Request Id')
+
+      expect(card.just_click_shop).to be_falsy
+      expect(card).not_to respond_to(:status)
+    end
+  end
+
   describe '#request_id' do
     it 'accepts optional brackets' do
       card = described_class.new('RequestId' => '{bf4616ea-448a-4a15-9590-ce1163f3ad50}')
