@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.cartaoprotegido.com.br/WebService/" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" targetNamespace="http://www.cartaoprotegido.com.br/WebService/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.cartaoprotegido.com.br/WebService/">
+      <s:import namespace="http://microsoft.com/wsdl/types/" />
+      <s:element name="JustClickShop">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="justClickShopRequestWS" type="tns:JustClickShopRequest" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="JustClickShopRequest">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:AbstractRequest">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="MerchantKey" type="s1:guid" />
+              <s:element minOccurs="0" maxOccurs="1" name="CustomerIdentification" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="CustomerName" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="OrderId" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Amount" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="PaymentMethod" type="s:short" />
+              <s:element minOccurs="1" maxOccurs="1" name="NumberInstallments" type="s:short" />
+              <s:element minOccurs="1" maxOccurs="1" name="PaymentType" type="s:short" />
+              <s:element minOccurs="1" maxOccurs="1" name="JustClickKey" type="s1:guid" />
+              <s:element minOccurs="0" maxOccurs="1" name="SecurityCode" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Country" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Currency" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="MerchantIdPagador" type="s1:guid" />
+              <s:element minOccurs="0" maxOccurs="1" name="JustClickAlias" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="AbstractRequest" abstract="true">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Version" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="RequestId" nillable="true" type="s1:guid" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="JustClickShopResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="JustClickShopResult" type="tns:JustClickShopResponse" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="JustClickShopResponse">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:AbstractResponse">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="BraspagTransactionId" type="s1:guid" />
+              <s:element minOccurs="0" maxOccurs="1" name="AcquirerTransactionId" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Amount" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="AuthorizationCode" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Status" nillable="true" type="s:short" />
+              <s:element minOccurs="0" maxOccurs="1" name="ReturnCode" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="ReturnMessage" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Country" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Currency" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="AbstractResponse" abstract="true">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="Success" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="CorrelationId" nillable="true" type="s1:guid" />
+          <s:element minOccurs="0" maxOccurs="1" name="ErrorReportCollection" type="tns:ArrayOfErrorReport" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfErrorReport">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ErrorReport" nillable="true" type="tns:ErrorReport" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ErrorReport">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="ErrorCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ErrorMessage" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="SaveCreditCard">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="saveCreditCardRequestWS" type="tns:SaveCreditCardRequest" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="SaveCreditCardRequest">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:AbstractRequest">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="MerchantKey" type="s1:guid" />
+              <s:element minOccurs="0" maxOccurs="1" name="CustomerIdentification" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="CustomerName" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="CardHolder" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="CardNumber" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="CardExpiration" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="JustClickAlias" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="SaveCreditCardResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SaveCreditCardResult" type="tns:SaveCreditCardResponse" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="SaveCreditCardResponse">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:AbstractResponse">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="JustClickKey" type="s1:guid" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="GetCreditCard">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="getCreditCardRequestWS" type="tns:GetCreditCardRequest" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="GetCreditCardRequest">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:AbstractRequest">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="MerchantKey" type="s1:guid" />
+              <s:element minOccurs="1" maxOccurs="1" name="JustClickKey" type="s1:guid" />
+              <s:element minOccurs="0" maxOccurs="1" name="JustClickAlias" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="GetCreditCardResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetCreditCardResult" type="tns:GetCreditCardResponse" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="GetCreditCardResponse">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:AbstractResponse">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="CardHolder" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="CardNumber" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="CardExpiration" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="MaskedCardNumber" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="GetMaskedCreditCard">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="getMaskedCreditCardRequestWS" type="tns:GetMaskedCreditCardRequest" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="GetMaskedCreditCardRequest">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:AbstractRequest">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="MerchantKey" type="s1:guid" />
+              <s:element minOccurs="1" maxOccurs="1" name="JustClickKey" type="s1:guid" />
+              <s:element minOccurs="0" maxOccurs="1" name="JustClickAlias" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="GetMaskedCreditCardResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetMaskedCreditCardResult" type="tns:GetMaskedCreditCardResponse" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="GetMaskedCreditCardResponse">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:AbstractResponse">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="CardHolder" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="CardExpiration" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="MaskedCardNumber" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="GetJustClickKey">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="getJustClickKeyRequestWS" type="tns:GetJustClickKeyRequest" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="GetJustClickKeyRequest">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:AbstractRequest">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="MerchantKey" type="s1:guid" />
+              <s:element minOccurs="1" maxOccurs="1" name="SaveCreditCardRequestId" type="s1:guid" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="GetJustClickKeyResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetJustClickKeyResult" type="tns:GetJustClickKeyResponse" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="GetJustClickKeyResponse">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:AbstractResponse">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="JustClickKey" type="s1:guid" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+    </s:schema>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://microsoft.com/wsdl/types/">
+      <s:simpleType name="guid">
+        <s:restriction base="s:string">
+          <s:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" />
+        </s:restriction>
+      </s:simpleType>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="JustClickShopSoapIn">
+    <wsdl:part name="parameters" element="tns:JustClickShop" />
+  </wsdl:message>
+  <wsdl:message name="JustClickShopSoapOut">
+    <wsdl:part name="parameters" element="tns:JustClickShopResponse" />
+  </wsdl:message>
+  <wsdl:message name="SaveCreditCardSoapIn">
+    <wsdl:part name="parameters" element="tns:SaveCreditCard" />
+  </wsdl:message>
+  <wsdl:message name="SaveCreditCardSoapOut">
+    <wsdl:part name="parameters" element="tns:SaveCreditCardResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetCreditCardSoapIn">
+    <wsdl:part name="parameters" element="tns:GetCreditCard" />
+  </wsdl:message>
+  <wsdl:message name="GetCreditCardSoapOut">
+    <wsdl:part name="parameters" element="tns:GetCreditCardResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetMaskedCreditCardSoapIn">
+    <wsdl:part name="parameters" element="tns:GetMaskedCreditCard" />
+  </wsdl:message>
+  <wsdl:message name="GetMaskedCreditCardSoapOut">
+    <wsdl:part name="parameters" element="tns:GetMaskedCreditCardResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetJustClickKeySoapIn">
+    <wsdl:part name="parameters" element="tns:GetJustClickKey" />
+  </wsdl:message>
+  <wsdl:message name="GetJustClickKeySoapOut">
+    <wsdl:part name="parameters" element="tns:GetJustClickKeyResponse" />
+  </wsdl:message>
+  <wsdl:portType name="CartaoProtegidoSoap">
+    <wsdl:operation name="JustClickShop">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Authorize a JustClick order</wsdl:documentation>
+      <wsdl:input message="tns:JustClickShopSoapIn" />
+      <wsdl:output message="tns:JustClickShopSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SaveCreditCard">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Save a credit card</wsdl:documentation>
+      <wsdl:input message="tns:SaveCreditCardSoapIn" />
+      <wsdl:output message="tns:SaveCreditCardSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCreditCard">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Get a credit card</wsdl:documentation>
+      <wsdl:input message="tns:GetCreditCardSoapIn" />
+      <wsdl:output message="tns:GetCreditCardSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMaskedCreditCard">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Get a masked credit card</wsdl:documentation>
+      <wsdl:input message="tns:GetMaskedCreditCardSoapIn" />
+      <wsdl:output message="tns:GetMaskedCreditCardSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetJustClickKey">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Get a Just Click Key</wsdl:documentation>
+      <wsdl:input message="tns:GetJustClickKeySoapIn" />
+      <wsdl:output message="tns:GetJustClickKeySoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="CartaoProtegidoSoap" type="tns:CartaoProtegidoSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="JustClickShop">
+      <soap:operation soapAction="http://www.cartaoprotegido.com.br/WebService/JustClickShop" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveCreditCard">
+      <soap:operation soapAction="http://www.cartaoprotegido.com.br/WebService/SaveCreditCard" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCreditCard">
+      <soap:operation soapAction="http://www.cartaoprotegido.com.br/WebService/GetCreditCard" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMaskedCreditCard">
+      <soap:operation soapAction="http://www.cartaoprotegido.com.br/WebService/GetMaskedCreditCard" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetJustClickKey">
+      <soap:operation soapAction="http://www.cartaoprotegido.com.br/WebService/GetJustClickKey" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="CartaoProtegidoSoap12" type="tns:CartaoProtegidoSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="JustClickShop">
+      <soap12:operation soapAction="http://www.cartaoprotegido.com.br/WebService/JustClickShop" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveCreditCard">
+      <soap12:operation soapAction="http://www.cartaoprotegido.com.br/WebService/SaveCreditCard" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCreditCard">
+      <soap12:operation soapAction="http://www.cartaoprotegido.com.br/WebService/GetCreditCard" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMaskedCreditCard">
+      <soap12:operation soapAction="http://www.cartaoprotegido.com.br/WebService/GetMaskedCreditCard" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetJustClickKey">
+      <soap12:operation soapAction="http://www.cartaoprotegido.com.br/WebService/GetJustClickKey" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CartaoProtegido">
+    <wsdl:port name="CartaoProtegidoSoap" binding="tns:CartaoProtegidoSoap">
+      <soap:address location="<%= FakeBraspag::CreditCards.wsdl_url %>" />
+    </wsdl:port>
+    <wsdl:port name="CartaoProtegidoSoap12" binding="tns:CartaoProtegidoSoap12">
+      <soap12:address location="<%= FakeBraspag::CreditCards.wsdl_url %>" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
