@@ -195,7 +195,7 @@ describe FakeBraspag do
       end
 
       it 'renders a successful response with the captured amount and the transaction status' do
-        order = Order.create(order_params)
+        Order.create(order_params)
         amount = '12,34'
 
         post '/webservices/pagador/Pagador.asmx/CapturePartial', { 'merchantId' => order_params['merchantId'],
