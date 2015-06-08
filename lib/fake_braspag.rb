@@ -14,6 +14,7 @@ $: << File.dirname(__FILE__)
 require 'models/order'
 require 'models/credit_card'
 require 'models/response_toggler'
+require 'fake_braspag/orders'
 require 'fake_braspag/payments'
 require 'fake_braspag/credit_cards'
 require 'fake_braspag/toggler'
@@ -78,6 +79,10 @@ module FakeBraspag
   # Returns a memoized Rack application.
   def self.app
     @app ||= Rack::Builder.app {
+      map '/webservices/pagador/pedido.asmx' do
+        run FakeBraspag::Orders
+      end
+
       map '/webservices/pagador/Pagador.asmx' do
         run FakeBraspag::Payments
       end
