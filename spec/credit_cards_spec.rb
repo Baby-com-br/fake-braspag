@@ -166,7 +166,7 @@ describe FakeBraspag::CreditCards do
         allow(ResponseToggler).to receive(:enabled?).with('just_click_shop').and_return(true)
       end
 
-      it 'renders a successful response' do
+      it 'renders a successful response and saves a captured order' do
         request_id = 'bf4616ea-448a-4a15-9590-ce1163f3ad50'
         just_click_key = '370a5342-c97a-4e55-8157-95c23fe18d03'
         amount = 1234
@@ -215,6 +215,9 @@ describe FakeBraspag::CreditCards do
             </soap:Body>
           </soap:Envelope>
         XML
+
+        order = Order.find('123456')
+        expect(order).to be_captured
       end
 
       it 'renders a failure response when no RequestId is provided' do
