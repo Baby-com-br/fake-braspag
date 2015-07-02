@@ -17,10 +17,12 @@ module FakeBraspag
     private
 
     def parsed_params
+      @params = JSON.parse(request.body.read)
+
       {
-        'orderId' => params['MerchantOrderId'],
-        'amount' => (params['Payment']['Amount'].to_i / 100.0).to_s,
-        'cardNumber' => params['Payment']['CreditCard']['CardNumber']
+        'orderId' => @params['MerchantOrderId'],
+        'amount' => (@params['Payment']['Amount'].to_i / 100.0).to_s,
+        'cardNumber' => @params['Payment']['CreditCard']['CardNumber']
       }
     end
   end
