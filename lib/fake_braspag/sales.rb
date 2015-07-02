@@ -1,13 +1,15 @@
 module FakeBraspag
   class Sales < Sinatra::Base
     post '/' do
-      @order = Order.new parsed_params
+      order = Order.new parsed_params
 
       begin
-        @order.authorize!
+        order.authorize!
+        @sale = SalePresenter.new(order)
 
         jbuilder :sales_authorize
       rescue Order::AuthorizationFailureError
+        @sale = SalePresenter.new(order)
         jbuilder :sales_authorize
       end
     end

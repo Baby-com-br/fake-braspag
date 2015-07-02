@@ -15,6 +15,7 @@ $: << File.dirname(__FILE__)
 require 'models/order'
 require 'models/credit_card'
 require 'models/response_toggler'
+require 'presenters/sale_presenter'
 require 'fake_braspag/orders'
 require 'fake_braspag/payments'
 require 'fake_braspag/credit_cards'
