@@ -1,5 +1,13 @@
 module FakeBraspag
   class Sales < Sinatra::Base
+    get '/:PaymentId' do
+      if ResponseToggler.enabled?('get_sale')
+        jbuilder :get_sale
+      else
+        jbuilder :get_sale_failure
+      end
+    end
+
     post '/' do
       order = Order.new parsed_params
 
