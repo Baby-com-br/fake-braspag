@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'spec_helper'
 require 'active_support/core_ext/string/strip'
 
@@ -29,6 +27,32 @@ describe FakeBraspag::Sales do
         }
       }
     }
+  end
+
+  describe 'cancel sale' do
+    context 'when success' do
+      before { ResponseToggler.enable('sale_cancel') }
+
+      it 'responds with a error response' do
+        put "/v2/sales/2014111703/void"
+
+        expect(last_response).to be_ok
+      end
+    end
+
+    context 'when failure' do
+      before { ResponseToggler.disable('sale_cancel') }
+
+      it 'responds with a error response' do
+        put "/v2/sales/2014111703/void"
+
+        response = JSON.parse(last_response.body)
+
+        expect(last_response).to be_ok
+        expect(response['Code']).to eq(114)
+        expect(response['Message']).to eq("Error")
+      end
+    end
   end
 
   describe 'authorization' do
