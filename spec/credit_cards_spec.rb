@@ -329,4 +329,93 @@ describe FakeBraspag::CreditCards do
       end
     end
   end
+
+
+  describe 'GetCreditCard' do
+    context 'when the response is enabled' do
+      before do
+        allow(ResponseToggler).to receive(:enabled?).with('get_credit_card').and_return(true) end
+
+      it 'returns a valid credit card result' do
+        post 'FakeCreditCard/CartaoProtegido.asmx', <<-XML.strip_heredoc
+          <?xml version="1.0" encoding="UTF-8"?>
+          <env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.cartaoprotegido.com.br/WebService/" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
+            <env:Body>
+              <tns:GetCreditCard>
+                <tns:GetCreditCardRequestWS>
+                  <tns:MerchantKey>E8D92C40-BDA5-C19F-5C4B-F3504A0CFE80</tns:MerchantKey>
+                  <tns:JustClickKey>e326371d-ea03-4b06-b618-92d75d7c2237</tns:JustClickKey>
+                </tns:GetCreditCardRequestWS>
+              </tns:GetCreditCard>
+            </env:Body>
+          </env:Envelope>
+        XML
+
+        expect(last_response).to be_ok
+
+        expect(last_response.body).to eq <<-XML.strip_heredoc
+        <?xml version="1.0" encoding="UTF-8"?>
+        <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+          <soap:Body>
+            <GetCreditCardResponse xmlns="http://www.cartaoprotegido.com.br/WebService/">
+              <GetCreditCardResult>
+                <Success>true</Success>
+                <CorrelationId xsi:nil="true"/>
+                <ErrorReportCollection/>
+                <CardHolder>TESTE HOLDER</CardHolder>
+                <CardNumber>0000000000000001</CardNumber>
+                <CardExpiration>12/2021</CardExpiration>
+                <MaskedCardNumber>000000******0001</MaskedCardNumber>
+              </GetCreditCardResult>
+            </GetCreditCardResponse>
+          </soap:Body>
+        </soap:Envelope>
+        XML
+      end
+    end
+
+    context 'when the response is disabled' do
+      before do
+        allow(ResponseToggler).to receive(:enabled?).with('get_credit_card').and_return(false)
+      end
+
+      it 'renders a failure response' do
+        post 'FakeCreditCard/CartaoProtegido.asmx', <<-XML.strip_heredoc
+          <?xml version="1.0" encoding="UTF-8"?>
+          <env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.cartaoprotegido.com.br/WebService/" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
+            <env:Body>
+              <tns:GetCreditCard>
+                <tns:GetCreditCardRequestWS>
+                  <tns:loja>E8D92C40-BDA5-C19F-5C4B-F3504A0CFE80</tns:loja>
+                  <tns:JustClickKey>e326371d-ea03-4b06-b618-92d75d7c2237</tns:JustClickKey>
+                </tns:GetCreditCardRequestWS>
+              </tns:GetCreditCard>
+            </env:Body>
+          </env:Envelope>
+        XML
+
+        expect(last_response).to be_ok
+
+        expect(last_response.body).to eq <<-XML.strip_heredoc
+        <?xml version="1.0" encoding="UTF-8"?>
+        <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+          <soap:Body>
+            <GetCreditCardResponse xmlns="http://www.cartaoprotegido.com.br/WebService/">
+              <GetCreditCardResult>
+                <Success>false</Success>
+                <CorrelationId xsi:nil="true"/>
+                <ErrorReportCollection>
+                  <ErrorReport>
+                    <ErrorCode>701</ErrorCode>
+                    <ErrorMessage>Merchant key can not be null</ErrorMessage>
+                  </ErrorReport>
+                </ErrorReportCollection>
+              </GetCreditCardResult>
+            </GetCreditCardResponse>
+          </soap:Body>
+        </soap:Envelope>
+        XML
+      end
+    end
+  end
 end

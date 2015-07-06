@@ -10,6 +10,8 @@ module FakeBraspag
         save_credit_card(data['saveCreditCardRequestWS'])
       when 'JustClickShop'
         just_click_shop(data['justClickShopRequestWS'])
+      when 'GetCreditCard'
+        get_protected_credit_card
       end
     end
 
@@ -68,6 +70,14 @@ module FakeBraspag
         builder :just_click_shop_success, locals: { card: card }
       else
         builder :just_click_shop_failure, locals: { card: card }
+      end
+    end
+
+    def get_protected_credit_card
+      if ResponseToggler.enabled?('get_credit_card')
+        builder :get_credit_card_success
+      else
+        builder :get_credit_card_failure
       end
     end
   end
