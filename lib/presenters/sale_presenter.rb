@@ -1,3 +1,5 @@
+require 'digest'
+
 class SalePresenter
   delegate :id, to: :@order
 
@@ -9,8 +11,16 @@ class SalePresenter
     (@order.amount.to_f * 100).to_i
   end
 
+  def save_card
+    @order.saveCard
+  end
+
   def card_number
     "%s******%s" % [@order.cardNumber[0..5], @order.cardNumber[12, 15]] if @order.cardNumber.present?
+  end
+
+  def card_token
+    Digest::SHA1.hexdigest(@order.cardNumber.to_s) if save_card
   end
 
   def reason_code

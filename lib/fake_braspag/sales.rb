@@ -22,7 +22,8 @@ module FakeBraspag
       {
         'orderId' => @params['MerchantOrderId'],
         'amount' => (@params['Payment']['Amount'].to_i / 100.0).to_s,
-        'cardNumber' => @params['Payment']['CreditCard']['CardNumber']
+        'cardNumber' => @params['Payment']['CreditCard']['CardNumber'],
+        'saveCard' => @params['Payment']['CreditCard']['SaveCard']
       }
     end
   end

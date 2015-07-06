@@ -21,6 +21,7 @@ describe FakeBraspag::Sales do
         "Installments" => 1,
         "CreditCard" => {
           "CardNumber" => "1234123412341231",
+          "SaveCard" => false,
           "Holder" => "Teste Holder",
           "ExpirationDate" => "12/2021",
           "SecurityCode" => "123",
@@ -33,7 +34,7 @@ describe FakeBraspag::Sales do
   describe 'authorization' do
     context 'with valid credit card' do
       it 'responds with a successful response' do
-        post '/v2/sales/', order_params
+        post '/v2/sales/', order_params.to_json, { 'Content-Type' => 'application/json' }
 
         expect(last_response).to be_ok
         expect(JSON.parse(last_response.body)).to eq(
@@ -77,7 +78,7 @@ describe FakeBraspag::Sales do
       end
 
       it 'persists the order data' do
-        post '/v2/sales/', order_params
+        post '/v2/sales/', order_params.to_json, { 'Content-Type' => 'application/json' }
 
         expect(last_response).to be_ok
 
@@ -89,7 +90,7 @@ describe FakeBraspag::Sales do
     context 'with invalid credit card' do
       it 'responds with a error response' do
         order_params['Payment']['CreditCard']['CardNumber'] = '4242424242424242'
-        post '/v2/sales/', order_params
+        post '/v2/sales/', order_params.to_json, { 'Content-Type' => 'application/json' }
 
         expect(last_response).to be_ok
         expect(JSON.parse(last_response.body)).to eq(
@@ -134,10 +135,20 @@ describe FakeBraspag::Sales do
 
       it 'does not persist the order data' do
         order_params['Payment']['CreditCard']['CardNumber'] = '4242424242424242'
-        post '/v2/sales/', order_params
+        post '/v2/sales/', order_params.to_json, { 'Content-Type' => 'application/json' }
 
         expect(last_response).to be_ok
         expect(Order.count).to eq 0
+      end
+    end
+
+    context "with save credit card option true" do
+      it 'returns card token based on card number' do
+        order_params['Payment']['CreditCard']['SaveCard'] = true
+        post '/v2/sales/', order_params.to_json, { 'Content-Type' => 'application/json' }
+
+        expect(last_response).to be_ok
+        expect(JSON.parse(last_response.body)['Payment']['CreditCard']['CardToken']).not_to be_nil
       end
     end
   end

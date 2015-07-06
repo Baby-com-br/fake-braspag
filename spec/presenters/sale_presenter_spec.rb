@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe SalePresenter do
-  let(:params) { { 'amount' => '157.0', 'cardNumber' => '4111111111111111' } }
+  let(:params) { { 'amount' => '157.0', 'cardNumber' => '4111111111111111', 'saveCard' => false } }
   let(:order) { Order.new(params) }
 
   subject(:sale) { SalePresenter.new(order) }
@@ -75,6 +75,30 @@ describe SalePresenter do
 
     it 'returns "Not Authorized" when order is not authorized' do
       expect(sale.provider_return_message).to eq("Not Authorized")
+    end
+  end
+
+  describe '#card_token' do
+    context 'when order has a saved card' do
+      let(:params) { { 'amount' => '157.0', 'cardNumber' => '4111111111111111', 'saveCard' => true } }
+
+      it 'returns a sha1 from card number' do
+        expect(sale.card_token).to eq(Digest::SHA1.hexdigest(params['cardNumber']))
+      end
+    end
+
+    context 'when order has not a saved card' do
+      let(:params) { { 'amount' => '157.0', 'cardNumber' => '4111111111111111', 'saveCard' => false } }
+
+      it 'returns nil' do
+        expect(sale.card_token).to be_nil
+      end
+    end
+  end
+
+  describe '#save_card' do
+    it 'returns order saveCard attribute' do
+      expect(sale.save_card).to be_falsey
     end
   end
 end

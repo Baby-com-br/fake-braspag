@@ -12,8 +12,9 @@ json.Payment do |payment|
     credit_card.CardNumber @sale.card_number
     credit_card.Holder "Teste Holder"
     credit_card.ExpirationDate "12/2021"
-    credit_card.SaveCard false
+    credit_card.SaveCard @sale.save_card
     credit_card.Brand "Visa"
+    credit_card.CardToken @sale.card_token if @sale.save_card
   end
   payment.ProofOfSale "674532"
   payment.AcquirerTransactionId "0305023644309"
