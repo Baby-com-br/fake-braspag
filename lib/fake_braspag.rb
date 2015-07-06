@@ -6,6 +6,7 @@ Bundler.setup
 
 require 'sinatra/base'
 require 'builder'
+require 'sinatra/jbuilder'
 require 'active_support'
 require 'active_support/core_ext/object/blank'
 
@@ -14,10 +15,12 @@ $: << File.dirname(__FILE__)
 require 'models/order'
 require 'models/credit_card'
 require 'models/response_toggler'
+require 'presenters/sale_presenter'
 require 'fake_braspag/orders'
 require 'fake_braspag/payments'
 require 'fake_braspag/credit_cards'
 require 'fake_braspag/toggler'
+require 'fake_braspag/sales'
 
 connection = Redis.new
 
@@ -89,6 +92,10 @@ module FakeBraspag
 
       map '/FakeCreditCard' do
         run FakeBraspag::CreditCards
+      end
+
+      map '/v2/sales' do
+        run FakeBraspag::Sales
       end
 
       map '/' do

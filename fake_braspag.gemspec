@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency('sinatra', '~> 1.4.5')
   s.add_dependency('builder', '~> 3.2')
+  s.add_dependency('tilt-jbuilder', '~> 0.6.0')
   s.add_dependency('redis', '~> 3.1')
   s.add_dependency('activesupport', '~> 4.1')
 end
