@@ -15,7 +15,7 @@ module FakeBraspag
     end
 
     put '/:PaymentId/void' do
-      if ResponseToggler.enabled?('sale_cancel')
+      if ResponseToggler.enabled?('sale_cancelation')
         jbuilder :sales_cancel
       else
         jbuilder :sales_cancel_failure

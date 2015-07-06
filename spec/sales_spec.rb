@@ -29,32 +29,6 @@ describe FakeBraspag::Sales do
     }
   end
 
-  describe 'cancel sale' do
-    context 'when success' do
-      before { ResponseToggler.enable('sale_cancel') }
-
-      it 'responds with a error response' do
-        put "/v2/sales/2014111703/void"
-
-        expect(last_response).to be_ok
-      end
-    end
-
-    context 'when failure' do
-      before { ResponseToggler.disable('sale_cancel') }
-
-      it 'responds with a error response' do
-        put "/v2/sales/2014111703/void"
-
-        response = JSON.parse(last_response.body)
-
-        expect(last_response).to be_ok
-        expect(response['Code']).to eq(114)
-        expect(response['Message']).to eq("Error")
-      end
-    end
-  end
-
   describe 'authorization' do
     context 'with valid credit card' do
       it 'responds with a successful response' do
@@ -176,4 +150,31 @@ describe FakeBraspag::Sales do
       end
     end
   end
+
+  describe 'sale cancelation' do
+    context 'success' do
+      before { ResponseToggler.enable('sale_cancelation') }
+
+      it 'responds with a success response' do
+        put "/v2/sales/2014111703/void"
+
+        expect(last_response).to be_ok
+      end
+    end
+
+    context 'failure' do
+      before { ResponseToggler.disable('sale_cancelation') }
+
+      it 'responds with an error response' do
+        put "/v2/sales/2014111703/void"
+
+        response = JSON.parse(last_response.body)
+
+        expect(last_response).to be_ok
+        expect(response['Code']).to eq(114)
+        expect(response['Message']).to eq("Error")
+      end
+    end
+  end
+
 end
