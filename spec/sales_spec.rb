@@ -208,8 +208,7 @@ describe FakeBraspag::Sales do
         response = JSON.parse(last_response.body)
 
         expect(last_response).to be_ok
-        expect(response['Code']).to eq(114)
-        expect(response['Message']).to eq("Error")
+        expect(response).to eq([{'Code' => 114, 'Message' => 'Error'}])
       end
     end
   end
