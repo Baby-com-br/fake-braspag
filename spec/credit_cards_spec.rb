@@ -325,7 +325,7 @@ describe FakeBraspag::CreditCards do
 
   describe 'GetCreditCard' do
     context 'when the response is enabled' do
-      before { ResponseToggler.disable('get_credit_card') }
+      before { ResponseToggler.enable('get_credit_card') }
 
       it 'returns a valid credit card result' do
         post 'FakeCreditCard/CartaoProtegido.asmx', <<-XML.strip_heredoc
