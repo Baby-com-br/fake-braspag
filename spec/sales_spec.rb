@@ -153,17 +153,21 @@ describe FakeBraspag::Sales do
 
   describe 'sale cancelation' do
     context 'success' do
-      before { ResponseToggler.enable('sale_cancelation') }
+      before { ResponseToggler.enable('void') }
 
       it 'responds with a success response' do
         put "/v2/sales/2014111703/void"
 
+        response = JSON.parse(last_response.body)
+
         expect(last_response).to be_ok
+        expect(response).to eq("Status" => 10, "ReasonCode" => 0, "ReasonMessage" => "Successful", "ProviderReturnCode" => "9",
+          "ProviderReturnMessage" => "Operation Successful", "Links" => [])
       end
     end
 
     context 'failure' do
-      before { ResponseToggler.disable('sale_cancelation') }
+      before { ResponseToggler.disable('void') }
 
       it 'responds with an error response' do
         put "/v2/sales/2014111703/void"
@@ -171,8 +175,7 @@ describe FakeBraspag::Sales do
         response = JSON.parse(last_response.body)
 
         expect(last_response).to be_ok
-        expect(response['Code']).to eq(114)
-        expect(response['Message']).to eq("Error")
+        expect(response).to eq([{'Code' => 114, 'Message' => 'Error'}])
       end
     end
   end
