@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'spec_helper'
 require 'active_support/core_ext/string/strip'
 
@@ -149,6 +147,64 @@ describe FakeBraspag::Sales do
 
         expect(last_response).to be_ok
         expect(JSON.parse(last_response.body)['Payment']['CreditCard']['CardToken']).not_to be_nil
+      end
+    end
+  end
+
+  describe 'capture a sale' do
+    context 'successful response' do
+      before { ResponseToggler.enable('capture') }
+
+      it 'responds with a success response' do
+        put "/v2/sales/2014111703/capture"
+
+        response = JSON.parse(last_response.body)
+
+        expect(last_response).to be_ok
+        expect(response).to eq("Status" => 2, "ReasonCode" => 0, "ReasonMessage" => "Successful", "ProviderReturnCode" => "6",
+                               "ProviderReturnMessage" => "Operation Successful", "Links" => [])
+      end
+    end
+
+    context 'failure response' do
+      before { ResponseToggler.disable('capture') }
+
+      it 'responds with an error response' do
+        put "/v2/sales/2014111703/capture"
+
+        response = JSON.parse(last_response.body)
+
+        expect(last_response).to be_ok
+        expect(response).to eq([{'Code' => 114, 'Message' => 'Error'}])
+      end
+    end
+  end
+
+  describe 'sale cancelation' do
+    context 'success' do
+      before { ResponseToggler.enable('void') }
+
+      it 'responds with a success response' do
+        put "/v2/sales/2014111703/void"
+
+        response = JSON.parse(last_response.body)
+
+        expect(last_response).to be_ok
+        expect(response).to eq("Status" => 10, "ReasonCode" => 0, "ReasonMessage" => "Successful", "ProviderReturnCode" => "9",
+          "ProviderReturnMessage" => "Operation Successful", "Links" => [])
+      end
+    end
+
+    context 'failure' do
+      before { ResponseToggler.disable('void') }
+
+      it 'responds with an error response' do
+        put "/v2/sales/2014111703/void"
+
+        response = JSON.parse(last_response.body)
+
+        expect(last_response).to be_ok
+        expect(response).to eq([{'Code' => 114, 'Message' => 'Error'}])
       end
     end
   end
