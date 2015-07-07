@@ -15,9 +15,7 @@ describe FakeBraspag::CreditCards do
 
   describe 'SaveCreditCard' do
     context 'when the response is enabled' do
-      before do
-        allow(ResponseToggler).to receive(:enabled?).with('save_credit_card').and_return(true)
-      end
+      before { ResponseToggler.enable('save_credit_card') }
 
       it 'renders a successful response with a valid just click key and a correlation id' do
         request_id = 'bf4616ea-448a-4a15-9590-ce1163f3ad50'
@@ -106,9 +104,7 @@ describe FakeBraspag::CreditCards do
     end
 
     context 'when the response is disabled' do
-      before do
-        allow(ResponseToggler).to receive(:enabled?).with('save_credit_card').and_return(false)
-      end
+      before { ResponseToggler.disable('save_credit_card') }
 
       it 'renders a failure response' do
         request_id = 'bf4616ea-448a-4a15-9590-ce1163f3ad50'
@@ -162,9 +158,7 @@ describe FakeBraspag::CreditCards do
 
   describe 'JustClickShop' do
     context 'when the response is enabled' do
-      before do
-        allow(ResponseToggler).to receive(:enabled?).with('just_click_shop').and_return(true)
-      end
+      before { ResponseToggler.enable('just_click_shop') }
 
       it 'renders a successful response and saves a captured order' do
         request_id = 'bf4616ea-448a-4a15-9590-ce1163f3ad50'
@@ -271,9 +265,7 @@ describe FakeBraspag::CreditCards do
     end
 
     context 'when the response is disabled' do
-      before do
-        allow(ResponseToggler).to receive(:enabled?).with('just_click_shop').and_return(false)
-      end
+      before { ResponseToggler.disable('just_click_shop') }
 
       it 'renders a failure response' do
         request_id = 'bf4616ea-448a-4a15-9590-ce1163f3ad50'
@@ -333,8 +325,7 @@ describe FakeBraspag::CreditCards do
 
   describe 'GetCreditCard' do
     context 'when the response is enabled' do
-      before do
-        allow(ResponseToggler).to receive(:enabled?).with('get_credit_card').and_return(true) end
+      before { ResponseToggler.disable('get_credit_card') }
 
       it 'returns a valid credit card result' do
         post 'FakeCreditCard/CartaoProtegido.asmx', <<-XML.strip_heredoc
@@ -375,9 +366,7 @@ describe FakeBraspag::CreditCards do
     end
 
     context 'when the response is disabled' do
-      before do
-        allow(ResponseToggler).to receive(:enabled?).with('get_credit_card').and_return(false)
-      end
+      before { ResponseToggler.disable('get_credit_card') }
 
       it 'renders a failure response' do
         post 'FakeCreditCard/CartaoProtegido.asmx', <<-XML.strip_heredoc
