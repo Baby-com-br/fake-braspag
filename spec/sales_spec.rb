@@ -208,4 +208,64 @@ describe FakeBraspag::Sales do
       end
     end
   end
+
+  describe 'search sale' do
+    context 'success' do
+      before { ResponseToggler.enable('get_sale') }
+
+      it 'responds with a success response' do
+        get "/v2/sales/2014111703"
+
+        expect(last_response).to be_ok
+        expect(JSON.parse(last_response.body)).to eq(
+          {
+            "MerchantOrderId"=>"2014111706",
+            "Customer"=>{"Name"=>"Comprador Teste"},
+            "Payment"=> {
+              "ServiceTaxAmount"=>0,
+              "Installments"=>1,
+              "Interest"=>"ByMerchant",
+              "Capture"=>false,
+              "Authenticate"=>false,
+              "CreditCard"=> {
+                "CardNumber"=>0,
+                "Holder"=>"Teste Holder",
+                "ExpirationDate"=>"12/2021",
+                "SaveCard"=>false,
+                "Brand"=>"Visa",
+                "CardToken"=>"TOKEN"
+              },
+              "ProofOfSale"=>"674532",
+              "AcquirerTransactionId"=>"0305023644309",
+              "AuthorizationCode"=>"123456",
+              "PaymentId"=>"24bc8366-fc31-4d6c-8555-17049a836a07",
+              "Type"=>"CreditCard",
+              "Amount"=>15700,
+              "ReceivedDate"=>"2015-04-25 08:34:04",
+              "Currency"=>"BRL",
+              "Country"=>"BRA",
+              "Provider"=>"Simulado",
+              "ReasonCode"=>0,
+              "ReasonMessage"=>"Successful",
+              "Status"=>1,
+              "Links"=>[]
+            }
+          }
+        )
+      end
+    end
+
+    context 'failure' do
+      before { ResponseToggler.disable('get_sale') }
+
+      it 'responds with an error response' do
+        get "/v2/sales/2014111703"
+
+        response = JSON.parse(last_response.body)
+
+        expect(last_response).to be_ok
+        expect(response).to eq([{'Code' => 114, 'Message' => 'Error'}])
+      end
+    end
+  end
 end
