@@ -22,6 +22,14 @@ module FakeBraspag
       end
     end
 
+    put '/:PaymentId/void' do
+      if ResponseToggler.enabled?('void')
+        jbuilder :sales_cancel
+      else
+        jbuilder :sales_cancel_failure
+      end
+    end
+
     private
 
     def parsed_params
