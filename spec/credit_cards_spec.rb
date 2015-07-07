@@ -15,7 +15,7 @@ describe FakeBraspag::CreditCards do
 
   describe 'SaveCreditCard' do
     context 'when the response is enabled' do
-      before { ResponseToggler.enable('save_credit_card') }
+      before { allow(ResponseToggler).to receive(:enabled?).with('save_credit_card').and_return(true) }
 
       it 'renders a successful response with a valid just click key and a correlation id' do
         request_id = 'bf4616ea-448a-4a15-9590-ce1163f3ad50'
@@ -158,7 +158,7 @@ describe FakeBraspag::CreditCards do
 
   describe 'JustClickShop' do
     context 'when the response is enabled' do
-      before { ResponseToggler.enable('just_click_shop') }
+      before { allow(ResponseToggler).to receive(:enabled?).with('just_click_shop').and_return(true) }
 
       it 'renders a successful response and saves a captured order' do
         request_id = 'bf4616ea-448a-4a15-9590-ce1163f3ad50'
@@ -325,7 +325,7 @@ describe FakeBraspag::CreditCards do
 
   describe 'GetCreditCard' do
     context 'when the response is enabled' do
-      before { ResponseToggler.enable('get_credit_card') }
+      before { allow(ResponseToggler).to receive(:enabled?).with('get_credit_card').and_return(true) }
 
       it 'returns a valid credit card result' do
         post 'FakeCreditCard/CartaoProtegido.asmx', <<-XML.strip_heredoc
