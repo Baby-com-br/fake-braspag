@@ -153,7 +153,7 @@ describe FakeBraspag::Sales do
 
   describe 'capture a sale' do
     context 'successful response' do
-      before { ResponseToggler.enable('capture') }
+      before { allow(ResponseToggler).to receive(:enabled?).with('capture').and_return(true) }
 
       it 'responds with a success response' do
         put "/v2/sales/2014111703/capture"
@@ -167,7 +167,7 @@ describe FakeBraspag::Sales do
     end
 
     context 'failure response' do
-      before { ResponseToggler.disable('capture') }
+      before { allow(ResponseToggler).to receive(:enabled?).with('capture').and_return(false) }
 
       it 'responds with an error response' do
         put "/v2/sales/2014111703/capture"
@@ -182,7 +182,7 @@ describe FakeBraspag::Sales do
 
   describe 'sale cancelation' do
     context 'success' do
-      before { ResponseToggler.enable('void') }
+      before { allow(ResponseToggler).to receive(:enabled?).with('void').and_return(true) }
 
       it 'responds with a success response' do
         put "/v2/sales/2014111703/void"
@@ -196,7 +196,7 @@ describe FakeBraspag::Sales do
     end
 
     context 'failure' do
-      before { ResponseToggler.disable('void') }
+      before { allow(ResponseToggler).to receive(:enabled?).with('void').and_return(false) }
 
       it 'responds with an error response' do
         put "/v2/sales/2014111703/void"
@@ -211,7 +211,7 @@ describe FakeBraspag::Sales do
 
   describe 'search sale' do
     context 'success' do
-      before { ResponseToggler.enable('get_sale') }
+      before { allow(ResponseToggler).to receive(:enabled?).with('get_sale').and_return(true) }
 
       it 'responds with a success response' do
         get "/v2/sales/2014111703"
@@ -256,7 +256,7 @@ describe FakeBraspag::Sales do
     end
 
     context 'failure' do
-      before { ResponseToggler.disable('get_sale') }
+      before { allow(ResponseToggler).to receive(:enabled?).with('get_sale').and_return(false) }
 
       it 'responds with an error response' do
         get "/v2/sales/2014111703"

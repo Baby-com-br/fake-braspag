@@ -27,9 +27,7 @@ describe FakeBraspag::Orders do
 
   describe 'get status order' do
     context 'when the response is enabled' do
-      before do
-        ResponseToggler.enable('get_status_order')
-      end
+      before { allow(ResponseToggler).to receive(:enabled?).with('get_status_order').and_return(true) }
 
       it 'renders a successful response with the order amount and the transaction status' do
         order = Order.create(order_params)
@@ -68,9 +66,7 @@ describe FakeBraspag::Orders do
     end
 
     context 'when the response is disabled' do
-      before do
-        ResponseToggler.disable('get_status_order')
-      end
+      before { allow(ResponseToggler).to receive(:enabled?).with('get_status_order').and_return(false) }
 
       it 'renders a failure response with the order amount, return code and transaction id' do
         order = Order.create(order_params)
@@ -111,17 +107,15 @@ describe FakeBraspag::Orders do
 
   describe 'disable get status order' do
     it 'disables the get status response' do
-      ResponseToggler.enable('get_status_order')
+      allow(ResponseToggler).to receive(:enabled?).with('get_status_order').and_return(true)
 
       get '/get_status_order/disable'
 
       expect(last_response).to be_ok
-
-      expect(ResponseToggler.enabled?('get_status_order')).to be_falsy
     end
 
     it 'returns not modified if the get status order is already disabled' do
-      ResponseToggler.disable('get_status_order')
+      allow(ResponseToggler).to receive(:enabled?).with('get_status_order').and_return(false)
 
       get '/get_status_order/disable'
 
@@ -131,13 +125,11 @@ describe FakeBraspag::Orders do
 
   describe 'enable get status order' do
     it 'enables the get status order response' do
-      ResponseToggler.disable('get_status_order')
+      allow(ResponseToggler).to receive(:enabled?).with('get_status_order').and_return(false)
 
       get '/get_status_order/enable'
 
       expect(last_response).to be_ok
-
-      expect(ResponseToggler.enabled?('get_status_order')).to be_truthy
     end
 
     it 'returns not modified if the get status order is already enabled' do

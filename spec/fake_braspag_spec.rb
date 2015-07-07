@@ -82,9 +82,7 @@ describe FakeBraspag do
 
   describe 'capture' do
     context 'when the response is enabled' do
-      before do
-        ResponseToggler.enable('capture')
-      end
+      before { allow(ResponseToggler).to receive(:enabled?).with('capture').and_return(true) }
 
       it 'renders a successful response with the order amount, return code and transaction id' do
         order = Order.create(order_params)
@@ -135,9 +133,7 @@ describe FakeBraspag do
     end
 
     context 'when the response is disabled' do
-      before do
-        ResponseToggler.disable('capture')
-      end
+      before { allow(ResponseToggler).to receive(:enabled?).with('capture').and_return(false) }
 
       it 'renders a failure response with the order amount, return code and transaction id' do
         order = Order.create(order_params)
@@ -190,9 +186,7 @@ describe FakeBraspag do
 
   describe 'partial capture' do
     context 'when the response is enabled' do
-      before do
-        ResponseToggler.enable('capture_partial')
-      end
+      before { allow(ResponseToggler).to receive(:enabled?).with('capture_partial').and_return(true) }
 
       it 'renders a successful response with the captured amount and the transaction status' do
         Order.create(order_params)
@@ -249,9 +243,7 @@ describe FakeBraspag do
     end
 
     context 'when the response is disabled' do
-      before do
-        ResponseToggler.disable('capture_partial')
-      end
+      before { allow(ResponseToggler).to receive(:enabled?).with('capture_partial').and_return(false) }
 
       it 'renders a failure response with the order amount, return code and transaction id' do
         order = Order.create(order_params)
@@ -311,17 +303,15 @@ describe FakeBraspag do
 
   describe 'disable capture' do
     it 'disables the capture response' do
-      ResponseToggler.enable('capture')
+      allow(ResponseToggler).to receive(:enabled?).with('capture').and_return(true)
 
       get '/capture/disable'
 
       expect(last_response).to be_ok
-
-      expect(ResponseToggler.enabled?('capture')).to be_falsy
     end
 
     it 'returns not modified if the capture is already disabled' do
-      ResponseToggler.disable('capture')
+      allow(ResponseToggler).to receive(:enabled?).with('capture').and_return(false)
 
       get '/capture/disable'
 
@@ -331,17 +321,15 @@ describe FakeBraspag do
 
   describe 'enable capture' do
     it 'enables the capture response' do
-      ResponseToggler.disable('capture')
+      allow(ResponseToggler).to receive(:enabled?).with('capture').and_return(false)
 
       get '/capture/enable'
 
       expect(last_response).to be_ok
-
-      expect(ResponseToggler.enabled?('capture')).to be_truthy
     end
 
     it 'returns not modified if the capture is already enabled' do
-      ResponseToggler.enable('capture')
+      allow(ResponseToggler).to receive(:enabled?).with('capture').and_return(true)
 
       get '/capture/enable'
 
@@ -351,17 +339,15 @@ describe FakeBraspag do
 
   describe 'disable partial capture' do
     it 'disables the partial capture response' do
-      ResponseToggler.enable('capture_partial')
+      allow(ResponseToggler).to receive(:enabled?).with('capture_partial').and_return(true)
 
       get '/capture_partial/disable'
 
       expect(last_response).to be_ok
-
-      expect(ResponseToggler.enabled?('capture_partial')).to be_falsy
     end
 
     it 'returns not modified if the partial capture is already disabled' do
-      ResponseToggler.disable('capture_partial')
+      allow(ResponseToggler).to receive(:enabled?).with('capture_partial').and_return(false)
 
       get '/capture_partial/disable'
 
@@ -371,17 +357,15 @@ describe FakeBraspag do
 
   describe 'enable partial capture' do
     it 'enables the partial capture response' do
-      ResponseToggler.disable('capture_partial')
+      allow(ResponseToggler).to receive(:enabled?).with('capture_partial').and_return(false)
 
       get '/capture_partial/enable'
 
       expect(last_response).to be_ok
-
-      expect(ResponseToggler.enabled?('capture_partial')).to be_truthy
     end
 
     it 'returns not modified if the partial capture is already enabled' do
-      ResponseToggler.enable('capture_partial')
+      allow(ResponseToggler).to receive(:enabled?).with('capture_partial').and_return(true)
 
       get '/capture_partial/enable'
 
