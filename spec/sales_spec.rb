@@ -152,4 +152,33 @@ describe FakeBraspag::Sales do
       end
     end
   end
+
+  describe 'capture a sale' do
+    context 'successful response' do
+      before { ResponseToggler.enable('capture') }
+
+      it 'responds with a success response' do
+        put "/v2/sales/2014111703/capture"
+
+        response = JSON.parse(last_response.body)
+
+        expect(last_response).to be_ok
+        expect(response).to eq("Status" => 2, "ReasonCode" => 0, "ReasonMessage" => "Successful", "ProviderReturnCode" => "6",
+          "ProviderReturnMessage" => "Operation Successful", "Links" => [])
+      end
+    end
+
+    context 'failure response' do
+      before { ResponseToggler.disable('capture') }
+
+      it 'responds with an error response' do
+        put "/v2/sales/2014111703/capture"
+
+        response = JSON.parse(last_response.body)
+
+        expect(last_response).to be_ok
+        expect(response).to eq([{'Code' => 114, 'Message' => 'Error'}])
+      end
+    end
+  end
 end
