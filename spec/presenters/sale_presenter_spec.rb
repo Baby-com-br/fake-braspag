@@ -83,7 +83,7 @@ describe SalePresenter do
       let(:params) { { 'amount' => '157.0', 'cardNumber' => '4111111111111111', 'saveCard' => true } }
 
       it 'returns a sha1 from card number' do
-        expect(sale.card_token).to eq(Digest::SHA1.hexdigest(params['cardNumber']))
+        expect(sale.card_token).to eq('68bfb396f35af3876fc509665b3dc23a0930')
       end
     end
 

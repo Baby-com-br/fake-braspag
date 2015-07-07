@@ -20,7 +20,7 @@ class SalePresenter
   end
 
   def card_token
-    Digest::SHA1.hexdigest(@order.cardNumber.to_s) if save_card
+    Digest::SHA1.hexdigest(@order.cardNumber.to_s)[0..35] if save_card
   end
 
   def reason_code
