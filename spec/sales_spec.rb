@@ -371,12 +371,93 @@ describe FakeBraspag::Sales do
       before { allow(ResponseToggler).to receive(:enabled?).with('get_sale').and_return(false) }
 
       it 'responds with an error response' do
-        get "/v2/sales/2014111703"
+        get "/v2/sales/2014111706"
 
         response = JSON.parse(last_response.body)
 
         expect(last_response).to be_ok
         expect(response).to eq([{'Code' => 114, 'Message' => 'Error'}])
+      end
+    end
+  end
+
+  describe 'conciliate' do
+    context 'with boleto' do
+      context 'success' do
+        it 'responds with a success response' do
+          post '/v2/sales/', boleto_order_params.to_json, { 'Content-Type' => 'application/json' }
+          put "/v2/sales/2014111706/conciliate"
+
+          expect(last_response).to be_ok
+          expect(JSON.parse(last_response.body)).to eq({
+            "MerchantOrderId" => "2014111706",
+            "Customer" =>
+            {
+              "Name" => "Comprador Teste"
+            },
+            "Payment" =>
+            {
+              "Instructions" => "Aceitar somente ate a data de vencimento, apos essa data juros de 1 por cento dia.",
+              "ExpirationDate" => Date.tomorrow.strftime('%Y-%m-%d'),
+              "Url" => "https =>//apisandbox.braspag.com.br/post/pagador/reenvia.asp/a5f3181d-c2e2-4df9-a5b4-d8f6edf6bd51",
+              "BoletoNumber" => "123-2",
+              "BarCodeNumber" => "00096629900000157000494250000000012300656560",
+              "DigitableLine" => "00090.49420 50000.000013 23006.565602 6 62990000015700",
+              "Assignor" => "Empresa Teste",
+              "Address" => "Rua Teste",
+              "Identification" => "11884926754",
+              "PaymentId" => "a5f3181d-c2e2-4df9-a5b4-d8f6edf6bd51",
+              "Type" => "Boleto",
+              "Amount" => 15700,
+              "ReceivedDate" => "2015-04-25 08:34:04",
+              "Currency" => "BRL",
+              "Country" => "BRA",
+              "Provider" => "Simulado",
+              "ReasonCode" => 0,
+              "ReasonMessage" => "Successful",
+              "Status" => 2,
+              "Links" => []
+            }
+          })
+        end
+      end
+
+      context 'failure' do
+        context 'with an inexistent order' do
+          it 'responds with an error response' do
+            put "/v2/sales/111111111111111/conciliate"
+
+            response = JSON.parse(last_response.body)
+
+            expect(last_response).to be_ok
+            expect(response).to eq([{'Code' => 114, 'Message' => 'Error'}])
+          end
+        end
+
+        context 'with a credit card order' do
+          it 'responds with an error response' do
+            post '/v2/sales/', credit_card_order_params.to_json, { 'Content-Type' => 'application/json' }
+            put "/v2/sales/2014111703/conciliate"
+
+            response = JSON.parse(last_response.body)
+
+            expect(last_response).to be_ok
+            expect(response).to eq([{'Code' => 114, 'Message' => 'Error'}])
+          end
+        end
+
+        context 'with conciliate toggle enabled' do
+          before { allow(ResponseToggler).to receive(:enabled?).with('conciliate').and_return(false) }
+
+          it 'responds with an error response' do
+            put "/v2/sales/2014111706/conciliate"
+
+            response = JSON.parse(last_response.body)
+
+            expect(last_response).to be_ok
+            expect(response).to eq([{'Code' => 114, 'Message' => 'Error'}])
+          end
+        end
       end
     end
   end

@@ -40,6 +40,16 @@ module FakeBraspag
       end
     end
 
+    put '/:PaymentId/conciliate' do
+      order = Order.find(params[:PaymentId])
+      if order.present? && order.PaymentMethod == 'Boleto' && ResponseToggler.enabled?('conciliate')
+        @sale = SalePresenter.new(order)
+        jbuilder :sale_conciliate
+      else
+        jbuilder :sale_conciliate_failure
+      end
+    end
+
     private
 
     def parsed_params
