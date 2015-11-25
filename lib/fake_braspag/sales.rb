@@ -43,6 +43,7 @@ module FakeBraspag
     put '/:PaymentId/conciliate' do
       order = Order.find(params[:PaymentId])
       if order.present? && order.boleto? && ResponseToggler.enabled?('conciliate')
+        order.pay_boleto!
         @sale = SalePresenter.new(order)
         jbuilder :sale_conciliate
       else
@@ -66,7 +67,7 @@ module FakeBraspag
           'saveCard' => @params['Payment']['CreditCard']['SaveCard']
         })
       else
-        common_params.merge({'paymentMethod' => 'Boleto'})
+        common_params.merge({'paymentMethod' => 'Boleto', 'status' => 'boleto_issued'})
       end
     end
   end
