@@ -164,6 +164,10 @@ class Order
     @attributes['status'] == 'captured'
   end
 
+  def boleto?
+    @attributes['paymentMethod'] == 'Boleto'
+  end
+
   # Public: Returns the order id.
   def id
     @attributes['orderId']

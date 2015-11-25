@@ -4,7 +4,7 @@ module FakeBraspag
       if ResponseToggler.enabled?('get_sale')
         order = Order.find!(params[:PaymentId])
         @sale = SalePresenter.new(order)
-        jbuilder order.PaymentMethod == 'CreditCard' ? :get_credit_card_sale : :get_boleto_sale
+        jbuilder order.boleto? ?  :get_boleto_sale : :get_credit_card_sale
       else
         jbuilder :get_sale_failure
       end
@@ -17,10 +17,10 @@ module FakeBraspag
         order.authorize!
         @sale = SalePresenter.new(order)
 
-        jbuilder order.PaymentMethod == 'CreditCard' ? :sales_authorize : :sales_boleto
+        jbuilder order.boleto? ? :sales_boleto : :sales_authorize
       rescue Order::AuthorizationFailureError
         @sale = SalePresenter.new(order)
-        jbuilder order.PaymentMethod == 'CreditCard' ? :sales_authorize : :sales_boleto
+        jbuilder order.boleto? ? :sales_boleto : :sales_authorize
       end
     end
 
@@ -42,7 +42,7 @@ module FakeBraspag
 
     put '/:PaymentId/conciliate' do
       order = Order.find(params[:PaymentId])
-      if order.present? && order.PaymentMethod == 'Boleto' && ResponseToggler.enabled?('conciliate')
+      if order.present? && order.boleto? && ResponseToggler.enabled?('conciliate')
         @sale = SalePresenter.new(order)
         jbuilder :sale_conciliate
       else

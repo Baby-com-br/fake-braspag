@@ -236,6 +236,20 @@ describe Order do
     end
   end
 
+  describe '#boleto?' do
+    it 'returns true when order payment method is boleto' do
+      order = Order.new(order_params.merge('paymentMethod' => 'Boleto'))
+
+      expect(order).to be_boleto
+    end
+
+    it 'returns false when payment method is credit card' do
+      order = Order.new(order_params.merge('paymentMethod' => 'CreditCard'))
+
+      expect(order).not_to be_boleto
+    end
+  end
+
   describe '#method_missing' do
     it 'returns the value of the attribute key with the same name' do
       order = Order.new(order_params)
