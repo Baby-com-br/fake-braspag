@@ -208,6 +208,17 @@ describe Order do
     end
   end
 
+  describe '#pay_boleto!' do
+    it 'marks the order as boleto_paid' do
+      order = Order.new(order_params.merge('paymentMethod' => 'Boleto', 'boleto_status' => 'boleto_issued'))
+      expect(order).not_to be_boleto_paid
+
+      order.pay_boleto!
+
+      expect(order).to be_boleto_paid
+    end
+  end
+
   describe '#authorized?' do
     it 'returns true if status is authorized' do
       order = Order.new(order_params.merge('status' => 'authorized'))
@@ -233,6 +244,34 @@ describe Order do
       order = Order.new(order_params.merge('status' => 'authorized'))
 
       expect(order).not_to be_captured
+    end
+  end
+
+  describe '#boleto?' do
+    it 'returns true when order payment method is boleto' do
+      order = Order.new(order_params.merge('paymentMethod' => 'Boleto'))
+
+      expect(order).to be_boleto
+    end
+
+    it 'returns false when payment method is credit card' do
+      order = Order.new(order_params.merge('paymentMethod' => 'CreditCard'))
+
+      expect(order).not_to be_boleto
+    end
+  end
+
+  describe '#boleto_paid?' do
+    it 'returns true if order is boleto_paid' do
+      order = Order.new(order_params.merge('boleto_status' => 'boleto_paid'))
+
+      expect(order).to be_boleto_paid
+    end
+
+    it 'returns false if order is boleto_paid' do
+      order = Order.new(order_params.merge('boleto_status' => 'boleto_issued'))
+
+      expect(order).not_to be_boleto_paid
     end
   end
 

@@ -46,13 +46,30 @@ describe SalePresenter do
   end
 
   describe '#status' do
-    it 'returns 1 when order is authorized' do
-      order.authorize!
-      expect(sale.status).to eq(1)
+    context 'for a credit card order' do
+      before { params.merge!({ 'paymentMethod' => 'CreditCard' }) }
+
+      it 'returns 1 when order is authorized' do
+        order.authorize!
+        expect(sale.status).to eq(1)
+      end
+
+      it 'returns 3 when order is not authorized' do
+        expect(sale.status).to eq(3)
+      end
     end
 
-    it 'returns 3 when order is not authorized' do
-      expect(sale.status).to eq(3)
+    context 'for a boleto order' do
+      before { params.merge!({ 'paymentMethod' => 'Boleto', 'boleto_status' => 'boleto_issued' }) }
+
+      it 'returns 1 when boleto is issued' do
+        expect(sale.status).to eq(1)
+      end
+
+      it 'returns 2 when boleto is paid' do
+        order.pay_boleto!
+        expect(sale.status).to eq(2)
+      end
     end
   end
 
