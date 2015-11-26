@@ -21,6 +21,6 @@ json.Payment do |payment|
   payment.Provider "Simulado"
   payment.ReasonCode @sale.reason_code
   payment.ReasonMessage @sale.reason_message
-  payment.Status 2
+  payment.Status @sale.status
   payment.Links []
 end

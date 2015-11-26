@@ -32,7 +32,11 @@ class SalePresenter
   end
 
   def status
-    @order.authorized? ? 1 : 3
+    if @order.boleto?
+      @order.boleto_paid? ? 2 : 1
+    else
+      @order.authorized? ? 1 : 3
+    end
   end
 
   def provider_return_code
