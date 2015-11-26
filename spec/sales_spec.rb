@@ -446,7 +446,7 @@ describe FakeBraspag::Sales do
           end
         end
 
-        context 'with conciliate toggle enabled' do
+        context 'with conciliate toggle disabled' do
           before { allow(ResponseToggler).to receive(:enabled?).with('conciliate').and_return(false) }
 
           it 'responds with an error response' do
