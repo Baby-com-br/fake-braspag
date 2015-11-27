@@ -154,6 +154,20 @@ class Order
     save
   end
 
+  # Public: Simulates an order boleto payment.
+  #
+  # Examples
+  #
+  #   order.pay_boleto!
+  #   # => true
+  #
+  # Returns true if the payment was successful and false otherwise.
+  def pay_boleto!
+    @attributes['boleto_status'] = 'boleto_paid'
+
+    save
+  end
+
   # Public: Checks if the order is authorized.
   def authorized?
     @attributes['status'] == 'authorized'
@@ -162,6 +176,16 @@ class Order
   # Public: Checks if the order is captured.
   def captured?
     @attributes['status'] == 'captured'
+  end
+
+  # Public: Checks if the order is paid with boleto.
+  def boleto_paid?
+    @attributes['boleto_status'] == 'boleto_paid'
+  end
+
+  # Public: Checks if the order payment method is boleto
+  def boleto?
+    @attributes['paymentMethod'] == 'Boleto'
   end
 
   # Public: Returns the order id.
