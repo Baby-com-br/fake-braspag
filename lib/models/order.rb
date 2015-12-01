@@ -263,6 +263,6 @@ class Order
   #   order = Order.new('amount' => '4.20')
   #   order.payment_id # => 'fake-braspag.order.c58620df-2218-42ed-8033-6eb229f7f130'
   def generate_payment_id
-    KEY_PREFIX + SecureRandom.uuid
+    self.class.key_for(SecureRandom.uuid)
   end
 end
