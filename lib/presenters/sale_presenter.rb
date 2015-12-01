@@ -1,7 +1,7 @@
 require 'digest'
 
 class SalePresenter
-  delegate :id, to: :@order
+  delegate :id, :payment_id, to: :@order
 
   def initialize(order)
     @order = order

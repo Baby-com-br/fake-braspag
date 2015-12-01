@@ -5,6 +5,7 @@ require 'active_support/core_ext/string/strip'
 describe FakeBraspag::Sales do
   before do
     Order.connection.flushdb
+    allow(SecureRandom).to receive(:uuid).and_return('a5f3181d-c2e2-4df9-a5b4-d8f6edf6bd51')
   end
 
   let(:credit_card_order_params) do
@@ -51,6 +52,8 @@ describe FakeBraspag::Sales do
     }
   end
 
+  let(:payment_id) { 'fake-braspag.order.a5f3181d-c2e2-4df9-a5b4-d8f6edf6bd51' }
+
   describe 'authorization' do
     context 'with boleto' do
       it 'responds with a successful response' do
@@ -75,7 +78,7 @@ describe FakeBraspag::Sales do
               "Assignor" => "Empresa Teste",
               "Address" => "Rua Teste",
               "Identification" => "11884926754",
-              "PaymentId" => "a5f3181d-c2e2-4df9-a5b4-d8f6edf6bd51",
+              "PaymentId" => payment_id,
               "Type" => "Boleto",
               "Amount" => 15700,
               "ReceivedDate" => "2015-04-25 08:34:04",
@@ -127,7 +130,7 @@ describe FakeBraspag::Sales do
                 "ProofOfSale" => "674532",
                 "AcquirerTransactionId" => "0305023644309",
                 "AuthorizationCode" => "123456",
-                "PaymentId" => "24bc8366-fc31-4d6c-8555-17049a836a07",
+                "PaymentId" => payment_id,
                 "Type" => "CreditCard",
                 "Amount" => 15700,
                 "Installments" => 1,
@@ -183,7 +186,7 @@ describe FakeBraspag::Sales do
                 "ProofOfSale" => "674532",
                 "AcquirerTransactionId" => "0305023644309",
                 "AuthorizationCode" => "123456",
-                "PaymentId" => "24bc8366-fc31-4d6c-8555-17049a836a07",
+                "PaymentId" => payment_id,
                 "Type" => "CreditCard",
                 "Amount" => 15700,
                 "Installments" => 1,
@@ -350,7 +353,7 @@ describe FakeBraspag::Sales do
               "Assignor" => "Empresa Teste",
               "Address" => "Rua Teste",
               "Identification" => "11884926754",
-              "PaymentId" => "a5f3181d-c2e2-4df9-a5b4-d8f6edf6bd51",
+              "PaymentId" => payment_id,
               "Type" => "Boleto",
               "Amount" => 15700,
               "ReceivedDate" => "2015-04-25 08:34:04",
@@ -406,7 +409,7 @@ describe FakeBraspag::Sales do
               "Assignor" => "Empresa Teste",
               "Address" => "Rua Teste",
               "Identification" => "11884926754",
-              "PaymentId" => "a5f3181d-c2e2-4df9-a5b4-d8f6edf6bd51",
+              "PaymentId" => payment_id,
               "Type" => "Boleto",
               "Amount" => 15700,
               "ReceivedDate" => "2015-04-25 08:34:04",
