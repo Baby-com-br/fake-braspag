@@ -81,6 +81,12 @@ describe Order do
 
       expect(order.amount).to eq '18.36'
     end
+
+    it 'returns a generated payment id' do
+      allow(SecureRandom).to receive(:uuid).and_return('c58620df-2218-42ed-8033-6eb229f7f130')
+      order = Order.create(order_params)
+      expect(order.payment_id).to eq('fake-braspag.order.c58620df-2218-42ed-8033-6eb229f7f130')
+    end
   end
 
   describe '#card_number' do

@@ -1,5 +1,6 @@
 require 'redis'
 require 'json'
+require 'securerandom'
 require 'active_support/core_ext/string/inflections'
 
 # Public: Class responsible to make operations upon an order.
@@ -97,6 +98,7 @@ class Order
   # attributes - a Hash with the order attributes.
   def initialize(attributes, options = {})
     attributes['amount'] = normalize_amount(attributes['amount'])
+    attributes['paymentId'] = generate_payment_id
 
     @attributes = attributes
     @persisted = options.fetch(:persisted, false)
@@ -251,5 +253,16 @@ class Order
     camelized_name = name.to_s.camelize(:lower)
 
     @attributes.key?(camelized_name) || super
+  end
+
+
+  # Internal: Generates a payment id for the order
+  #
+  # Examples
+  #
+  #   order = Order.new('amount' => '4.20')
+  #   order.payment_id # => 'fake-braspag.order.c58620df-2218-42ed-8033-6eb229f7f130'
+  def generate_payment_id
+    KEY_PREFIX + SecureRandom.uuid
   end
 end
