@@ -98,7 +98,7 @@ class Order
   # attributes - a Hash with the order attributes.
   def initialize(attributes, options = {})
     attributes['amount'] = normalize_amount(attributes['amount'])
-    attributes['paymentId'] = generate_payment_id
+    attributes['paymentId'] ||= generate_payment_id
 
     @attributes = attributes
     @persisted = options.fetch(:persisted, false)

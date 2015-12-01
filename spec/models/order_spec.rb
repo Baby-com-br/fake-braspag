@@ -87,6 +87,11 @@ describe Order do
       order = Order.create(order_params)
       expect(order.payment_id).to eq('fake-braspag.order.c58620df-2218-42ed-8033-6eb229f7f130')
     end
+
+    it 'keeps the generated payment id if its already exists' do
+      order = Order.create(order_params.merge('paymentId' => 'prefix-number.secure-random-number'))
+      expect(order.payment_id).to eq('prefix-number.secure-random-number')
+    end
   end
 
   describe '#card_number' do
