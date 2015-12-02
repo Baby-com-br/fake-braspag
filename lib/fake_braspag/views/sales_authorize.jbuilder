@@ -19,7 +19,7 @@ json.Payment do |payment|
   payment.ProofOfSale "674532"
   payment.AcquirerTransactionId "0305023644309"
   payment.AuthorizationCode "123456"
-  payment.PaymentId "24bc8366-fc31-4d6c-8555-17049a836a07"
+  payment.PaymentId @sale.id
   payment.Type "CreditCard"
   payment.Amount @sale.amount
   payment.Installments 1

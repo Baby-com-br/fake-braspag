@@ -12,7 +12,7 @@ json.Payment do |payment|
   payment.Assignor "Empresa Teste"
   payment.Address "Rua Teste"
   payment.Identification "11884926754"
-  payment.PaymentId "a5f3181d-c2e2-4df9-a5b4-d8f6edf6bd51"
+  payment.PaymentId @sale.id
   payment.Type "Boleto"
   payment.Amount @sale.amount
   payment.ReceivedDate "2015-04-25 08:34:04"
