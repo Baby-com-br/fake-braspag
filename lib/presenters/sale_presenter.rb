@@ -11,6 +11,10 @@ class SalePresenter
     (@order.amount.to_f * 100).to_i
   end
 
+  def captured_amount
+    (@order.captured_amount.to_f * 100).to_i
+  end
+
   def save_card
     @order.saveCard
   end
