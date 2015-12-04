@@ -23,6 +23,21 @@ describe SalePresenter do
     end
   end
 
+  describe '#captured_amount' do
+    context 'when order is boleto paid' do
+      it 'returns captured amount in braspag format' do
+        order.pay_boleto!
+        expect(sale.captured_amount).to eq(15700)
+      end
+    end
+
+    context 'when order has not been asked to pay boleto' do
+      it 'returns captured amount in braspag format' do
+        expect(sale.captured_amount).to be_zero
+      end
+    end
+  end
+
   describe '#reason_code' do
     it 'returns 0 when order is authorized' do
       order.authorize!

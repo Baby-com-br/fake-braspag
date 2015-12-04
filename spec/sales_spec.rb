@@ -353,6 +353,7 @@ describe FakeBraspag::Sales do
               "PaymentId" => "2014111706",
               "Type" => "Boleto",
               "Amount" => 15700,
+              "CapturedAmount"=>0,
               "ReceivedDate" => "2015-04-25 08:34:04",
               "Currency" => "BRL",
               "Country" => "BRA",

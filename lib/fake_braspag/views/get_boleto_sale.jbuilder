@@ -15,6 +15,7 @@ json.Payment do |payment|
   payment.PaymentId @sale.id
   payment.Type "Boleto"
   payment.Amount @sale.amount
+  payment.CapturedAmount @sale.captured_amount
   payment.ReceivedDate "2015-04-25 08:34:04"
   payment.Currency "BRL"
   payment.Country "BRA"
