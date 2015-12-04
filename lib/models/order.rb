@@ -162,8 +162,15 @@ class Order
   #   # => true
   #
   # Returns true if the payment was successful and false otherwise.
-  def pay_boleto!
-    @attributes['boleto_status'] = 'boleto_paid'
+  def pay_boleto!(amount = nil)
+    if amount
+      normalized_amount = normalize_amount(amount)
+      @attributes['boleto_status'] = 'boleto_paid' if normalized_amount.to_i >= self.amount.to_i
+      @attributes['capturedAmount'] = normalized_amount
+    else
+      @attributes['boleto_status'] = 'boleto_paid'
+      @attributes['capturedAmount'] = self.amount
+    end
 
     save
   end
