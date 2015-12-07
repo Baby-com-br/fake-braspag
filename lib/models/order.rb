@@ -154,11 +154,14 @@ class Order
     save
   end
 
-  # Public: Simulates an order boleto payment.
+  # Public: Simulates an order boleto payment. When an amount is provided. The captured_amount is the provided amount
   #
   # Examples
   #
   #   order.pay_boleto!
+  #   # => true
+  #
+  #   order.pay_boleto!('15,00')
   #   # => true
   #
   # Returns true if the payment was successful and false otherwise.

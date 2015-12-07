@@ -233,7 +233,7 @@ describe Order do
       end
     end
 
-    context 'when no captured amount is provided' do
+    context 'when provided captured amount is more than amount' do
       it 'marks the order as boleto_paid' do
         order = Order.new(order_params.merge('paymentMethod' => 'Boleto', 'boleto_status' => 'boleto_issued'))
         expect(order).not_to be_boleto_paid
