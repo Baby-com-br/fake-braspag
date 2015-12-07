@@ -43,7 +43,7 @@ module FakeBraspag
     put '/:PaymentId/conciliate' do
       order = Order.find(params[:PaymentId])
       if order.present? && order.boleto? && ResponseToggler.enabled?('conciliate')
-        order.pay_boleto!
+        order.pay_boleto!(params[:amount])
         @sale = SalePresenter.new(order)
         jbuilder :sale_conciliate
       else

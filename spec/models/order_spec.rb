@@ -209,13 +209,40 @@ describe Order do
   end
 
   describe '#pay_boleto!' do
-    it 'marks the order as boleto_paid' do
-      order = Order.new(order_params.merge('paymentMethod' => 'Boleto', 'boleto_status' => 'boleto_issued'))
-      expect(order).not_to be_boleto_paid
+    context 'when no captured amount is provided' do
+      it 'marks the order as boleto_paid' do
+        order = Order.new(order_params.merge('paymentMethod' => 'Boleto', 'boleto_status' => 'boleto_issued'))
+        expect(order).not_to be_boleto_paid
 
-      order.pay_boleto!
+        order.pay_boleto!
 
-      expect(order).to be_boleto_paid
+        expect(order).to be_boleto_paid
+        expect(order.captured_amount).to eq(order.amount)
+      end
+    end
+
+    context 'when provided captured amount is less than amount' do
+      it 'does not mark the order as boleto_paid' do
+        order = Order.new(order_params.merge('paymentMethod' => 'Boleto', 'boleto_status' => 'boleto_issued'))
+        expect(order).not_to be_boleto_paid
+
+        order.pay_boleto!('15,00')
+
+        expect(order).not_to be_boleto_paid
+        expect(order.captured_amount).to be < order.amount
+      end
+    end
+
+    context 'when provided captured amount is more than amount' do
+      it 'marks the order as boleto_paid' do
+        order = Order.new(order_params.merge('paymentMethod' => 'Boleto', 'boleto_status' => 'boleto_issued'))
+        expect(order).not_to be_boleto_paid
+
+        order.pay_boleto!('20,00')
+
+        expect(order).to be_boleto_paid
+        expect(order.captured_amount).to be > order.amount
+      end
     end
   end
 

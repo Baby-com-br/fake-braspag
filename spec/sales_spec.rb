@@ -353,6 +353,7 @@ describe FakeBraspag::Sales do
               "PaymentId" => "2014111706",
               "Type" => "Boleto",
               "Amount" => 15700,
+              "CapturedAmount"=>0,
               "ReceivedDate" => "2015-04-25 08:34:04",
               "Currency" => "BRL",
               "Country" => "BRA",
@@ -384,41 +385,124 @@ describe FakeBraspag::Sales do
   describe 'conciliate' do
     context 'with boleto' do
       context 'success' do
-        it 'responds with a success response' do
-          post '/v2/sales/', boleto_order_params.to_json, { 'Content-Type' => 'application/json' }
-          put "/v2/sales/2014111706/conciliate"
+        context 'with exact boleto amount' do
+          it 'responds with a success response' do
+            post '/v2/sales/', boleto_order_params.to_json, { 'Content-Type' => 'application/json' }
+            put "/v2/sales/2014111706/conciliate"
 
-          expect(last_response).to be_ok
-          expect(JSON.parse(last_response.body)).to eq({
-            "MerchantOrderId" => "2014111706",
-            "Customer" =>
-            {
-              "Name" => "Comprador Teste"
-            },
-            "Payment" =>
-            {
-              "Instructions" => "Aceitar somente ate a data de vencimento, apos essa data juros de 1 por cento dia.",
-              "ExpirationDate" => Date.tomorrow.strftime('%Y-%m-%d'),
-              "Url" => "https =>//apisandbox.braspag.com.br/post/pagador/reenvia.asp/a5f3181d-c2e2-4df9-a5b4-d8f6edf6bd51",
-              "BoletoNumber" => "123-2",
-              "BarCodeNumber" => "00096629900000157000494250000000012300656560",
-              "DigitableLine" => "00090.49420 50000.000013 23006.565602 6 62990000015700",
-              "Assignor" => "Empresa Teste",
-              "Address" => "Rua Teste",
-              "Identification" => "11884926754",
-              "PaymentId" => "2014111706",
-              "Type" => "Boleto",
-              "Amount" => 15700,
-              "ReceivedDate" => "2015-04-25 08:34:04",
-              "Currency" => "BRL",
-              "Country" => "BRA",
-              "Provider" => "Simulado",
-              "ReasonCode" => 0,
-              "ReasonMessage" => "Successful",
-              "Status" => 2,
-              "Links" => []
-            }
-          })
+            expect(last_response).to be_ok
+            expect(JSON.parse(last_response.body)).to eq({
+              "MerchantOrderId" => "2014111706",
+              "Customer" =>
+              {
+                "Name" => "Comprador Teste"
+              },
+              "Payment" =>
+              {
+                "Instructions" => "Aceitar somente ate a data de vencimento, apos essa data juros de 1 por cento dia.",
+                "ExpirationDate" => Date.tomorrow.strftime('%Y-%m-%d'),
+                "Url" => "https =>//apisandbox.braspag.com.br/post/pagador/reenvia.asp/a5f3181d-c2e2-4df9-a5b4-d8f6edf6bd51",
+                "BoletoNumber" => "123-2",
+                "BarCodeNumber" => "00096629900000157000494250000000012300656560",
+                "DigitableLine" => "00090.49420 50000.000013 23006.565602 6 62990000015700",
+                "Assignor" => "Empresa Teste",
+                "Address" => "Rua Teste",
+                "Identification" => "11884926754",
+                "PaymentId" => "2014111706",
+                "Type" => "Boleto",
+                "Amount" => 15700,
+                "CapturedAmount" => 15700,
+                "ReceivedDate" => "2015-04-25 08:34:04",
+                "Currency" => "BRL",
+                "Country" => "BRA",
+                "Provider" => "Simulado",
+                "ReasonCode" => 0,
+                "ReasonMessage" => "Successful",
+                "Status" => 2,
+                "Links" => []
+              }
+            })
+          end
+        end
+
+        context 'with less than boleto amount' do
+          it 'responds with a success response, status 1 and the captured amount' do
+            post '/v2/sales/', boleto_order_params.to_json, { 'Content-Type' => 'application/json' }
+            put "/v2/sales/2014111706/conciliate", {amount: '50,00'}
+
+            expect(last_response).to be_ok
+            expect(JSON.parse(last_response.body)).to eq({
+              "MerchantOrderId" => "2014111706",
+              "Customer" =>
+              {
+                "Name" => "Comprador Teste"
+              },
+              "Payment" =>
+              {
+                "Instructions" => "Aceitar somente ate a data de vencimento, apos essa data juros de 1 por cento dia.",
+                "ExpirationDate" => Date.tomorrow.strftime('%Y-%m-%d'),
+                "Url" => "https =>//apisandbox.braspag.com.br/post/pagador/reenvia.asp/a5f3181d-c2e2-4df9-a5b4-d8f6edf6bd51",
+                "BoletoNumber" => "123-2",
+                "BarCodeNumber" => "00096629900000157000494250000000012300656560",
+                "DigitableLine" => "00090.49420 50000.000013 23006.565602 6 62990000015700",
+                "Assignor" => "Empresa Teste",
+                "Address" => "Rua Teste",
+                "Identification" => "11884926754",
+                "PaymentId" => "2014111706",
+                "Type" => "Boleto",
+                "Amount" => 15700,
+                "CapturedAmount" => 5000,
+                "ReceivedDate" => "2015-04-25 08:34:04",
+                "Currency" => "BRL",
+                "Country" => "BRA",
+                "Provider" => "Simulado",
+                "ReasonCode" => 0,
+                "ReasonMessage" => "Successful",
+                "Status" => 1,
+                "Links" => []
+              }
+            })
+          end
+        end
+
+        context 'with more than boleto amount' do
+          it 'responds with a success response, status 2 and the captured amount' do
+            post '/v2/sales/', boleto_order_params.to_json, { 'Content-Type' => 'application/json' }
+            put "/v2/sales/2014111706/conciliate", {amount: '200,00'}
+
+            expect(last_response).to be_ok
+            expect(JSON.parse(last_response.body)).to eq({
+              "MerchantOrderId" => "2014111706",
+              "Customer" =>
+              {
+                "Name" => "Comprador Teste"
+              },
+              "Payment" =>
+              {
+                "Instructions" => "Aceitar somente ate a data de vencimento, apos essa data juros de 1 por cento dia.",
+                "ExpirationDate" => Date.tomorrow.strftime('%Y-%m-%d'),
+                "Url" => "https =>//apisandbox.braspag.com.br/post/pagador/reenvia.asp/a5f3181d-c2e2-4df9-a5b4-d8f6edf6bd51",
+                "BoletoNumber" => "123-2",
+                "BarCodeNumber" => "00096629900000157000494250000000012300656560",
+                "DigitableLine" => "00090.49420 50000.000013 23006.565602 6 62990000015700",
+                "Assignor" => "Empresa Teste",
+                "Address" => "Rua Teste",
+                "Identification" => "11884926754",
+                "PaymentId" => "2014111706",
+                "Type" => "Boleto",
+                "Amount" => 15700,
+                "CapturedAmount" => 20000,
+                "ReceivedDate" => "2015-04-25 08:34:04",
+                "Currency" => "BRL",
+                "Country" => "BRA",
+                "Provider" => "Simulado",
+                "ReasonCode" => 0,
+                "ReasonMessage" => "Successful",
+                "Status" => 2,
+                "Links" => []
+              }
+            })
+          end
         end
       end
 
