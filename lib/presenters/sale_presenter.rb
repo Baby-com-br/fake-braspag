@@ -8,7 +8,7 @@ class SalePresenter
   end
 
   def amount
-    (@order.amount.to_f * 100).to_i
+    (BigDecimal.new(@order.amount) * 100).to_i
   end
 
   def captured_amount
