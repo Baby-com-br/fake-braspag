@@ -4,7 +4,7 @@ json.Customer do |customer|
 end
 json.Payment do |payment|
   payment.Instructions "Aceitar somente ate a data de vencimento, apos essa data juros de 1 por cento dia."
-  payment.ExpirationDate Date.tomorrow.strftime('%Y-%m-%d')
+  payment.ExpirationDate @sale.expiration_date || Date.tomorrow.strftime('%Y-%m-%d')
   payment.Url "https =>//apisandbox.braspag.com.br/post/pagador/reenvia.asp/a5f3181d-c2e2-4df9-a5b4-d8f6edf6bd51"
   payment.BoletoNumber "123-2"
   payment.BarCodeNumber "00096629900000157000494250000000012300656560"

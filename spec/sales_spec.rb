@@ -44,7 +44,6 @@ describe FakeBraspag::Sales do
         "BoletoNumber" => "123",
         "Assignor" => "Empresa Teste",
         "Demonstrative" => "Demonstrative Teste",
-        "ExpirationDate" => "2015-01-05",
         "Identification" => "11884926754",
         "Instructions" => "Aceitar somente ate a data de vencimento, apos essa data juros de 1 porcento dia"
       }
@@ -53,41 +52,82 @@ describe FakeBraspag::Sales do
 
   describe 'authorization' do
     context 'with boleto' do
-      it 'responds with a successful response' do
-        post '/v2/sales/', boleto_order_params.to_json, { 'Content-Type' => 'application/json' }
+      context 'responds with a successful response' do
+        it 'without expiration_date param' do
+          post '/v2/sales/', boleto_order_params.to_json, { 'Content-Type' => 'application/json' }
 
-        expect(last_response).to be_ok
-        expect(JSON.parse(last_response.body)).to eq(
-          {
-            "MerchantOrderId" => "2014111706",
-            "Customer" =>
+          expect(last_response).to be_ok
+          expect(JSON.parse(last_response.body)).to eq(
             {
-              "Name" => "Comprador Teste"
-            },
-            "Payment" =>
+              "MerchantOrderId" => "2014111706",
+              "Customer" =>
+              {
+                "Name" => "Comprador Teste"
+              },
+              "Payment" =>
+              {
+                "Instructions" => "Aceitar somente ate a data de vencimento, apos essa data juros de 1 por cento dia.",
+                "ExpirationDate" => Date.tomorrow.strftime('%Y-%m-%d'),
+                "Url" => "https =>//apisandbox.braspag.com.br/post/pagador/reenvia.asp/a5f3181d-c2e2-4df9-a5b4-d8f6edf6bd51",
+                "BoletoNumber" => "123-2",
+                "BarCodeNumber" => "00096629900000157000494250000000012300656560",
+                "DigitableLine" => "00090.49420 50000.000013 23006.565602 6 62990000015700",
+                "Assignor" => "Empresa Teste",
+                "Address" => "Rua Teste",
+                "Identification" => "11884926754",
+                "PaymentId" => "2014111706",
+                "Type" => "Boleto",
+                "Amount" => 15700,
+                "ReceivedDate" => "2015-04-25 08:34:04",
+                "Currency" => "BRL",
+                "Country" => "BRA",
+                "Provider" => "Simulado",
+                "ReasonCode" => 0,
+                "ReasonMessage" => "Successful",
+                "Status" => 1,
+                "Links" => []
+              }
+            })
+        end
+
+        it 'with expiration_date param' do
+          boleto_order_params['Payment']['ExpirationDate'] = "2016-07-07"
+
+          post '/v2/sales/', boleto_order_params.to_json, { 'Content-Type' => 'application/json' }
+
+          expect(last_response).to be_ok
+          expect(JSON.parse(last_response.body)).to eq(
             {
-              "Instructions" => "Aceitar somente ate a data de vencimento, apos essa data juros de 1 por cento dia.",
-              "ExpirationDate" => Date.tomorrow.strftime('%Y-%m-%d'),
-              "Url" => "https =>//apisandbox.braspag.com.br/post/pagador/reenvia.asp/a5f3181d-c2e2-4df9-a5b4-d8f6edf6bd51",
-              "BoletoNumber" => "123-2",
-              "BarCodeNumber" => "00096629900000157000494250000000012300656560",
-              "DigitableLine" => "00090.49420 50000.000013 23006.565602 6 62990000015700",
-              "Assignor" => "Empresa Teste",
-              "Address" => "Rua Teste",
-              "Identification" => "11884926754",
-              "PaymentId" => "2014111706",
-              "Type" => "Boleto",
-              "Amount" => 15700,
-              "ReceivedDate" => "2015-04-25 08:34:04",
-              "Currency" => "BRL",
-              "Country" => "BRA",
-              "Provider" => "Simulado",
-              "ReasonCode" => 0,
-              "ReasonMessage" => "Successful",
-              "Status" => 1,
-              "Links" => []
-            }
-          })
+              "MerchantOrderId" => "2014111706",
+              "Customer" =>
+              {
+                "Name" => "Comprador Teste"
+              },
+              "Payment" =>
+              {
+                "Instructions" => "Aceitar somente ate a data de vencimento, apos essa data juros de 1 por cento dia.",
+                "ExpirationDate" => "2016-07-07",
+                "Url" => "https =>//apisandbox.braspag.com.br/post/pagador/reenvia.asp/a5f3181d-c2e2-4df9-a5b4-d8f6edf6bd51",
+                "BoletoNumber" => "123-2",
+                "BarCodeNumber" => "00096629900000157000494250000000012300656560",
+                "DigitableLine" => "00090.49420 50000.000013 23006.565602 6 62990000015700",
+                "Assignor" => "Empresa Teste",
+                "Address" => "Rua Teste",
+                "Identification" => "11884926754",
+                "PaymentId" => "2014111706",
+                "Type" => "Boleto",
+                "Amount" => 15700,
+                "ReceivedDate" => "2015-04-25 08:34:04",
+                "Currency" => "BRL",
+                "Country" => "BRA",
+                "Provider" => "Simulado",
+                "ReasonCode" => 0,
+                "ReasonMessage" => "Successful",
+                "Status" => 1,
+                "Links" => []
+              }
+            })
+        end
       end
 
       it 'persists the order data' do
@@ -106,43 +146,43 @@ describe FakeBraspag::Sales do
 
         expect(last_response).to be_ok
         expect(JSON.parse(last_response.body)).to eq(
-        {
+          {
             "MerchantOrderId" => "2014111703",
             "Customer" => {
-                "Name" => "Comprador Teste",
+              "Name" => "Comprador Teste",
             },
             "Payment" => {
-                "ServiceTaxAmount" => 0,
-                "Installments" => 1,
-                "Interest" => "ByMerchant",
-                "Capture" => false,
-                "Authenticate" => false,
-                "CreditCard" => {
-                    "CardNumber" => "123412******1231",
-                    "Holder" => "Teste Holder",
-                    "ExpirationDate" => "12/2021",
-                    "SaveCard" => false,
-                    "Brand" => "Visa"
-                },
-                "ProofOfSale" => "674532",
-                "AcquirerTransactionId" => "0305023644309",
-                "AuthorizationCode" => "123456",
-                "PaymentId" => "2014111703",
-                "Type" => "CreditCard",
-                "Amount" => 15700,
-                "Installments" => 1,
-                "ReceivedDate" => "2015-04-25 08:34:04",
-                "Currency" => "BRL",
-                "Country" => "BRA",
-                "Provider" => "Simulado",
-                "ReasonCode" => 0,
-                "ReasonMessage" => "Successful",
-                "Status" => 1,
-                "ProviderReturnCode" => "4",
-                "ProviderReturnMessage" => "Operation Successful",
-                "Links" => []
+              "ServiceTaxAmount" => 0,
+              "Installments" => 1,
+              "Interest" => "ByMerchant",
+              "Capture" => false,
+              "Authenticate" => false,
+              "CreditCard" => {
+                "CardNumber" => "123412******1231",
+                "Holder" => "Teste Holder",
+                "ExpirationDate" => "12/2021",
+                "SaveCard" => false,
+                "Brand" => "Visa"
+              },
+              "ProofOfSale" => "674532",
+              "AcquirerTransactionId" => "0305023644309",
+              "AuthorizationCode" => "123456",
+              "PaymentId" => "2014111703",
+              "Type" => "CreditCard",
+              "Amount" => 15700,
+              "Installments" => 1,
+              "ReceivedDate" => "2015-04-25 08:34:04",
+              "Currency" => "BRL",
+              "Country" => "BRA",
+              "Provider" => "Simulado",
+              "ReasonCode" => 0,
+              "ReasonMessage" => "Successful",
+              "Status" => 1,
+              "ProviderReturnCode" => "4",
+              "ProviderReturnMessage" => "Operation Successful",
+              "Links" => []
             }
-        })
+          })
       end
 
       it 'persists the order data' do
@@ -162,43 +202,43 @@ describe FakeBraspag::Sales do
 
         expect(last_response).to be_ok
         expect(JSON.parse(last_response.body)).to eq(
-        {
+          {
             "MerchantOrderId" => "2014111703",
             "Customer" => {
-                "Name" => "Comprador Teste",
+              "Name" => "Comprador Teste",
             },
             "Payment" => {
-                "ServiceTaxAmount" => 0,
-                "Installments" => 1,
-                "Interest" => "ByMerchant",
-                "Capture" => false,
-                "Authenticate" => false,
-                "CreditCard" => {
-                    "CardNumber" => "424242******4242",
-                    "Holder" => "Teste Holder",
-                    "ExpirationDate" => "12/2021",
-                    "SaveCard" => false,
-                    "Brand" => "Visa"
-                },
-                "ProofOfSale" => "674532",
-                "AcquirerTransactionId" => "0305023644309",
-                "AuthorizationCode" => "123456",
-                "PaymentId" => "2014111703",
-                "Type" => "CreditCard",
-                "Amount" => 15700,
-                "Installments" => 1,
-                "ReceivedDate" => "2015-04-25 08:34:04",
-                "Currency" => "BRL",
-                "Country" => "BRA",
-                "Provider" => "Simulado",
-                "ReasonCode" => 7,
-                "ReasonMessage" => "Denied",
-                "Status" => 3,
-                "ProviderReturnCode" => "2",
-                "ProviderReturnMessage" => "Not Authorized",
-                "Links" => []
+              "ServiceTaxAmount" => 0,
+              "Installments" => 1,
+              "Interest" => "ByMerchant",
+              "Capture" => false,
+              "Authenticate" => false,
+              "CreditCard" => {
+                "CardNumber" => "424242******4242",
+                "Holder" => "Teste Holder",
+                "ExpirationDate" => "12/2021",
+                "SaveCard" => false,
+                "Brand" => "Visa"
+              },
+              "ProofOfSale" => "674532",
+              "AcquirerTransactionId" => "0305023644309",
+              "AuthorizationCode" => "123456",
+              "PaymentId" => "2014111703",
+              "Type" => "CreditCard",
+              "Amount" => 15700,
+              "Installments" => 1,
+              "ReceivedDate" => "2015-04-25 08:34:04",
+              "Currency" => "BRL",
+              "Country" => "BRA",
+              "Provider" => "Simulado",
+              "ReasonCode" => 7,
+              "ReasonMessage" => "Denied",
+              "Status" => 3,
+              "ProviderReturnCode" => "2",
+              "ProviderReturnMessage" => "Not Authorized",
+              "Links" => []
             }
-        })
+          })
       end
 
       it 'does not persist the order data' do
@@ -261,7 +301,7 @@ describe FakeBraspag::Sales do
 
         expect(last_response).to be_ok
         expect(response).to eq("Status" => 10, "ReasonCode" => 0, "ReasonMessage" => "Successful", "ProviderReturnCode" => "9",
-          "ProviderReturnMessage" => "Operation Successful", "Links" => [])
+                               "ProviderReturnMessage" => "Operation Successful", "Links" => [])
       end
     end
 
