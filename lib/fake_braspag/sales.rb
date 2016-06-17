@@ -67,7 +67,11 @@ module FakeBraspag
           'saveCard' => @params['Payment']['CreditCard']['SaveCard']
         })
       else
-        common_params.merge({'paymentMethod' => 'Boleto', 'status' => 'boleto_issued'})
+        common_params.merge({
+          'paymentMethod' => 'Boleto',
+          'status' => 'boleto_issued',
+          'expirationDate' => @params['Payment']['ExpirationDate']
+        })
       end
     end
   end
